@@ -1,0 +1,19 @@
+{
+  "local_qwen_agent": {
+    "provider": "vllm",
+    "model": "Qwen3.8",
+    "base_url": "http://localhost:3040/v1",
+    "api_key_env": "any",
+    "temperature":0.2,
+    "top_p":0.9
+  },
+  "api_qwen_agent": {
+    "provider": "openai",
+    "model": "qwen3.5-27b",
+    "base_url": "https://api.dslab.tech/v1",
+    "api_key_env": "DSLAB_API_KEY", 
+    "temperature": 0.2,
+    "top_p":0.9
+  }
+}
+
