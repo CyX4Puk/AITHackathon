@@ -155,15 +155,6 @@
   .totals .crit{display:grid;grid-template-columns:150px 1fr;gap:4px 12px;font-size:13px;margin-top:10px}
   .totals .crit .k{color:var(--text-secondary)}
   .totals .crit .g{display:inline-flex;gap:4px;align-items:flex-start;margin-right:12px}
-  .minis{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;margin-top:12px}
-  .mini{border:1px solid var(--border);border-radius:var(--r8);padding:10px 12px;cursor:pointer;display:flex;flex-direction:column;gap:4px;min-width:0}
-  .mini:hover{background:var(--bg-secondary)}
-  .mini .n{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
-  .mini .row{gap:6px}
-  .mini .f{font-size:12px;line-height:16px;color:var(--text-primary);display:flex;gap:6px;align-items:flex-start}
-  .mini .cnt{font-size:12px;color:var(--text-secondary);display:flex;gap:10px}
-  .mini .cnt span{display:inline-flex;gap:3px;align-items:center}
-
   /* Сравнение: матрица */
   .toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:16px 0 8px}
   .toolbar .grow{flex:1}
@@ -549,7 +540,7 @@ const PALETTE = ['#0b1f35','#3b5bdb','#7048e8','#1098ad','#5c7cfa','#495057','#8
 
 /* ---------- Состояние ---------- */
 const S = { session:[], selected:null, tab:'summary', llmOff:false, epView:'active', deal:{goal:null,amount:null},
-  filter:'all', focus:[], focusMode:false, expanded:false, metric:'pr', scale:'abs', view:'overlay', hiddenLines:new Set() };
+  filter:'all', focus:[], focusMode:false, expanded:false, metric:'pr', view:null, hiddenLines:new Set() };
 
 /* ---------- Утилиты ---------- */
 const $ = s => document.querySelector(s);
@@ -573,8 +564,6 @@ const cellItems = (c,k) => k==='deal' ? [dealCell(c)] : c.cmp[k];
 const rows = () => S.deal.amount ? [...ROWS,['Соразмерность сделки','deal']] : ROWS;
 /* Счётчики: сигналы строк сравнения + сигналы слота «Дополнительно» (возраст, смены руководителя/учредителя), которые в таблицу не входят */
 const counts = c => { const all=[...rows().flatMap(([,k])=>cellItems(c,k)), ...c.facts.filter(f=>f.slot==='Дополнительно').map(f=>[f.pol,f.text])]; return {neg:all.filter(([p])=>p==='negative').length, cau:all.filter(([p])=>p==='caution').length, gap:c.gaps.length}; };
-const topFact = c => c.facts.slice(1).find(f=>f.pol==='negative') || c.facts.slice(1).find(f=>f.pol==='caution') || c.facts.slice(1).find(f=>f.pol==='gap') || {pol:'positive',text:'Негативных сигналов по данным отчёта нет.'};
-
 /* ---------- Панель сессии (чипы) ---------- */
 function renderSession(){
   const bar=$('#sessionBar');
@@ -599,7 +588,7 @@ function renderWork(){
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===S.tab));
   const c=DB[S.selected];
   $('#subject').innerHTML = S.tab==='compare'
-    ? `<div class="title"><h2>Сравнение ${S.session.length} контрагентов</h2></div><div class="small muted">Единый набор критериев. Порядок строк — порядок добавления в сессию; сравнение не ранжирует компании.</div>`
+    ? `<div class="title"><h2>Сравнение ${S.session.length} контрагентов</h2></div><div class="small muted">Единый набор критериев. Строки матрицы упорядочены по возрастанию риска (ключ — под таблицей); баллов и вердикта нет.</div>`
     : `<div class="title"><h2>${esc(c.name)}</h2>${riskStatus(c)}${zskStatus(c)}</div><div class="small muted">ИНН <span class="mono">${c.inn}</span> · ОГРН <span class="mono">${c.ogrn}</span> · ${c.status} · зарегистрирована ${c.reg} · отчёт от ${c.report}</div>`;
   document.title=(S.tab==='compare'?'Сравнение':c.name)+' — Проверка контрагентов';
   $('#tabBody').innerHTML = S.tab==='summary'?renderSummary(c):S.tab==='card'?renderCard(c):renderCompare();
@@ -718,20 +707,22 @@ function renderTotals(){
   }).join('');
   const llmText = S.llmOff ? '' : `<p style="margin:8px 0 0">${esc(`Из ${n} компаний ${headl.length?`у ${headl.length} есть предупреждение по статусу (${headl.map(c=>c.short).join(', ')}); `:''}негативные сигналы по данным отчёта у ${withNeg.length} (${withNeg.map(c=>c.short).join(', ')}); без негативных и требующих внимания сигналов — ${clean.length?clean.map(c=>c.short).join(', '):'никого'}. Пробелы в данных у ${withGap.length}: отсутствие сведений не означает отсутствие риска.`)}</p>`;
   return `<div class="totals">
-    <div class="row" style="justify-content:space-between;flex-wrap:wrap"><h2>Итоги сравнения · ${n} контрагентов</h2><span class="small tertiary">Ранжирования нет; порядок — порядок добавления</span></div>
+    <div class="row" style="justify-content:space-between;flex-wrap:wrap"><h2>Итоги сравнения · ${n} контрагентов</h2><span class="small tertiary">Баллов и вердикта нет; подробности по каждой компании — в матрице ниже</span></div>
     ${llmText}
     ${headl.length?`<div class="headlines">${headl.map(c=>`<div class="alert">${ico('negative','sm')} <b>${esc(c.short)}:</b> ${esc(c.headline)}</div>`).join('')}</div>`:''}
     <div class="crit">${crit}</div>
-    <div class="minis">${list.map(c=>{ const k=counts(c), t=topFact(c); return `<div class="mini" data-open="${c.inn}" data-go="summary" title="Открыть сводку">
-      <div class="row" style="justify-content:space-between"><span class="n">${esc(c.short)}</span>${riskStatus(c)}</div>
-      ${c.headline?`<div class="f">${ico('negative','xs')}<span style="color:var(--negative-text)">${esc(c.headline)}</span></div>`:''}
-      <div class="f">${ico(t.pol,'xs')}<span>${esc(t.text)}</span></div>
-      <div class="cnt"><span>${ico('negative','xs')}${k.neg}</span><span>${ico('caution','xs')}${k.cau}</span><span>${ico('gap','xs')}${k.gap}</span></div></div>`; }).join('')}</div>
-    <div class="small tertiary" style="margin-top:8px">Счётчики — число сработавших правил каждой полярности, не балл. Клик по карточке открывает сводку.</div>
   </div>`;
 }
+/* Порядок матрицы — по возрастанию риска. Ключ явный и показан в подписи под таблицей:
+   1) метка банка LOW → MEDIUM → HIGH, UNKNOWN в конце (не определена — вне шкалы);
+   2) заголовок-предупреждение по статусу (нет → есть);
+   3) число negative-сигналов, затем caution;
+   4) порядок добавления. */
+const RISK_RANK = {LOW:0, MEDIUM:1, HIGH:2, UNKNOWN:3};
+const riskKey = c => { const k=counts(c); return [RISK_RANK[c.risk], c.headline?1:0, k.neg, k.cau, S.session.indexOf(c.inn)]; };
+const byRisk = list => [...list].sort((a,b)=>{ const ka=riskKey(a), kb=riskKey(b); for(let i=0;i<ka.length;i++) if(ka[i]!==kb[i]) return ka[i]-kb[i]; return 0; });
 function filtered(){
-  return cs().filter(c=> S.filter==='all' || (S.filter==='neg'&&counts(c).neg>0) || (S.filter==='gap'&&c.gaps.length>0) || (S.filter==='head'&&c.headline));
+  return byRisk(cs()).filter(c=> S.filter==='all' || (S.filter==='neg'&&counts(c).neg>0) || (S.filter==='gap'&&c.gaps.length>0) || (S.filter==='head'&&c.headline));
 }
 function renderMatrix(){
   const list=filtered(), rs=rows();
@@ -753,7 +744,7 @@ function renderMatrix(){
       ${rs.map(([,k])=>`<td>${cell(c,k)}</td>`).join('')}</tr>`).join('')}
     ${!list.length?`<tr><td colspan="${rs.length+2}" class="muted" style="text-align:center;padding:20px">По этому фильтру контрагентов нет</td></tr>`:''}
   </table></div>
-  <div class="small tertiary" style="margin-top:8px">Фильтр показывает подмножество, не меняя порядок. Итоговой строки, баллов и сортировки по «надёжности» нет; выбор за вами. Отметьте 2–4 компании, чтобы открыть подробное сравнение колонками.</div>`;
+  <div class="small tertiary" style="margin-top:8px">Порядок строк — по возрастанию риска: метка банка (низкий → средний → высокий; «не определён» — в конце), затем предупреждение по статусу, затем число негативных сигналов. Это порядок, а не балл и не вердикт; выбор за вами. Отметьте 2–4 компании, чтобы открыть подробное сравнение колонками.</div>`;
 }
 function renderFocus(){
   const list=S.focus.map(i=>DB[i]), rs=rows();
@@ -782,7 +773,7 @@ function renderDiffs(list){
 }
 function renderCompare(){
   if(S.focusMode&&S.focus.length>=2){ const fl=S.focus.map(i=>DB[i]); return renderFocus()+renderYearChart()+renderDiffs(fl)+renderSteps(fl); }
-  return renderTotals()+renderMatrix()+renderYearChart()+renderDiffs()+renderSteps(cs());
+  return renderTotals()+renderMatrix()+renderYearChart()+renderDiffs()+renderSteps(byRisk(cs()));
 }
 function renderSteps(list){
   return `<h2 style="margin-top:20px">Что проверить до сделки</h2>
@@ -796,45 +787,42 @@ function seriesFor(list){
   list.forEach((c,i)=>{
     const pts=c.fin.filter(f=>f[k]!=null&&!(k==='pr'&&f[k]===0)).map(f=>({y:f.y,v:f[k]}));
     if(!pts.length){ skipped.push([c, c.isIP?'ИП не публикует отчётность':c.fin.length?'показатель не указан':'нет отчётности']); return; }
-    if(S.scale==='idx'&&pts.length<2){ skipped.push([c,`только ${pts[0].y}: индекс не считается`]); return; }
-    if(S.scale==='log'&&pts.some(p=>p.v<=0)){ skipped.push([c,'значения ≤ 0: лог-шкала неприменима']); return; }
-    let vals=pts.map(p=>p.v);
-    if(S.scale==='idx'){ const b=pts[0].v; if(b===0){ skipped.push([c,'первый год = 0: индекс не считается']); return; } vals=pts.map(p=>p.v/Math.abs(b)*100); }
-    if(S.scale==='log') vals=pts.map(p=>Math.log10(p.v));
-    ser.push({c,color:PALETTE[S.session.indexOf(c.inn)%PALETTE.length],pts:pts.map((p,j)=>({y:p.y,raw:p.v,v:vals[j]}))});
+    ser.push({c,color:PALETTE[S.session.indexOf(c.inn)%PALETTE.length],pts:pts.map(p=>({y:p.y,raw:p.v,v:p.v}))});
   });
   return {k,name,r,ser,skipped};
 }
-function yLabel(v){ if(S.scale==='idx') return Math.round(v)+''; if(S.scale==='log') return mlnShort(Math.pow(10,v)); return mlnShort(v); }
+const yLabel = v => mlnShort(v);
+/* Единственная шкала — рубли, линейная. Вид по умолчанию: до 4 компаний — общий график, от 5 — мини-графики по компаниям */
+const chartView = n => S.view || (n>4?'small':'overlay');
 function renderYearChart(){
   const list=S.focusMode&&S.focus.length>=2?S.focus.map(i=>DB[i]):cs();
   const {k,name,r,ser,skipped}=seriesFor(list);
   const years=[...new Set(list.flatMap(c=>c.fin.map(f=>f.y)))].sort();
+  const view=chartView(ser.length);
   const ctl=`
   <div class="toolbar" style="margin-top:20px"><h2>Динамика по годам</h2>
     <div class="seg">${METRICS.map(([mk,mn])=>`<button class="${S.metric===mk?'on':''}" data-metric="${mk}">${mn}</button>`).join('')}</div>
     <div class="grow"></div>
-    <div class="seg">${[['abs','млн ₽'],['idx','Индекс, первый год = 100'],['log','Лог-шкала']].map(([s,l])=>`<button class="${S.scale===s?'on':''}" data-scale="${s}">${l}</button>`).join('')}</div>
-    <div class="seg">${[['overlay','Общий'],['small','По компаниям']].map(([v,l])=>`<button class="${S.view===v?'on':''}" data-view="${v}">${l}</button>`).join('')}</div>
+    <div class="seg">${[['overlay','Общий график'],['small','По компаниям']].map(([v,l])=>`<button class="${view===v?'on':''}" data-view="${v}">${l}</button>`).join('')}</div>
   </div>
-  <div class="small muted" style="margin-bottom:6px">${name} ${ref(r)} · годы по возрастанию; год без значения не рисуется. Цвет линии — только для различения компаний.</div>`;
-  if(!ser.length) return ctl+`<div class="plate gap" style="margin-top:0">${ico('gap','sm')} Ни у одной компании нет данных для этого показателя в выбранной шкале.</div>`+skippedNote(skipped);
-  return ctl + (S.view==='overlay'?overlay(ser,years):smalls(ser,years)) + skippedNote(skipped);
+  <div class="small muted" style="margin-bottom:6px">${name}, млн ₽ ${ref(r)} · годы по возрастанию; год без значения не рисуется. Цвет линии — только для различения компаний.</div>`;
+  if(!ser.length) return ctl+`<div class="plate gap" style="margin-top:0">${ico('gap','sm')} Ни у одной компании нет данных по этому показателю.</div>`+skippedNote(skipped);
+  return ctl + (view==='overlay'?overlay(ser,years):smalls(ser,years)) + skippedNote(skipped);
 }
 function skippedNote(sk){ return sk.length?`<div class="small muted" style="margin-top:8px">${ico('gap','xs')} Не на графике: ${sk.map(([c,why])=>`${esc(c.short)} (${why})`).join('; ')}.</div>`:''; }
 function overlay(ser,years){
-  const W=820,H=280,L=64,R=120,T=16,B=32;
+  const W=820,H=280,L=84,R=120,T=16,B=32;
   const vis=ser.filter(s=>!S.hiddenLines.has(s.c.inn));
   const all=(vis.length?vis:ser).flatMap(s=>s.pts.map(p=>p.v));
-  let mn=Math.min(...all), mx=Math.max(...all); if(S.scale==='abs'){ mn=Math.min(0,mn); mx=Math.max(0,mx); } if(mn===mx){ mn-=1; mx+=1; }
-  const pad=(mx-mn)*0.08; mn-=pad; mx+=pad;
+  let mn=Math.min(0,...all), mx=Math.max(0,...all); if(mn===mx){ mn-=1; mx+=1; }
+  const pad=(mx-mn)*0.08; if(mn<0) mn-=pad; if(mx>0) mx+=pad;
   const x=y=>L+(years.indexOf(y))*((W-L-R)/Math.max(1,years.length-1));
   const yy=v=>T+(H-T-B)*(1-(v-mn)/(mx-mn));
   const ticks=[0,.25,.5,.75,1].map(t=>mn+(mx-mn)*t);
-  const zero=(S.scale==='abs'&&mn<0&&mx>0)?`<line class="ax" x1="${L}" x2="${W-R}" y1="${yy(0)}" y2="${yy(0)}" stroke-dasharray="3 3"/>`:'';
+  const zero=(mn<0&&mx>0)?`<line class="ax" x1="${L}" x2="${W-R}" y1="${yy(0)}" y2="${yy(0)}" stroke-dasharray="3 3"/>`:'';
   /* Подписи у концов линий раздвигаются, чтобы не накладываться (шаг 12 px) */
   const ends=vis.map(s=>({s,ly:yy(s.pts[s.pts.length-1].v)})).sort((a,b)=>a.ly-b.ly);
-  for(let i=1;i<ends.length;i++) if(ends[i].ly-ends[i-1].ly<12) ends[i].ly=ends[i-1].ly+12;
+  for(let i=1;i<ends.length;i++) if(ends[i].ly-ends[i-1].ly<13) ends[i].ly=ends[i-1].ly+13;
   const labelY=Object.fromEntries(ends.map(e=>[e.s.c.inn,e.ly]));
   const lines=ser.map(s=>{ const on=!S.hiddenLines.has(s.c.inn); if(!on) return '';
     const d=s.pts.map((p,i)=>`${i?'L':'M'}${x(p.y)},${yy(p.v)}`).join(' ');
@@ -847,14 +835,13 @@ function overlay(ser,years){
     ${lines}
   </svg></div>
   <div class="row" style="flex-wrap:wrap;gap:6px;margin-top:6px">${ser.map(s=>`<span class="lchip${S.hiddenLines.has(s.c.inn)?' off':''}" data-toggle="${s.c.inn}" data-hover="${s.c.inn}"><i style="background:${s.color}"></i>${esc(s.c.short)}</span>`).join('')}<span class="small tertiary" style="margin-left:6px">клик скрывает линию, наведение подсвечивает</span></div>
-  ${S.scale==='abs'&&ser.length>1?`<div class="small tertiary" style="margin-top:4px">Масштабы компаний различаются на порядки; для сравнения динамики переключитесь на «Индекс» или «Лог-шкала».</div>`:''}`;
+  ${(()=>{ const v=(vis.length?vis:ser).flatMap(s=>s.pts.map(p=>Math.abs(p.raw))).filter(Boolean); return v.length>1&&Math.max(...v)/Math.min(...v)>50?`<div class="small tertiary" style="margin-top:4px">Масштабы компаний различаются на порядки: линии малых компаний прижаты к оси. Их динамика видна в режиме «По компаниям».</div>`:''; })()}`;
 }
 function smalls(ser,years){
-  const all=ser.flatMap(s=>s.pts.map(p=>p.v)); let gmn=Math.min(...all,S.scale==='abs'?0:Infinity), gmx=Math.max(...all,S.scale==='abs'?0:-Infinity);
   const W=200,H=70,L=20,R=20,T=10,B=14;
-  return `<div class="row small muted" style="gap:8px;margin-bottom:4px"><span>Шкала:</span><div class="seg"><button class="${S.smallScale!=='shared'?'on':''}" data-sscale="own">своя у каждой</button><button class="${S.smallScale==='shared'?'on':''}" data-sscale="shared">общая</button></div></div>
+  return `<div class="small muted" style="margin-bottom:4px">У каждой компании своя ось (от нуля до максимума показателя); сравнивайте форму линии и процент изменения, не высоту.</div>
   <div class="smalls">${ser.map(s=>{
-    let mn,mx; if(S.smallScale==='shared'){ mn=gmn; mx=gmx; } else { const v=s.pts.map(p=>p.v); mn=Math.min(...v,S.scale==='abs'?0:Infinity); mx=Math.max(...v,S.scale==='abs'?0:-Infinity); }
+    const v=s.pts.map(p=>p.v); let mn=Math.min(0,...v), mx=Math.max(0,...v);
     if(mn===mx){ mn-=1; mx+=1; } const pad=(mx-mn)*.1; mn-=pad; mx+=pad;
     const x=y=>L+(years.indexOf(y))*((W-L-R)/Math.max(1,years.length-1)), yy=v=>T+(H-T-B)*(1-(v-mn)/(mx-mn));
     const d=s.pts.map((p,i)=>`${i?'L':'M'}${x(p.y)},${yy(p.v)}`).join(' ');
@@ -965,9 +952,7 @@ document.addEventListener('click',e=>{
   else if(d.filter){ S.filter=d.filter; renderWork(); }
   else if(d.expand){ S.expanded=!S.expanded; renderWork(); }
   else if(d.metric){ S.metric=d.metric; S.hiddenLines.clear(); renderWork(); }
-  else if(d.scale){ S.scale=d.scale; renderWork(); }
   else if(d.view){ S.view=d.view; renderWork(); }
-  else if(d.sscale){ S.smallScale=d.sscale; renderWork(); }
   else if(d.toggle){ S.hiddenLines.has(d.toggle)?S.hiddenLines.delete(d.toggle):S.hiddenLines.add(d.toggle); renderWork(); }
   else if(cl('[data-open]')){ const el=cl('[data-open]'); S.selected=el.dataset.open; S.tab=el.dataset.go||'card'; renderAll(); }
   else if(d.ep){ S.epView=d.ep; renderWork(); }
@@ -988,7 +973,7 @@ S.session=[...SETS[setName]];
 S.selected=H.includes('t3')?'9714079997':H.includes('t2')?'1660266560':S.session[0]; S.tab=H.includes('summary')?'summary':H.includes('card')?'card':(S.session.length>1?'compare':'summary');
 if(H.includes('llmoff')){S.llmOff=true; $('#llmToggle').textContent='LLM недоступна: вкл'; $('#llmToggle').classList.add('on');}
 if(H.includes('deal')){S.deal={goal:'поставка',amount:100};}
-if(H.includes('idx')) S.scale='idx'; if(H.includes('log')) S.scale='log'; if(H.includes('small')) S.view='small';
+if(H.includes('small')) S.view='small'; if(H.includes('overlay')) S.view='overlay';
 if(H.includes('focus')&&S.session.length>=3){ S.focus=S.session.slice(0,3); S.focusMode=true; }
 if(H.includes('neg')) S.filter='neg';
 document.querySelectorAll('.devbar [data-state]').forEach(b=>b.classList.toggle('on',b.dataset.state===setName));
