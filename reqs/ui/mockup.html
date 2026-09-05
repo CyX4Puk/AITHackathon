@@ -77,8 +77,6 @@
   .cchip:hover{background:var(--bg-secondary)}
   .cchip.active{border-color:#0b1f35;box-shadow:inset 0 0 0 1px #0b1f35}
   .cchip .name{font-weight:500;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .cchip .dot{width:8px;height:8px;border-radius:50%;flex:none}
-  .dot.green{background:var(--positive)} .dot.orange{background:var(--attention)} .dot.red{background:var(--negative)} .dot.grey{background:var(--text-tertiary)}
   .cchip .warn{color:var(--negative-text);font-weight:700;font-size:12px}
   .cchip .x{border:0;background:none;color:var(--text-tertiary);font-size:15px;line-height:14px;padding:2px 5px;border-radius:50%}
   .cchip .x:hover{background:var(--bg-tertiary);color:var(--text-primary)}
@@ -93,25 +91,31 @@
   .status.grey{background:var(--bg-tertiary);color:var(--text-secondary)}
   .badge{background:var(--bg-tertiary);border-radius:10px;padding:0 6px;font-size:12px;line-height:18px;font-weight:500;color:var(--text-secondary)}
 
+  /* Оценка банка в сводке чата — компактные метки */
+  .bank-assess{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px}
+  .bank-assess-k{font-size:12px;line-height:16px;color:var(--text-secondary);font-weight:500}
+  .signals-fold{margin-top:4px}
+  .signals-fold summary{font-weight:500}
+  .steps-block{margin-top:0;margin-bottom:12px}
+  .steps-block h2{font-size:15px;margin-bottom:8px}
+  .llm-summary{margin:0 0 12px;padding:12px 16px}
+  .llm-summary h2{font-size:13px;line-height:16px;font-weight:500;margin-bottom:8px;color:var(--text-secondary)}
+  .llm-summary p{margin:0 0 8px;font-size:14px;line-height:1.5;font-weight:400}
+  .llm-summary p:last-child{margin-bottom:0;font-size:13px;color:var(--text-secondary)}
+
   .subject{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
   .subject .title{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 
-  /* Факт сводки (в чате и в панели) */
-  .fact{display:grid;grid-template-columns:22px 1fr;gap:10px;padding:10px 12px;border-radius:var(--r12);border:1px solid var(--border);border-left-width:4px;margin-bottom:6px;cursor:pointer}
+  /* Факт сводки (в чате и в панели): полярность — полоса слева и фон, без пиктограмм */
+  .fact{padding:10px 12px;border-radius:var(--r12);border:1px solid var(--border);border-left-width:4px;margin-bottom:6px;cursor:pointer}
   .fact:hover{filter:brightness(.985)}
   .fact .slot{font-size:12px;line-height:16px;color:var(--text-secondary);margin-bottom:1px}
-  .fact .text{font-weight:500}
+  .fact .text{font-weight:500;line-height:1.45}
   .fact.negative{border-left-color:var(--negative);background:var(--negative-bg)}
   .fact.caution{border-left-color:var(--attention);background:var(--attention-bg)}
-  .fact.gap{border-left-color:var(--text-tertiary);border-style:dashed;border-left-style:solid;background:transparent}
+  .fact.gap{border-left-color:var(--text-tertiary);border-style:dashed;border-left-style:solid;background:var(--bg-secondary)}
   .fact.info{border-left-color:var(--text-secondary);background:var(--info-bg)}
-  .fact.positive{border-left-color:var(--positive);background:transparent}
-  .ico{width:22px;height:22px;border-radius:50%;display:inline-grid;place-items:center;font-size:13px;font-weight:700;color:#fff;margin-top:1px;flex:none}
-  .negative .ico,.ico.negative{background:var(--negative)} .caution .ico,.ico.caution{background:var(--attention)}
-  .gap .ico,.ico.gap{background:transparent;color:var(--text-secondary);border:1.5px dashed var(--text-tertiary)}
-  .info .ico,.ico.info{background:var(--text-secondary)} .positive .ico,.ico.positive{background:var(--positive)}
-  .ico.sm{width:16px;height:16px;font-size:10px;margin-top:2px}
-  .ico.xs{width:12px;height:12px;font-size:8px;margin-top:0}
+  .fact.positive{border-left-color:var(--positive);background:var(--positive-bg)}
 
   .plate{border-radius:var(--r12);padding:14px 16px;margin-top:16px;border:1px solid var(--border)}
   .plate h2{margin-bottom:8px;font-size:15px}
@@ -170,22 +174,32 @@
   .mx td{vertical-align:top;line-height:17px}
   .mx tr.sel td{background:#f6f8fb}
   .mx .cn{font-weight:600;cursor:pointer} .mx .cn:hover{text-decoration:underline}
-  .mx .item{display:flex;gap:5px;align-items:flex-start;margin:1px 0}
+  .mx .item{margin:1px 0;padding:2px 6px;border-radius:6px}
+  .mx .item.negative{background:var(--negative-bg)}
+  .mx .item.caution{background:var(--attention-bg)}
+  .mx .item.gap{background:var(--bg-secondary);border:1px dashed var(--text-tertiary)}
   .mx .item span{overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
   .mx.expanded .item span{display:block}
   .mx .more{color:var(--text-secondary);font-size:12px;cursor:pointer;margin-left:20px}
   .mx.expanded .more{display:none}
-  .mx .hidden-item{display:none} .mx.expanded .hidden-item{display:flex}
+  .mx .hidden-item{display:none} .mx.expanded .hidden-item{display:block}
   .cmp th:first-child,.cmp td:first-child{width:150px;color:var(--text-secondary);font-weight:500;background:var(--bg-primary);position:sticky;left:0}
   .cmp th{vertical-align:top}
   .cmp th .cname{color:var(--text-primary);font-weight:600;font-size:14px;cursor:pointer}
   .cmp td{font-size:14px}
-  .cmp .item{display:flex;gap:6px;align-items:flex-start;margin:2px 0}
+  .cmp .item{margin:2px 0;padding:2px 6px;border-radius:6px}
+  .cmp .item.negative{background:var(--negative-bg)}
+  .cmp .item.caution{background:var(--attention-bg)}
+  .cmp .item.gap{background:var(--bg-secondary);border:1px dashed var(--text-tertiary)}
   .gridN{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:8px}
   .gridN .plate{margin:0}
   .crit{display:grid;grid-template-columns:140px 1fr;gap:4px 12px;font-size:13px;margin-top:8px}
   .crit .k{color:var(--text-secondary)}
-  .crit .g{display:inline-flex;gap:4px;align-items:flex-start;margin-right:12px}
+  .crit .g{display:inline-block;margin-right:12px;padding:2px 6px;border-radius:6px}
+  .crit .g.negative{background:var(--negative-bg)}
+  .crit .g.caution{background:var(--attention-bg)}
+  .crit .g.gap{background:var(--bg-secondary);border:1px dashed var(--text-tertiary)}
+  .crit .g.positive{background:var(--positive-bg)}
 
   /* Динамика по годам */
   .ychart{margin-top:8px}
@@ -218,7 +232,7 @@
   .msg .hdr .meta{font-size:12px;color:var(--text-tertiary)}
   .msg .sys{background:var(--bg-secondary);border-left:3px solid var(--text-tertiary);padding:8px 10px;border-radius:0 8px 8px 0;color:var(--text-secondary);font-size:13px}
   .msg .err{background:var(--negative-bg);border-left:3px solid var(--negative);padding:8px 10px;border-radius:0 8px 8px 0;color:var(--negative-text);font-size:13px}
-  .msg .gapbox{border:1px dashed var(--text-tertiary);border-radius:8px;padding:6px 10px;color:var(--text-secondary);font-size:13px;margin:6px 0}
+  .msg .gapbox{border:1px dashed var(--text-tertiary);border-radius:8px;padding:6px 10px;color:var(--text-secondary);font-size:13px;margin:6px 0;background:var(--bg-secondary)}
   .msg .okline{display:flex;gap:8px;align-items:center;color:var(--text-secondary);font-size:13px;margin:4px 0 6px}
   .msg .step{background:var(--attention-bg);border-radius:8px;padding:8px 10px;font-size:13px;margin-top:6px}
   .msg .step .why{color:var(--text-secondary)}
@@ -239,14 +253,26 @@
   .suggest .lbl{font-size:12px;color:var(--text-tertiary);align-self:center}
   .compose{display:flex;gap:8px;padding:12px 20px 14px;align-items:flex-end;border-top:1px solid var(--border)}
   .compose textarea{flex:1;resize:none;border:1px solid var(--border);border-radius:var(--r8);padding:12px;font:inherit;min-height:48px;max-height:104px}
+  .compose textarea::placeholder{color:var(--text-tertiary);opacity:1}
   .compose button{width:48px;height:48px;border-radius:var(--r8);border:0;background:#0b1f35;color:#fff;font-size:18px}
-  .compose-hint{padding:0 20px 12px;font-size:12px;color:var(--text-tertiary)}
-  .chat.empty-session .chat-flow{justify-content:center;padding-bottom:8vh}
-  .chat.empty-session .msgs{flex:0 0 auto;overflow:visible;padding-bottom:8px;align-items:center}
-  .chat.empty-session .msg.agent{align-self:center;max-width:560px;text-align:center;font-size:16px;line-height:22px}
-  .chat.empty-session .suggest{justify-content:center;border-top:0;padding-top:4px}
-  .chat.empty-session .compose{width:100%;border-top:0}
-  .chat.empty-session .compose-hint{text-align:center}
+  /* Пустая сессия: task-first launcher вместо приветственного сообщения */
+  .launcher{display:none;flex-direction:column;align-items:center;gap:20px;max-width:640px;width:100%;margin:0 auto;padding:0 20px 12vh}
+  .launcher-title{font-size:22px;line-height:28px;font-weight:600;color:var(--text-primary);text-align:center;margin:0;max-width:560px}
+  .launcher-intro{font-size:15px;line-height:22px;color:var(--text-secondary);text-align:center;margin:0;max-width:560px}
+  .launcher-compose{display:flex;gap:8px;width:100%;align-items:stretch}
+  .launcher-compose input{flex:1;border:1px solid var(--border);border-radius:var(--r8);padding:0 16px;font:inherit;font-size:15px;height:52px;min-width:0;background:var(--bg-primary)}
+  .launcher-compose input::placeholder{color:var(--text-tertiary)}
+  .launcher-compose input:focus{outline:2px solid rgba(11,31,53,.18);outline-offset:0;border-color:#0b1f35}
+  .launcher-compose .launcher-btn{height:52px;padding:0 20px;border-radius:var(--r8);border:0;background:#0b1f35;color:#fff;font-weight:500;font-size:15px;white-space:nowrap;flex:none}
+  .launcher-compose .launcher-btn:hover{background:#152a42}
+  .launcher-examples{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  .launcher-examples .chip{background:var(--bg-secondary);border-color:transparent;color:var(--text-secondary);font-size:13px;padding:6px 12px}
+  .launcher-examples .chip:hover{background:var(--bg-tertiary);color:var(--text-primary)}
+  .chat.empty-session .chat-head{display:none}
+  .chat.empty-session .chat-flow{justify-content:center;flex:1}
+  .chat.empty-session .launcher{display:flex}
+  .chat.empty-session .msgs{display:none}
+  .chat.empty-session .compose{display:none}
   .skeleton{display:flex;flex-direction:column;gap:6px} .skeleton i{display:block;height:12px;border-radius:6px;background:linear-gradient(90deg,var(--bg-secondary),var(--bg-tertiary),var(--bg-secondary));background-size:200% 100%;animation:sk 1.2s infinite}
   @keyframes sk{to{background-position:-200% 0}}
 
@@ -260,7 +286,6 @@
 <header>
   <div class="logo">А</div>
   <h1>Проверка контрагентов</h1>
-  <span class="status grey">данные отчёта банка</span>
   <div class="spacer"></div>
   <div class="devbar">
     <span>Макет · состояние:</span>
@@ -277,16 +302,28 @@
   <!-- A. Чат — основной инструмент; сессия в шапке чата -->
   <section class="panel chat" id="chat">
     <div class="chat-head">
-      <div class="top"><h2>Чат с агентом</h2><span class="status grey">по данным отчёта</span><span class="counter" id="counter"></span></div>
+      <div class="top"><h2>Чат с агентом</h2><span class="counter" id="counter"></span></div>
       <div class="chips" id="chips"></div>
     </div>
     <div class="chat-flow">
+      <div class="launcher" id="launcher">
+        <h2 class="launcher-title">Здравствуйте, вы на странице интеллектуального помощника для проверки контрагентов</h2>
+        <p class="launcher-intro">Пожалуйста, опишите задачу своими словами. Можно сразу направить в чат ИНН для проверки, контекст сделки или попросить сравнить контрагентов.</p>
+        <div class="launcher-compose">
+          <input type="text" id="launcherInput" autocomplete="off" placeholder="Например: планируется контракт на 100 млн, поставка, сравни Ромашка и Одуванчик">
+          <button type="button" class="launcher-btn" id="launcherBtn">Проверить</button>
+        </div>
+        <div class="launcher-examples">
+          <button type="button" class="chip" data-q="проверь 9721159668">Проверить 9721159668</button>
+          <button type="button" class="chip" data-q="Доступные ИНН">Показать доступные ИНН</button>
+          <button type="button" class="chip" data-q="проверь 9721159668 и 1660266560">Сравнить 9721159668 и 1660266560</button>
+        </div>
+      </div>
       <div class="msgs" id="msgs"></div>
       <div class="compose">
         <textarea id="chatInput" rows="1" placeholder="Опишите задачу, введите ИНН или контекст сделки"></textarea>
         <button id="sendBtn" title="Отправить">↑</button>
       </div>
-      <div class="compose-hint">Примеры: «проверь 9721159668» · «убери Техпром» · «контракт на 100 млн, поставка» · «сравни Транслориум и Агилар подробно»</div>
     </div>
   </section>
 
@@ -302,7 +339,6 @@
 /* ---------- Данные: 10 компаний из functional_spec.md §10.1 (T1–T4, T6–T9, T11, T12), значения — из data/contractors_audit.snapshot.json.
    Число реестров в REG_CLEAN и тексты LLM — иллюстративные. ---------- */
 const MAX = 10;
-const P = {negative:'!', caution:'!', gap:'?', info:'i', positive:'✓'};
 const POL_ORDER = {negative:0, caution:1, gap:2, info:3, positive:4};
 const RISK = {LOW:['риск низкий','green'],MEDIUM:['риск средний','orange'],HIGH:['риск высокий','red'],UNKNOWN:['риск не определён','grey']};
 const ZSK = {GREEN:['ЗСК зелёный','green'],YELLOW:['ЗСК жёлтый','orange'],RED:['ЗСК красный','red']};
@@ -340,9 +376,9 @@ const DB = {
     {slot:'Реестры ФНС',pol:'caution',text:'Адрес регистрации — массовый.',refs:['reputationalRisks.negative[code=massAddress]']},
     {slot:'Дополнительно',pol:'caution',text:'Смена руководителя и учредителя с 08.12.2025.',refs:['foundersInfo.authPerson.positionDate','foundersInfo.cofounders[0].dateFrom']}
   ],
-  gaps:[{text:'сведений о проверках в отчёте нет',ref:'inspections'}],
+  gaps:[{text:'сведений о проверках контролирующих органов в отчёте нет',ref:'inspections'}],
   steps:[st('addr','массовый адрес'),st('change','смена руководителя и учредителя')],
-  cmp:{bank:[['info','риск низкий, ЗСК зелёный']],fin:[['positive','Выручка растёт: +42 % (2023–2025)'],['positive','Прибыль растёт: 5,8 → 7,9 млн ₽']],legal:[['info','Арбитраж: 1 дело как истец; открытых как ответчик нет'],['positive','Исполнительные производства не найдены']],reg:[['caution','Адрес регистрации — массовый']],gapsRow:[['gap','Нет сведений о проверках']]}
+  cmp:{bank:[['info','риск низкий, ЗСК зелёный']],fin:[['positive','Выручка растёт: +42 % (2023–2025)'],['positive','Прибыль растёт: 5,8 → 7,9 млн ₽']],legal:[['info','Арбитраж: 1 дело как истец; открытых как ответчик нет'],['positive','Исполнительные производства не найдены']],reg:[['caution','Адрес регистрации — массовый']],gapsRow:[['gap','Проверки контролирующих органов отсутствуют']]}
 },
 '1660266560': {
   inn:'1660266560', name:'ООО «АГИЛАР СК»', short:'Агилар СК', full:'ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ "АГИЛАР СК"', ogrn:'1161690077592', kpp:'165901001',
@@ -362,9 +398,9 @@ const DB = {
     {slot:'Реестры ФНС',pol:'positive',text:'Проверено 12 реестров ФНС, негативных отметок нет.',refs:['reputationalRisks.positive[]']},
     {slot:'Дополнительно',pol:'negative',text:'Открытые арбитражные дела как ответчик: 2 на 568,0 тыс. ₽.',refs:['arbitrationByStatus.defandantArbitration.defandantArbitrationPending.dpCount']}
   ],
-  gaps:[{text:'сведений о проверках в отчёте нет',ref:'inspections'}],
+  gaps:[{text:'сведений о проверках контролирующих органов в отчёте нет',ref:'inspections'}],
   steps:[st('ep','активное исполнительное производство'),st('arb','открытые дела как ответчик'),st('fin','краткосрочные обязательства выше оборотных активов, прибыль снижается')],
-  cmp:{bank:[['info','риск средний, ЗСК зелёный']],fin:[['negative','Краткосрочные обязательства превышают оборотные активы (2025)'],['negative','Прибыль снижается: 1,6 → 0,4 млн ₽'],['positive','Выручка растёт: 8,2 → 79,8 млн ₽']],legal:[['negative','Активные исполнительные производства: 1'],['negative','Открытые дела как ответчик: 2 на 568,0 тыс. ₽']],reg:[['positive','Проверено 12 реестров, отметок нет']],gapsRow:[['gap','Нет сведений о проверках']]}
+  cmp:{bank:[['info','риск средний, ЗСК зелёный']],fin:[['negative','Краткосрочные обязательства превышают оборотные активы (2025)'],['negative','Прибыль снижается: 1,6 → 0,4 млн ₽'],['positive','Выручка растёт: 8,2 → 79,8 млн ₽']],legal:[['negative','Активные исполнительные производства: 1'],['negative','Открытые дела как ответчик: 2 на 568,0 тыс. ₽']],reg:[['positive','Проверено 12 реестров, отметок нет']],gapsRow:[['gap','Проверки контролирующих органов отсутствуют']]}
 },
 '9714079997': {
   inn:'9714079997', name:'ООО «ТЕХПРОМ»', short:'Техпром', full:'ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ "ТЕХПРОМ"', ogrn:'1257700375008', kpp:'771401001',
@@ -383,9 +419,9 @@ const DB = {
     {slot:'Реестры ФНС',pol:'caution',text:'Адрес регистрации — массовый.',refs:['reputationalRisks.negative[code=massAddress]']},
     {slot:'Дополнительно',pol:'caution',text:'Компания зарегистрирована 22.08.2025, ей меньше года.',refs:['baseInfo.registrationInfo.registrationDate']}
   ],
-  gaps:[{text:'тренд выручки (данные только за 2025)',ref:'finReports[].common.proceeds'},{text:'сведений о проверках в отчёте нет',ref:'inspections'}],
+  gaps:[{text:'тренд выручки (данные только за 2025)',ref:'finReports[].common.proceeds'},{text:'сведений о проверках контролирующих органов в отчёте нет',ref:'inspections'}],
   steps:[st('addr','массовый адрес'),st('finmiss','выручка только за один год'),st('young')],
-  cmp:{bank:[['info','риск высокий, ЗСК красный']],fin:[['gap','Выручка только за 2025 (96,0 млн ₽); тренд оценить нельзя']],legal:[['positive','Исполнительные производства не найдены'],['positive','Арбитражные дела не найдены']],reg:[['caution','Адрес регистрации — массовый']],gapsRow:[['gap','Тренд выручки: данные за один год'],['gap','Нет сведений о проверках']]}
+  cmp:{bank:[['info','риск высокий, ЗСК красный']],fin:[['gap','Выручка только за 2025 (96,0 млн ₽); тренд оценить нельзя']],legal:[['positive','Исполнительные производства не найдены'],['positive','Арбитражные дела не найдены']],reg:[['caution','Адрес регистрации — массовый']],gapsRow:[['gap','Тренд выручки: данные за один год'],['gap','Проверки контролирующих органов отсутствуют']]}
 },
 '592061218009': {
   inn:'592061218009', name:'ИП МУРАВЬЕВА Е.А.', short:'ИП Муравьева', full:'МУРАВЬЕВА ЕКАТЕРИНА АЛЕКСАНДРОВНА', ogrn:'324784700417137', kpp:null, isIP:true,
@@ -400,9 +436,9 @@ const DB = {
     {slot:'Реестры ФНС',pol:'positive',text:'Проверено 14 реестров ФНС, негативных отметок нет.',refs:['reputationalRisks.positive[]']},
     {slot:'Дополнительно',pol:'caution',text:'ИП зарегистрирован 23.12.2024, ему 1 год.',refs:['baseInfo.registrationInfo.registrationDate']}
   ],
-  gaps:[{text:'ИП не публикует отчётность',ref:'finReports'},{text:'сведений о проверках в отчёте нет',ref:'inspections'}],
+  gaps:[{text:'ИП не публикует отчётность',ref:'finReports'},{text:'сведений о проверках контролирующих органов в отчёте нет',ref:'inspections'}],
   steps:[st('finip'),st('young','ИП моложе 3 лет')],
-  cmp:{bank:[['info','риск высокий, ЗСК зелёный']],fin:[['gap','ИП не публикует отчётность; оценить финансы нельзя']],legal:[['positive','Исполнительные производства не найдены'],['positive','Арбитражные дела не найдены']],reg:[['positive','Проверено 14 реестров, отметок нет']],gapsRow:[['gap','Нет отчётности (ИП)'],['gap','Нет сведений о проверках']]}
+  cmp:{bank:[['info','риск высокий, ЗСК зелёный']],fin:[['gap','ИП не публикует отчётность; оценить финансы нельзя']],legal:[['positive','Исполнительные производства не найдены'],['positive','Арбитражные дела не найдены']],reg:[['positive','Проверено 14 реестров, отметок нет']],gapsRow:[['gap','Нет отчётности (ИП)'],['gap','Проверки контролирующих органов отсутствуют']]}
 },
 '7826131151': {
   inn:'7826131151', name:'ООО «ДОМ НА МОЙКЕ»', short:'Дом на Мойке', full:'ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ "ДОМ НА МОЙКЕ"', ogrn:'1027810251523', kpp:'783801001',
@@ -421,9 +457,9 @@ const DB = {
     {slot:'Реестры ФНС',pol:'positive',text:'Проверено 12 реестров ФНС, негативных отметок нет.',refs:['reputationalRisks.positive[]']},
     {slot:'Финансы',pol:'negative',text:'Краткосрочные обязательства (135,4 млн ₽) превышают оборотные активы (1,6 млн ₽) за 2025.',refs:['finReports[year=2025].liabilities.shortTermLiabilities.total','finReports[year=2025].assets.currentAssets.total']}
   ],
-  gaps:[{text:'уровень риска банка не определён',ref:'baseInfo.riskLevel'},{text:'сведений о проверках в отчёте нет',ref:'inspections'}],
+  gaps:[{text:'уровень риска банка не определён',ref:'baseInfo.riskLevel'},{text:'сведений о проверках контролирующих органов в отчёте нет',ref:'inspections'}],
   steps:[st('fin','отрицательный капитал, долговая нагрузка')],
-  cmp:{bank:[['gap','уровень риска не определён; ЗСК зелёный']],fin:[['negative','Отрицательный капитал: −1,8 млрд ₽ (2025)'],['negative','Краткосрочные обязательства 135,4 млн ₽ выше оборотных активов 1,6 млн ₽'],['positive','Выручка растёт: 83,8 → 139,9 млн ₽, +67 %']],legal:[['info','3 завершённых исполнительных производства, активных нет'],['info','Арбитраж: 10 дел, как истец 6, как ответчик 4; открытых нет']],reg:[['positive','Проверено 12 реестров, отметок нет']],gapsRow:[['gap','Оценка банка не определена'],['gap','Нет сведений о проверках']]}
+  cmp:{bank:[['gap','уровень риска не определён; ЗСК зелёный']],fin:[['negative','Отрицательный капитал: −1,8 млрд ₽ (2025)'],['negative','Краткосрочные обязательства 135,4 млн ₽ выше оборотных активов 1,6 млн ₽'],['positive','Выручка растёт: 83,8 → 139,9 млн ₽, +67 %']],legal:[['info','3 завершённых исполнительных производства, активных нет'],['info','Арбитраж: 10 дел, как истец 6, как ответчик 4; открытых нет']],reg:[['positive','Проверено 12 реестров, отметок нет']],gapsRow:[['gap','Оценка банка не определена'],['gap','Проверки контролирующих органов отсутствуют']]}
 },
 '5032257375': {
   inn:'5032257375', name:'ООО «МАКСМАРКЕТ»', short:'Максмаркет', full:'ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ "МАКСМАРКЕТ"', ogrn:'1165032060050', kpp:'503201001',
@@ -445,7 +481,7 @@ const DB = {
   ],
   gaps:[{text:'тренд выручки (данные только за 2023)',ref:'finReports[].common.proceeds'}],
   steps:[st('status','банкротство'),st('ep','54 активных исполнительных производства'),st('block'),st('addr','фиктивный адрес, недостоверные данные'),st('arb','как ответчик 258 дел'),st('finmiss','выручка только за один год'),st('change','смена руководителя')],
-  cmp:{bank:[['info','риск низкий, ЗСК зелёный']],fin:[['gap','Выручка только за 2023 (116,3 млрд ₽); тренд оценить нельзя']],legal:[['negative','Активные исполнительные производства: 54 на 4,0 млн ₽'],['caution','Арбитраж: как ответчик 258 дел, как истец 20'],['info','Проверок: 9, нарушений не выявлено, по 1 результат неизвестен']],reg:[['negative','В процедуре банкротства'],['negative','Блокировки счетов ФНС'],['negative','Фиктивный адрес'],['negative','Недостоверные регистрационные данные']],gapsRow:[['gap','Тренд выручки: данные за один год']]}
+  cmp:{bank:[['info','риск низкий, ЗСК зелёный']],fin:[['gap','Выручка только за 2023 (116,3 млрд ₽); тренд оценить нельзя']],legal:[['negative','Активные исполнительные производства: 54 на 4,0 млн ₽'],['caution','Арбитраж: как ответчик 258 дел, как истец 20'],['info','Проверок контролирующих органов: 9, нарушений не выявлено, по 1 результат неизвестен']],reg:[['negative','В процедуре банкротства'],['negative','Блокировки счетов ФНС'],['negative','Фиктивный адрес'],['negative','Недостоверные регистрационные данные']],gapsRow:[['gap','Тренд выручки: данные за один год']]}
 },
 '2100006761': {
   inn:'2100006761', name:'ООО «РАДО АЛАТЫРЬ КС»', short:'Радо Алатырь', full:'ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ "РАДИО АЛАТЫРЬ КАЗАЧИЙ СПАС"', ogrn:'1232100003266', kpp:'210001001',
@@ -467,7 +503,7 @@ const DB = {
   ],
   gaps:[],
   steps:[st('status','предстоящее исключение из ЕГРЮЛ'),st('fin','отрицательный капитал'),st('change','смена руководителя и учредителей')],
-  cmp:{bank:[['info','риск низкий, ЗСК зелёный']],fin:[['negative','Отрицательный капитал: −14,0 тыс. ₽ (2025)'],['positive','Выручка растёт: 37,0 → 293,0 тыс. ₽']],legal:[['positive','Исполнительные производства не найдены'],['positive','Арбитражные дела не найдены'],['info','Проверок: 2, нарушений не выявлено']],reg:[['positive','Проверено 12 реестров, отметок нет']],gapsRow:[['positive','Все разделы отчёта заполнены']]}
+  cmp:{bank:[['info','риск низкий, ЗСК зелёный']],fin:[['negative','Отрицательный капитал: −14,0 тыс. ₽ (2025)'],['positive','Выручка растёт: 37,0 → 293,0 тыс. ₽']],legal:[['positive','Исполнительные производства не найдены'],['positive','Арбитражные дела не найдены'],['info','Проверок контролирующих органов: 2, нарушений не выявлено']],reg:[['positive','Проверено 12 реестров, отметок нет']],gapsRow:[['positive','Все разделы отчёта заполнены']]}
 },
 '2311304742': {
   inn:'2311304742', name:'ООО «БИЛД-ЮГ»', short:'Билд-Юг', full:'ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ "БИЛД-ЮГ"', ogrn:'1202300022430', kpp:'231101001',
@@ -489,7 +525,7 @@ const DB = {
   ],
   gaps:[],
   steps:[st('ep','активное исполнительное производство'),st('arb','открытое дело как ответчик'),st('block'),st('addr','фиктивный адрес'),st('reason','изменение места нахождения')],
-  cmp:{bank:[['info','риск низкий, ЗСК зелёный']],fin:[['positive','Выручка растёт: +38 % (2023–2024)'],['positive','Прибыль растёт: −32,2 → 14,1 млн ₽']],legal:[['negative','Активные исполнительные производства: 1, сумма не указана'],['negative','Открытые дела как ответчик: 1'],['info','Проверок: 4, нарушений не выявлено']],reg:[['negative','Блокировки счетов ФНС'],['negative','Фиктивный адрес'],['negative','Недостоверные регистрационные данные']],gapsRow:[['positive','Все разделы отчёта заполнены']]}
+  cmp:{bank:[['info','риск низкий, ЗСК зелёный']],fin:[['positive','Выручка растёт: +38 % (2023–2024)'],['positive','Прибыль растёт: −32,2 → 14,1 млн ₽']],legal:[['negative','Активные исполнительные производства: 1, сумма не указана'],['negative','Открытые дела как ответчик: 1'],['info','Проверок контролирующих органов: 4, нарушений не выявлено']],reg:[['negative','Блокировки счетов ФНС'],['negative','Фиктивный адрес'],['negative','Недостоверные регистрационные данные']],gapsRow:[['positive','Все разделы отчёта заполнены']]}
 },
 '7104080194': {
   inn:'7104080194', name:'ООО «АВАНГАРД Т»', short:'Авангард Т', full:'ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ "АВАНГАРД Т"', ogrn:'1187154022362', kpp:'710401001',
@@ -507,9 +543,9 @@ const DB = {
     {slot:'Реестры ФНС',pol:'positive',text:'Проверено 12 реестров ФНС, негативных отметок нет.',refs:['reputationalRisks.positive[]']},
     {slot:'Финансы',pol:'negative',text:'Прибыль снижается: 34,6 млн ₽ (2023) → 7,6 млн ₽ (2025).',refs:['finReports[year=2023].common.profit','finReports[year=2025].common.profit']}
   ],
-  gaps:[{text:'сведений о проверках в отчёте нет',ref:'inspections'}],
+  gaps:[{text:'сведений о проверках контролирующих органов в отчёте нет',ref:'inspections'}],
   steps:[st('fin','выручка и прибыль снижаются'),st('change','смена состава учредителей')],
-  cmp:{bank:[['info','риск низкий, ЗСК зелёный']],fin:[['negative','Выручка снижается: −13 % (2023–2025)'],['negative','Прибыль снижается: 34,6 → 7,6 млн ₽']],legal:[['info','26 завершённых исполнительных производств, активных нет'],['info','Арбитраж: 2 дела как истец; открытых как ответчик нет']],reg:[['positive','Проверено 12 реестров, отметок нет']],gapsRow:[['gap','Нет сведений о проверках']]}
+  cmp:{bank:[['info','риск низкий, ЗСК зелёный']],fin:[['negative','Выручка снижается: −13 % (2023–2025)'],['negative','Прибыль снижается: 34,6 → 7,6 млн ₽']],legal:[['info','26 завершённых исполнительных производств, активных нет'],['info','Арбитраж: 2 дела как истец; открытых как ответчик нет']],reg:[['positive','Проверено 12 реестров, отметок нет']],gapsRow:[['gap','Проверки контролирующих органов отсутствуют']]}
 },
 '4720028039': {
   inn:'4720028039', name:'ООО «ЛЗСО»', short:'ЛЗСО', full:'ОБЩЕСТВО С ОГРАНИЧЕННОЙ ОТВЕТСТВЕННОСТЬЮ "ЛОМОНОСОВСКИЙ ЗАВОД СУДОВОГО ОБОРУДОВАНИЯ"', ogrn:'1084720000199', kpp:'472501001',
@@ -526,9 +562,9 @@ const DB = {
     {slot:'Юридические события',pol:'caution',text:'Арбитраж: как ответчик 3 дела, как истец 1.',refs:['arbitrationByStatus']},
     {slot:'Реестры ФНС',pol:'negative',text:'Действуют блокировки счетов по решению ФНС; в реестре организаций с фиктивным адресом; отметка ФНС о недостоверных регистрационных данных; отметка ФНС о недостоверных данных руководителя.',refs:['reputationalRisks.negative[code=fnsBlocking]','reputationalRisks.negative[code=invalidAddress]','reputationalRisks.negative[code=invalidRegistrationData]','reputationalRisks.negative[code=invalidAuthpersonsData]']}
   ],
-  gaps:[{text:'отчётность без показателей выручки и прибыли',ref:'finReports[].common'},{text:'сведений о проверках в отчёте нет',ref:'inspections'}],
+  gaps:[{text:'отчётность без показателей выручки и прибыли',ref:'finReports[].common'},{text:'сведений о проверках контролирующих органов в отчёте нет',ref:'inspections'}],
   steps:[st('finmiss','отчётность без показателей'),st('arb','как ответчик 3 дела'),st('block'),st('addr','фиктивный адрес'),st('auth')],
-  cmp:{bank:[['info','риск низкий, ЗСК зелёный']],fin:[['gap','Отчётность за 2023 без выручки и прибыли; оценить нельзя']],legal:[['caution','Арбитраж: как ответчик 3, как истец 1'],['positive','Исполнительные производства не найдены']],reg:[['negative','Блокировки счетов ФНС'],['negative','Фиктивный адрес'],['negative','Недостоверные регистрационные данные'],['negative','Недостоверные данные руководителя']],gapsRow:[['gap','Финансы: отчётность без показателей'],['gap','Нет сведений о проверках']]}
+  cmp:{bank:[['info','риск низкий, ЗСК зелёный']],fin:[['gap','Отчётность за 2023 без выручки и прибыли; оценить нельзя']],legal:[['caution','Арбитраж: как ответчик 3, как истец 1'],['positive','Исполнительные производства не найдены']],reg:[['negative','Блокировки счетов ФНС'],['negative','Фиктивный адрес'],['negative','Недостоверные регистрационные данные'],['negative','Недостоверные данные руководителя']],gapsRow:[['gap','Финансы: отчётность без показателей'],['gap','Проверки контролирующих органов отсутствуют']]}
 }};
 
 const SETS = {
@@ -556,7 +592,7 @@ const riskStatus = c => status(...RISK[c.risk]);
 const zskStatus = c => status(...ZSK[c.zsk]);
 /* Технические пути полей хранятся в данных и data-ref, но не выводятся пользователю. */
 const ref = () => '';
-const ico = (pol,size) => `<span class="ico ${pol}${size?' '+size:''}">${P[pol]||'i'}</span>`;
+const ico = () => '';
 const fmt1 = v => v.toLocaleString('ru-RU',{minimumFractionDigits:1,maximumFractionDigits:1});
 const mln = v => v==null ? '<span class="tertiary">нет данных</span>' : (Math.abs(v)>=1000 ? fmt1(v/1000)+' млрд ₽' : Math.abs(v)<1 ? fmt1(v*1000)+' тыс. ₽' : fmt1(v)+' млн ₽');
 const mlnT = v => mln(v).replace(/<[^>]+>/g,'');
@@ -564,6 +600,39 @@ const mlnShort = v => Math.abs(v)>=1000 ? fmt1(v/1000)+' млрд' : Math.abs(v)
 const worst = items => items.reduce((w,[p])=>POL_ORDER[p]<POL_ORDER[w]?p:w,'positive');
 const cs = () => S.session.map(i=>DB[i]);
 const lc = s => s.charAt(0).toLowerCase()+s.slice(1);
+const GAP_REFS = [
+  {re:/inspections/, slot:'Юридические события', short:'Проверки контролирующих органов отсутствуют.'},
+  {re:/finReports\[\]\.common\.proceeds/, slot:'Финансы', short:g=>g.text.charAt(0).toUpperCase()+g.text.slice(1)+'.'},
+  {re:/finReports\[\]\.common/, slot:'Финансы', short:'Отчётность без показателей выручки и прибыли.'},
+  {re:/finReports/, slot:'Финансы', short:g=>/ИП/i.test(g.text)?'Бухгалтерская отчётность отсутствует.':'Финансовая отчётность отсутствует.'},
+  {re:/baseInfo\.riskLevel/, slot:'Оценка банка', short:'Уровень риска банка не определён.'},
+  {re:/reputationalRisks/, slot:'Реестры ФНС', short:'Сведения по реестрам ФНС отсутствуют.'},
+];
+const gapMeta = ref => (GAP_REFS.find(x=>x.re.test(ref))||{slot:'Полнота данных', short:g=>g.text.charAt(0).toUpperCase()+g.text.slice(1)+(g.text.endsWith('.')?'':'.')});
+const gapBody = g => { const m=gapMeta(g.ref); return typeof m.short==='function'?m.short(g):m.short; };
+const gapFact = g => { const {slot}=gapMeta(g.ref); return `<div class="fact gap" data-ref="${esc(g.ref)}"><div class="slot">${esc(slot)}</div><div class="text">${esc(gapBody(g))}</div></div>`; };
+const GROUP_TIER = {negative:0, caution:1, gap:2, info:2, positive:3};
+const signalItemFromFact = f => ({slot:f.slot, pol:f.pol, text:f.text, refs:f.refs});
+const signalItemFromGap = g => ({slot:gapMeta(g.ref).slot, pol:'gap', text:gapBody(g), refs:[g.ref]});
+const groupKey = (slot, pol) => `${slot}\0${GROUP_TIER[pol]??4}`;
+const sortSignalItems = items => {
+  const order=[], buckets=new Map();
+  items.forEach((it,i)=>{ const k=groupKey(it.slot,it.pol); if(!buckets.has(k)){buckets.set(k,[]); order.push(k);} buckets.get(k).push({it,i}); });
+  order.sort((a,b)=>{
+    const minA=Math.min(...buckets.get(a).map(x=>POL_ORDER[x.it.pol]));
+    const minB=Math.min(...buckets.get(b).map(x=>POL_ORDER[x.it.pol]));
+    return minA!==minB?minA-minB:order.indexOf(a)-order.indexOf(b);
+  });
+  return order.flatMap(k=>buckets.get(k).sort((a,b)=>POL_ORDER[b.it.pol]-POL_ORDER[a.it.pol]||a.i-b.i).map(x=>x.it));
+};
+const factCard = it => `<div class="fact ${it.pol}" data-ref="${esc(it.refs[0])}"><div class="slot">${esc(it.slot)}</div><div class="text">${esc(it.text)}</div></div>`;
+const signalItems = c => {
+  const facts=c.facts.filter(f=>f.slot!=='Оценка банка').map(signalItemFromFact);
+  const gaps=c.gaps.map(signalItemFromGap).filter(gi=>!facts.some(fi=>fi.slot===gi.slot&&fi.pol==='gap'));
+  return sortSignalItems([...facts,...gaps]);
+};
+const hasAlertSignals = items => items.some(it=>it.pol==='negative'||it.pol==='caution'||it.pol==='gap');
+const gapsNote = () => '<div class="small muted" style="margin-top:4px">Отсутствие сведений в отчёте банка не означает отсутствие риска.</div>';
 const names = list => list.map(c=>esc(c.short)).join(', ');
 const dealCell = c => {
   const amt=S.deal.amount; const last=[...c.fin].reverse().find(f=>f.pr);
@@ -585,10 +654,10 @@ const findAllByName = t => cs().filter(c=>t.includes(c.short.toLowerCase()) || t
 /* ---------- Шапка чата: чипы сессии ---------- */
 function renderChips(){
   const box=$('#chips'), cnt=$('#counter');
-  if(!S.session.length){ box.innerHTML=`<span class="label">Сессия начнётся после первого запроса</span>`; cnt.textContent='0 из '+MAX; return; }
+  if(!S.session.length){ box.innerHTML=''; cnt.textContent=''; return; }
   box.innerHTML = `<span class="label">В сессии</span>` + S.session.map(inn=>{ const c=DB[inn]; return `
     <span class="cchip${inn===S.selected?' active':''}" data-inn="${inn}" title="${esc(c.name)} · ИНН ${inn} · ${RISK[c.risk][0]} · клик — сводка в чате">
-      <span class="dot ${RISK[c.risk][1]}"></span><span class="name">${esc(c.short)}</span>${c.headline?'<span class="warn" title="'+esc(c.headline)+'">!</span>':''}
+      <span class="name">${esc(c.short)}</span>${c.headline?'<span class="warn" title="'+esc(c.headline)+'">!</span>':''}
       <button class="x" title="Удалить из сессии" data-del="${inn}">×</button></span>`; }).join('')
     + (S.deal.goal||S.deal.amount ? `<span class="cchip deal" title="Контекст сделки; изменить — фразой в чате"><span class="name">Сделка: ${[S.deal.goal, S.deal.amount?mlnT(S.deal.amount):null].filter(Boolean).join(' · ')}</span><button class="x" data-deldeal="1" title="Сбросить контекст">×</button></span>` : '');
   cnt.innerHTML = `${S.session.length} из ${MAX}${S.session.length>1?' · <a href="#" data-clear="1" style="color:inherit">очистить</a>':''}`;
@@ -624,21 +693,61 @@ function renderPanel(){
 }
 
 /* ---------- Сводка в чате (основной ответ агента) ---------- */
-function summaryHtml(c, intro){
-  const sorted=[...c.facts].sort((a,b)=>POL_ORDER[a.pol]-POL_ORDER[b.pol]);
-  const main=sorted.filter(f=>f.slot!=='Оценка банка'&&(f.pol==='negative'||f.pol==='caution'||f.pol==='gap'));
-  const rest=sorted.filter(f=>f.slot!=='Оценка банка'&&(f.pol==='info'||f.pol==='positive'));
-  const fact=f=>`<div class="fact ${f.pol}" data-ref="${esc(f.refs[0])}">${ico(f.pol,'sm')}<div><div class="slot">${f.slot}</div><div class="text">${esc(f.text)}</div><div>${f.refs.slice(0,2).map(ref).join('')}</div></div></div>`;
-  return `${intro?`<p>Добавил в сессию (${S.session.length} из ${MAX}). Кратко по данным отчёта:</p>`:''}
-  <div class="hdr"><b>${esc(c.name)}</b>${riskStatus(c)}${zskStatus(c)}<span class="meta">ИНН ${c.inn} · отчёт от ${c.report}</span></div>
-  ${c.headline?`<div class="alert">${ico('negative','sm')} ${esc(c.headline)} ${ref('status.reasonName')}</div>`:''}
-  ${main.map(fact).join('')}
-  ${!main.length?`<div class="okline">${ico('positive','sm')} Негативных и требующих внимания сигналов по данным отчёта нет.</div>`:''}
-  ${rest.length?`<details class="fold"><summary>ещё ${rest.length} ${rest.length===1?'факт':rest.length<5?'факта':'фактов'} без сигналов</summary>${rest.map(fact).join('')}</details>`:''}
-  ${c.gaps.length?`<div class="gapbox">${ico('gap','xs')} Оценить нельзя: ${c.gaps.map(g=>esc(g.text)).join('; ')}. Отсутствие сведений не означает отсутствие риска.</div>`:''}
-  ${c.steps.length?`<div class="step"><b>Что проверить до сделки:</b> ${esc(c.steps[0].text)} <span class="why">(${esc(c.steps[0].why)})</span>${c.steps.length>1?` <details class="fold" style="display:inline-block;margin:0"><summary style="display:inline">ещё ${c.steps.length-1}</summary><ol style="margin:6px 0 0;padding-left:18px">${c.steps.slice(1).map(s=>`<li>${esc(s.text)} <span class="why">(${esc(s.why)})</span></li>`).join('')}</ol></details>`:''}</div>`:''}
+function bankHeroHtml(c){
+  return `<div class="bank-assess" id="bank-assess"><span class="bank-assess-k">Оценка банка</span>${riskStatus(c)}${zskStatus(c)}${c.risk==='UNKNOWN'?`<span class="status grey">уровень риска не определён</span>`:''}</div>`;
+}
+/* Краткий вывод LLM: в проде — отдельный вызов модели по signals + profile + dealContext; в макете — по тем же данным */
+function llmBriefText(c){
+  const okvedShort=(c.okved||'').split(' — ')[0];
+  const risk=RISK[c.risk][0], zsk=ZSK[c.zsk][0].replace(/^ЗСК\s+/,'');
+  const paras=[];
+  let intro=c.isIP?`Индивидуальный предприниматель ${c.short}, ${c.age} на рынке`:`Компания ${c.short} (${c.age}, основной ОКВЭД ${okvedShort})`;
+  intro+=`. Банк оценивает контрагента как «${risk}», программа «Знай своего клиента» — «${zsk}».`;
+  if(c.risk==='UNKNOWN') intro+=' Уровень риска банка в отчёте не определён — модель банка может учитывать данные, которых здесь нет.';
+  paras.push(intro);
+  if(c.headline) paras.push(`Важно: ${c.headline.replace(/\.$/,'')}.`);
+  const neg=c.facts.filter(f=>f.pol==='negative'), cau=c.facts.filter(f=>f.pol==='caution');
+  if(neg.length||cau.length) paras.push(`Стоит обратить внимание на: ${[...neg,...cau].map(f=>f.text.replace(/\.$/,'')).join('; ')}.`);
+  else{ const pos=c.facts.filter(f=>f.pol==='positive'); const pt=pos.length?pos[0].text.replace(/\.$/,''):''; paras.push(pt?`Существенных негативных сигналов в отчёте не видно; ${pt.charAt(0).toLowerCase()+pt.slice(1)}.`:'Явных негативных сигналов в доступных данных не обнаружено.'); }
+  if(c.gaps.length) paras.push(`Есть пробелы: ${c.gaps.map(g=>gapBody(g).replace(/\.$/,'')).join('; ')}. Отсутствие сведений в отчёте не означает отсутствие риска.`);
+  if(S.deal.goal||S.deal.amount){
+    const dealLbl=[S.deal.goal, S.deal.amount?`на ${mlnT(S.deal.amount)}`:null].filter(Boolean).join(' ');
+    if(S.deal.goal==='госзакупка') paras.push(`При цели «${dealLbl}» имеет смысл отдельно проверить опыт участия в закупках и соответствие ОКВЭД предмету контракта.`);
+    else if(S.deal.amount){ const [dc]=dealCell(c);
+      if(dc==='caution') paras.push(`В контексте сделки ${dealLbl} сумма выглядит высокой относительно годовой выручки — разумно заложить постоплату или обеспечение.`);
+      else if(dc==='gap') paras.push(`Для сделки ${dealLbl} масштаб по выручке оценить сложно из‑за пробелов в отчётности — запросите дополнительные документы.`);
+      else paras.push(`Для планируемой сделки (${dealLbl}) по масштабу выглядит приемлемо, но перечисленные риски всё равно стоит закрыть до подписания.`);
+    } else paras.push(`С учётом цели «${S.deal.goal}» сфокусируйтесь на шагах проверки ниже.`);
+  }
+  paras.push('Итоговое решение о сотрудничестве остаётся за вами; ниже — конкретные шаги и факты отчёта.');
+  return paras;
+}
+function llmBriefHtml(c){
+  if(S.llmOff) return '';
+  return `<div class="plate common llm-summary"><h2>Краткий вывод</h2>${llmBriefText(c).map(p=>`<p>${esc(p)}</p>`).join('')}</div>`;
+}
+function stepsHtml(c,full){
+  if(!c.steps.length) return '';
+  if(full) return `<div class="plate attention steps-block"><h2>Что проверить до сделки</h2><ol>${c.steps.map(s=>`<li>${esc(s.text)} <span class="why">(${esc(s.why)})</span></li>`).join('')}</ol><div class="small muted" style="margin-top:8px">Рекомендации — из фиксированной таблицы «сигнал → шаг». Решение о сделке остаётся за вами.</div></div>`;
+  return `<div class="plate attention steps-block"><h2>Что проверить до сделки</h2><ol>${c.steps.map(s=>`<li>${esc(s.text)} <span class="why">(${esc(s.why)})</span></li>`).join('')}</ol></div>`;
+}
+function summaryHtml(c){
+  const items=signalItems(c);
+  const total=(c.headline?1:0)+items.length;
+  const cards=items.map(factCard).join('');
+  const signals=`<details class="fold signals-fold"><summary>Результаты анализа${total?` · ${total}`:''}</summary>
+  ${c.headline?`<div class="alert">${esc(c.headline)} ${ref('status.reasonName')}</div>`:''}
+  ${!hasAlertSignals(items)?`<div class="okline">Негативных и требующих внимания сигналов нет.</div>`:''}
+  ${cards}
+  ${c.gaps.length?gapsNote():''}
+  </details>`;
+  return `<div class="hdr"><b>${esc(c.name)}</b><span class="meta">ИНН ${c.inn} · отчёт от ${c.report}</span></div>
+  ${bankHeroHtml(c)}
+  ${llmBriefHtml(c)}
+  ${stepsHtml(c)}
+  ${signals}
   <div class="actions"><button class="chip go" data-pview="card" data-inn="${c.inn}">Подробности в панели →</button>${S.session.length>1?`<button class="lnk" data-q="В чём различия?">сравнить с остальными</button>`:''}</div>
-  <div class="foot">${S.llmOff?'Текст сформирован по правилам без языковой модели.':'Факты — по правилам; формулировки уточнены языковой моделью.'}</div>`;
+  ${S.llmOff?`<div class="foot">Текст сформирован по правилам без языковой модели.</div>`:''}`;
 }
 /* Итоги сравнения — ответ агента на «сравни» / «различия» и при добавлении нескольких ИНН */
 function totalsHtml(intro){
@@ -646,14 +755,14 @@ function totalsHtml(intro){
   const headl=list.filter(c=>c.headline), withNeg=list.filter(c=>counts(c).neg>0), withGap=list.filter(c=>c.gaps.length>0), clean=list.filter(c=>counts(c).neg===0&&counts(c).cau===0);
   const crit=rows().filter(([,k])=>k!=='bank'&&k!=='gapsRow').map(([name,k])=>{
     const g=groupsByCriterion(k); const part=[];
-    if(g.negative.length) part.push(`<span class="g">${ico('negative','xs')}<span>${names(g.negative.map(([c])=>c))}</span></span>`);
-    if(g.caution.length) part.push(`<span class="g">${ico('caution','xs')}<span>${names(g.caution.map(([c])=>c))}</span></span>`);
-    if(g.gap.length) part.push(`<span class="g">${ico('gap','xs')}<span>оценить нельзя: ${names(g.gap.map(([c])=>c))}</span></span>`);
-    if(!part.length) part.push(`<span class="g">${ico('positive','xs')}<span>негативных сигналов ни у кого</span></span>`);
+    if(g.negative.length) part.push(`<span class="g negative"><span>${names(g.negative.map(([c])=>c))}</span></span>`);
+    if(g.caution.length) part.push(`<span class="g caution"><span>${names(g.caution.map(([c])=>c))}</span></span>`);
+    if(g.gap.length) part.push(`<span class="g gap"><span>оценить нельзя: ${names(g.gap.map(([c])=>c))}</span></span>`);
+    if(!part.length) part.push(`<span class="g positive"><span>негативных сигналов ни у кого</span></span>`);
     return `<div class="k">${name}</div><div>${part.join('')}</div>`;
   }).join('');
   return `${intro?`<p>В сессии ${n} компаний. Итоги по единому набору критериев:</p>`:''}
-  <p>${headl.length?`Предупреждение по статусу у ${headl.length}: ${names(headl)}. `:''}Негативные сигналы по данным отчёта у ${withNeg.length} из ${n}${withNeg.length?` (${names(withNeg)})`:''}; без негативных и требующих внимания — ${clean.length?names(clean):'никого'}. Пробелы в данных у ${withGap.length}: отсутствие сведений не означает отсутствие риска.</p>
+  <p>${headl.length?`Предупреждение по статусу у ${headl.length}: ${names(headl)}. `:''}Негативные сигналы у ${withNeg.length} из ${n}${withNeg.length?` (${names(withNeg)})`:''}; без негативных и требующих внимания — ${clean.length?names(clean):'никого'}. Пробелы в данных у ${withGap.length}: отсутствие сведений не означает отсутствие риска.</p>
   ${headl.map(c=>`<div class="alert" style="font-size:13px;font-weight:500;padding:8px 10px">${ico('negative','xs')} <b>${esc(c.short)}:</b> ${esc(c.headline)}</div>`).join('')}
   <div class="crit">${crit}</div>
   <div class="actions"><button class="chip go" data-pview="compare">Матрица сигналов в панели →</button><button class="lnk" data-pview="chart">динамика по годам</button></div>
@@ -692,20 +801,17 @@ function renderCard(c){
       <tr><td>Как ответчик ${a.dp>0?ico('negative','sm'):a.df>=2&&a.df+a.da+a.dp>a.pf+a.pa+a.pp?ico('caution','sm'):''}</td><td class="num">${a.df}${a.dfA?` · ${a.dfA}`:''}</td><td class="num">${a.da}</td><td class="num">${a.dp>0?`<b>${a.dp}${a.dpA?' · '+a.dpA:''}</b>`:a.dp}</td></tr></table>
     <div>${ref('arbitrationByStatus.commonCount')}${ref('arbitrationByStatus.defandantArbitration.defandantArbitrationPending.dpCount')}</div>`;
 
-  const insp=c.insp ? `<div class="muted">Проверок: ${c.insp.total}, нарушений не выявлено${c.insp.unknown?`, по ${c.insp.unknown} результат неизвестен`:''}${c.insp.canceled?`, ${c.insp.canceled} отменена`:''}. ${ref('inspections[].inspectionStatus')}</div>` : `<div class="muted">${ico('gap','sm')} Сведений о проверках в отчёте нет. ${ref('inspections')}</div>`;
+  const insp=c.insp ? `<div class="muted">Проверок контролирующих органов: ${c.insp.total}, нарушений не выявлено${c.insp.unknown?`, по ${c.insp.unknown} результат неизвестен`:''}${c.insp.canceled?`, ${c.insp.canceled} отменена`:''}. ${ref('inspections[].inspectionStatus')}</div>` : `<div class="muted">${ico('gap','sm')} Проверки контролирующих органов отсутствуют. ${ref('inspections')}</div>`;
 
   const regNeg=c.regNeg.filter(r=>r.pol!=='dup'), regDup=c.regNeg.filter(r=>r.pol==='dup');
-  const sigCount=b=>({A:c.risk==='UNKNOWN'?1:0,B:(c.headline?1:0)+(/меньше года|^1 год/.test(c.age)?1:0),C:c.facts.filter(f=>f.slot==='Финансы'&&f.pol!=='info'&&f.pol!=='positive').length,D:c.facts.filter(f=>f.slot==='Юридические события'&&(f.pol==='negative'||f.pol==='caution')).length,E:regNeg.filter(r=>r.pol!=='info').length,F:(c.auth&&c.auth.recent?1:0)+(c.founders.some(f=>f.recent)?1:0)}[b]);
+  const sigCount=b=>({A:(c.headline?1:0)+(/меньше года|^1 год/.test(c.age)?1:0),B:c.facts.filter(f=>f.slot==='Финансы'&&f.pol!=='info'&&f.pol!=='positive').length,C:c.facts.filter(f=>f.slot==='Юридические события'&&(f.pol==='negative'||f.pol==='caution')).length,D:regNeg.filter(r=>r.pol!=='info').length,E:(c.auth&&c.auth.recent?1:0)+(c.founders.some(f=>f.recent)?1:0)}[b]);
   const sc=b=>sigCount(b)?`<span class="badge">${sigCount(b)} сигнал${sigCount(b)>1?'а':''}</span>`:'';
   const na='<span class="tertiary">не указано</span>';
 
   return `
-  ${c.headline?`<div class="alert">${ico('negative')} ${esc(c.headline)} ${ref('status.reasonName')}</div>`:''}
-  <details class="block" id="blk-A" open><summary>A. Оценка банка ${sc('A')}</summary><div class="body">
-    <div class="kv"><div class="k">Уровень риска банка</div><div class="v">${riskStatus(c)} ${c.risk==='UNKNOWN'?`<span class="sig">${ico('gap','sm')} пробел</span>`:''} ${ref('baseInfo.riskLevel')}</div>
-    <div class="k">Знай своего клиента (ЗСК)</div><div class="v">${zskStatus(c)} ${ref('zskRiskLevel')}</div></div></div></details>
+  ${c.headline?`<div class="alert">${esc(c.headline)} ${ref('status.reasonName')}</div>`:''}
 
-  <details class="block" id="blk-B" open><summary>B. Профиль ${sc('B')}</summary><div class="body"><div class="kv">
+  <details class="block" id="blk-A"><summary>A. Профиль ${sc('A')}</summary><div class="body"><div class="kv">
     <div class="k">${c.isIP?'ФИО':'Полное наименование'}</div><div class="v">${esc(c.full)}</div>
     <div class="k">ИНН / ОГРН${c.isIP?'ИП':''}${c.kpp?' / КПП':''}</div><div class="v mono" style="font-size:14px">${c.inn} / ${c.ogrn}${c.kpp?' / '+c.kpp:''}</div>
     <div class="k">Статус</div><div class="v">${c.status} (${c.statusDate}) ${c.reason?`<span class="sig">${ico('negative','sm')} ${esc(c.reason)}</span>`:''} ${ref('status.status')}</div>
@@ -718,29 +824,27 @@ function renderCard(c){
     <div class="k">Дата отчёта</div><div class="v">${c.report} ${ref('reportDate')}</div>
   </div></div></details>
 
-  <details class="block" id="blk-C" open><summary>C. Финансы ${fin&&c.trend?`<span class="status ${c.trend.startsWith('+')?'green':c.trend.startsWith('−')?'red':'grey'}">${c.trend}</span>`:''} ${sc('C')}</summary><div class="body">${chart}</div></details>
+  <details class="block" id="blk-B"><summary>B. Финансы ${fin&&c.trend?`<span class="status ${c.trend.startsWith('+')?'green':c.trend.startsWith('−')?'red':'grey'}">${c.trend}</span>`:''} ${sc('B')}</summary><div class="body">${chart}</div></details>
 
-  <details class="block" id="blk-D" open><summary>D. Юридические события ${sc('D')}</summary><div class="body">
+  <details class="block" id="blk-C"><summary>C. Юридические события ${sc('C')}</summary><div class="body">
     <h3 style="margin:4px 0 6px">Исполнительные производства ${epActive?ico('negative','sm'):''}</h3>${ep}
     <h3 style="margin:16px 0 6px">Арбитраж</h3>${arb}
-    <h3 style="margin:16px 0 6px">Проверки</h3>${insp}
+    <h3 style="margin:16px 0 6px">Проверки контролирующих органов</h3>${insp}
   </div></details>
 
-  <details class="block" id="blk-E" open><summary>E. Реестры ФНС ${sc('E')}</summary><div class="body">
-    ${regNeg.map(r=>`<div class="plate ${r.pol==='caution'?'attention':r.pol==='info'?'common':'negative'}" style="margin:0 0 8px"><div class="row" style="align-items:flex-start">${ico(r.pol,'sm')}<div><div style="font-weight:500">${esc(r.text)}</div>${ref('reputationalRisks.negative[code='+r.code+']')}</div></div></div>`).join('')}
+  <details class="block" id="blk-D"><summary>D. Реестры ФНС ${sc('D')}</summary><div class="body">
+    ${regNeg.map(r=>`<div class="plate ${r.pol==='caution'?'attention':r.pol==='info'?'common':'negative'}" style="margin:0 0 8px"><div style="font-weight:500">${esc(r.text)}</div>${ref('reputationalRisks.negative[code='+r.code+']')}</div>`).join('')}
     <details class="col" ${regNeg.length?'':'open'}><summary>Проверено ${c.regPos} реестров, негативных отметок нет ${ref('reputationalRisks.positive[]')}</summary><div class="small muted" style="margin-top:6px">Банкротство · блокировки счетов ФНС · недостоверный адрес · недостоверные регистрационные данные · недостоверные данные руководителя · реестр недобросовестных поставщиков · дисквалифицированные лица · долги по налогам · несдача отчётности · массовый руководитель · массовый адрес · массовые ОКВЭД (за вычетом сработавших)</div></details>
-    ${regDup.length?`<details class="col" style="margin-top:8px"><summary>Отметки банка, дублирующие блоки C/D (${regDup.length})</summary>${regDup.map(r=>`<div class="small muted" style="margin-top:4px">${esc(r.text)} <span class="tertiary">— см. блок D</span></div>`).join('')}</details>`:''}
+    ${regDup.length?`<details class="col" style="margin-top:8px"><summary>Отметки банка, дублирующие блоки B/C (${regDup.length})</summary>${regDup.map(r=>`<div class="small muted" style="margin-top:4px">${esc(r.text)} <span class="tertiary">— см. блок C</span></div>`).join('')}</details>`:''}
   </div></details>
 
-  <details class="block" id="blk-F"><summary>F. Дополнительно ${sc('F')}</summary><div class="body"><div class="kv">
+  <details class="block" id="blk-E"><summary>E. Дополнительно ${sc('E')}</summary><div class="body"><div class="kv">
     <div class="k">Руководитель</div><div class="v">${c.auth?`${c.auth.name}, ${c.auth.pos}, с ${c.auth.since} ${c.auth.recent?`<span class="sig">${ico('caution','sm')} смена за 24 мес.</span>`:''}`:'<span class="tertiary">ИП действует от своего имени</span>'} ${ref('foundersInfo.authPerson')}</div>
     <div class="k">Учредители</div><div class="v">${c.founders.length?c.founders.map(f=>`${esc(f.name)} — ${f.share}, с ${f.since} ${f.recent?`<span class="sig">${ico('caution','sm')} вошёл за 24 мес.</span>`:''}`).join('<br>'):'<span class="tertiary">'+(c.isIP?'для ИП не применимо':'не указаны')+'</span>'} ${ref('foundersInfo.cofounders[]')}</div>
     <div class="k">Лицензии</div><div class="v">${c.licenses.length?c.licenses.map(l=>`${esc(l.name)} — ${l.status}`).join('<br>'):'<span class="muted">сведений в отчёте нет</span>'} ${ref('licenses')}</div>
     <div class="k">Госзакупки</div><div class="v muted">участие не найдено ${ref('procurements')}</div>
     <div class="k">Связанные компании</div><div class="v">${c.related?`${c.related} ${c.related===1?'компания':c.related<5?'компании':'компаний'} <span class="tertiary">· риск-профиль связанных компаний недоступен (P3)</span>`:'<span class="muted">не найдены</span>'} ${ref('relatedCompanies[]')}</div>
-  </div></div></details>
-  <div class="plate attention"><h2>Что проверить до сделки</h2><ol>${c.steps.map(s=>`<li>${esc(s.text)} <span class="why">(${esc(s.why)})</span></li>`).join('')}</ol><div class="small muted" style="margin-top:8px">Рекомендации — из фиксированной таблицы «сигнал → шаг». Решение о сделке остаётся за вами.</div></div>
-  <button class="btn ghost sm" style="margin-top:12px" onclick="alert('Side-panel с деревом полей исходного отчёта (P3). Для теста RAT скрывается флагом.')">Показать исходный отчёт (JSON)</button>`;
+  </div></div></details>`;
 }
 
 /* ---------- Сравнение (панель) ---------- */
@@ -756,7 +860,7 @@ const FILTER_LABEL={neg:'только с негативными сигналам
 function renderMatrix(){
   const list=filtered(), rs=rows();
   const cell=(c,k)=>{ const it=[...cellItems(c,k)].sort((a,b)=>POL_ORDER[a[0]]-POL_ORDER[b[0]]);
-    return it.map(([p,t],i)=>`<div class="item${i>0?' hidden-item':''}">${ico(p,'sm')}<span>${esc(t)}</span></div>`).join('') + (it.length>1?`<div class="more" data-expand="1">ещё ${it.length-1}</div>`:''); };
+    return it.map(([p,t],i)=>`<div class="item ${p}${i>0?' hidden-item':''}"><span>${esc(t)}</span></div>`).join('') + (it.length>1?`<div class="more" data-expand="1">ещё ${it.length-1}</div>`:''); };
   return `
   <div class="toolbar">
     <h2>Матрица сигналов</h2>
@@ -781,7 +885,7 @@ function renderFocus(){
   <div class="toolbar"><button class="btn ghost sm" data-unfocus="1">← Ко всем ${S.session.length}</button></div>
   <div style="overflow:auto"><table class="cmp">
     <tr><th>Критерий</th>${list.map(c=>`<th><div class="cname" data-open="${c.inn}">${esc(c.name)}</div><div class="mono muted">${c.inn}</div><div style="margin-top:4px">${riskStatus(c)}</div></th>`).join('')}</tr>
-    ${rs.map(([n,k])=>`<tr><td>${n}</td>${list.map(c=>`<td>${cellItems(c,k).map(([p,t])=>`<div class="item">${ico(p,'sm')}<span>${esc(t)}</span></div>`).join('')}</td>`).join('')}</tr>`).join('')}
+    ${rs.map(([n,k])=>`<tr><td>${n}</td>${list.map(c=>`<td>${cellItems(c,k).map(([p,t])=>`<div class="item ${p}"><span>${esc(t)}</span></div>`).join('')}</td>`).join('')}</tr>`).join('')}
   </table></div>`;
 }
 function diffsList(list){
@@ -885,7 +989,7 @@ function addInn(inn){
   if(S.session.includes(inn)){ S.selected=inn; setView('card',inn); S.ctx='company'; return {ok:true,html:`<p>${esc(DB[inn].name)} уже в сессии.</p>`+summaryHtml(DB[inn])}; }
   if(S.session.length>=MAX) return {ok:false,html:`<div class="err">В сессии не больше ${MAX} контрагентов. Удалите одного («убери Техпром»), чтобы добавить нового.</div>`};
   S.session.push(inn); S.selected=inn; S.focusMode=false; setView('card',inn); S.ctx='company';
-  return {ok:true,html:summaryHtml(DB[inn],true)};
+  return {ok:true,html:summaryHtml(DB[inn])};
 }
 function agentAnswer(q){
   const t=q.toLowerCase().trim();
@@ -911,7 +1015,7 @@ function agentAnswer(q){
     if(goal!==undefined) S.deal.goal=goal;
     const hit=cs().filter(c=>S.deal.amount&&dealCell(c)[0]==='caution');
     if(S.session.length>1) setView('compare');
-    return `<p>Запомнил контекст сделки: ${[S.deal.goal, S.deal.amount?mlnT(S.deal.amount):null].filter(Boolean).join(', ')}. ${S.deal.amount&&S.session.length?`${S.session.length>1?'В сравнении появилась строка «Соразмерность сделки»':'В сводке появился слот «Соразмерность сделки»'}${hit.length?`: сумма превышает годовую выручку у ${names(hit)} ${ref('finReports[].common.proceeds')}`:''}.`:''} Метки банка не пересчитываются.</p>${S.session.length>1?`<div class="actions"><button class="chip go" data-pview="compare">Матрица в панели →</button></div>`:''}`;
+    return `<p>Запомнил контекст сделки: ${[S.deal.goal, S.deal.amount?mlnT(S.deal.amount):null].filter(Boolean).join(', ')}. ${S.deal.amount&&S.session.length?`${S.session.length>1?'В сравнении появилась строка «Соразмерность сделки»':'Краткий вывод обновлён с учётом сделки'}${hit.length?`: сумма превышает годовую выручку у ${names(hit)} ${ref('finReports[].common.proceeds')}`:''}.`:''} Метки банка не пересчитываются.</p>${S.session.length===1&&!S.llmOff?llmBriefHtml(DB[S.session[0]]):''}${S.session.length>1?`<div class="actions"><button class="chip go" data-pview="compare">Матрица в панели →</button></div>`:''}`;
   }
   if(!S.session.length) return `<p>В сессии пока никого. Введите ИНН — 10 цифр для юрлица или 12 для ИП, или напишите «доступные ИНН».</p>`;
   const many=S.session.length>1;
@@ -924,11 +1028,11 @@ function agentAnswer(q){
   }
   if(/расскажи|покажи сводку|сводк|что по|карточк|подробнее о/.test(t)&&(mentioned.length===1||!many)){ const c=DB[S.selected]; setView('card',c.inn); S.ctx='company'; return summaryHtml(c); }
   if(many&&/матриц|ко всем|всех|все компании/.test(t)){ S.focusMode=false; S.filter='all'; setView('compare'); S.ctx='compare'; return `<p>Матрица сигналов по всем ${S.session.length} — в панели. Строки идут по возрастанию риска, ключ порядка подписан под таблицей.</p><div class="actions"><button class="chip go" data-pview="compare">Открыть матрицу →</button></div>`; }
-  if(many&&/только с негатив|с негативн/.test(t)){ S.filter='neg'; S.focusMode=false; setView('compare'); S.ctx='compare'; const l=filtered(); return `<p>Негативные сигналы по данным отчёта у ${l.length} из ${S.session.length}:</p><ul>${l.map(c=>`<li><b>${esc(c.short)}</b> — ${esc(rows().flatMap(([,k])=>cellItems(c,k)).filter(([p])=>p==='negative').map(([,x])=>lc(x)).join('; '))}</li>`).join('')}</ul><div class="actions"><button class="chip go" data-pview="compare">Матрица с фильтром в панели →</button><button class="lnk" data-q="Покажи матрицу">показать всех</button></div>`; }
+  if(many&&/только с негатив|с негативн/.test(t)){ S.filter='neg'; S.focusMode=false; setView('compare'); S.ctx='compare'; const l=filtered(); return `<p>Негативные сигналы у ${l.length} из ${S.session.length}:</p><ul>${l.map(c=>`<li><b>${esc(c.short)}</b> — ${esc(rows().flatMap(([,k])=>cellItems(c,k)).filter(([p])=>p==='negative').map(([,x])=>lc(x)).join('; '))}</li>`).join('')}</ul><div class="actions"><button class="chip go" data-pview="compare">Матрица с фильтром в панели →</button><button class="lnk" data-q="Покажи матрицу">показать всех</button></div>`; }
   if(many&&/предупрежден|статус/.test(t)){ const l=cs().filter(c=>c.headline); S.filter='head'; setView('compare'); S.ctx='compare'; return l.length?`<p>Предупреждение по статусу у ${l.length} из ${S.session.length}:</p>${l.map(c=>`<div class="alert" style="font-size:13px;font-weight:500;padding:8px 10px">${ico('negative','xs')} <b>${esc(c.short)}:</b> ${esc(c.headline)} ${ref('status.reasonName')}</div>`).join('')}<div class="actions"><button class="chip go" data-pview="compare">Матрица с фильтром в панели →</button></div>`:`<p>Предупреждений по статусу ни у кого из ${S.session.length} нет; все действуют ${ref('status.status')}.</p>`; }
-  if(many&&/пробел|не хватает|нет данных|недостаточно/.test(t)&&mentioned.length!==1&&!['company','fin','legal'].includes(S.ctx)){ const l=cs().filter(c=>c.gaps.length); S.filter='gap'; setView('compare'); S.ctx='compare'; return `<p>Пробелы в данных у ${l.length} из ${S.session.length}:</p><ul>${l.map(c=>`<li><b>${esc(c.short)}</b>: ${c.gaps.map(g=>esc(g.text)).join('; ')}</li>`).join('')}</ul><p>Отсутствие сведений не означает отсутствие риска.</p><div class="actions"><button class="chip go" data-pview="compare">Матрица с фильтром в панели →</button></div>`; }
+  if(many&&/пробел|не хватает|нет данных|недостаточно/.test(t)&&mentioned.length!==1&&!['company','fin','legal'].includes(S.ctx)){ const l=cs().filter(c=>c.gaps.length); S.filter='gap'; setView('compare'); S.ctx='compare'; return `<p>Пробелы в данных у ${l.length} из ${S.session.length}:</p>${l.map(c=>`<p><b>${esc(c.short)}</b></p>${c.gaps.map(gapFact).join('')}`).join('')}${gapsNote()}<div class="actions"><button class="chip go" data-pview="compare">Матрица с фильтром в панели →</button></div>`; }
   if(many&&/по годам|динамик/.test(t)){ S.metric=/прибыл/.test(t)?'pf':/капитал/.test(t)?'cap':/обязательств/.test(t)?'stl':/актив/.test(t)?'ca':'pr'; S.hiddenLines.clear(); setView('chart'); S.ctx='chart'; return trendText(); }
-  if(many&&/лучше|надёжн|надежн|с кем работать|кого выбрать|самый/.test(t)){ setView('compare'); S.ctx='diffs'; return `<p>Не ранжирую компании — перечислю различия по данным отчёта, решение за вами.</p>${diffsList()}<p>Отсутствие фактов не означает отсутствие риска: у ${names(cs().filter(c=>c.gaps.length))||'никого'} есть пробелы в данных.</p><div class="actions"><button class="chip go" data-pview="compare">Матрица в панели →</button></div>`; }
+  if(many&&/лучше|надёжн|надежн|с кем работать|кого выбрать|самый/.test(t)){ setView('compare'); S.ctx='diffs'; return `<p>Не ранжирую компании — перечислю различия, решение за вами.</p>${diffsList()}<p>Отсутствие фактов не означает отсутствие риска: у ${names(cs().filter(c=>c.gaps.length))||'никого'} есть пробелы в данных.</p><div class="actions"><button class="chip go" data-pview="compare">Матрица в панели →</button></div>`; }
   if(many&&/различ|сравн|итог/.test(t)){ S.focusMode=false; setView('compare'); S.ctx='diffs'; return totalsHtml()+`<details class="fold"><summary>различия по критериям текстом</summary>${diffsList()}</details>`; }
   const c=DB[S.selected];
   const who=many?`${esc(c.short)}: `:'';
@@ -942,17 +1046,17 @@ function agentAnswer(q){
   if(/финанс|выручк|прибыл/.test(t)){
     S.ctx='fin'; setView('card',c.inn);
     const fin=c.fin.filter(f=>f.pr); if(!fin.length) return `<p>${who}выручка в отчётности не указана ни за один год ${ref('finReports')}.</p><div class="gapbox">Недостаточно данных для оценки финансов${c.isIP?' — ИП не публикует отчётность':''}.</div>${other}`;
-    return `<p>${who}выручка ${fin.map(f=>`${mln(f.pr)} (${f.y})`).join(' → ')} ${ref('finReports[].common.proceeds')}. ${fin.length<2?'Тренд по одному году оценить нельзя.':''} ${esc(c.facts.find(f=>f.slot==='Финансы').text)}</p>${c.fin.every(f=>f.pf==null)?'<div class="gapbox">Прибыль в отчётности не указана.</div>':''}<div class="actions"><button class="chip go" data-pview="card" data-inn="${c.inn}" data-block="C">Блок «Финансы» в панели →</button>${many?`<button class="lnk" data-q="Выручка по годам">сравнить динамику по компаниям</button>`:''}</div>${other}`;
+    return `<p>${who}выручка ${fin.map(f=>`${mln(f.pr)} (${f.y})`).join(' → ')} ${ref('finReports[].common.proceeds')}. ${fin.length<2?'Тренд по одному году оценить нельзя.':''} ${esc(c.facts.find(f=>f.slot==='Финансы').text)}</p>${c.fin.every(f=>f.pf==null)?'<div class="gapbox">Прибыль в отчётности не указана.</div>':''}<div class="actions"><button class="chip go" data-pview="card" data-inn="${c.inn}" data-block="B">Блок «Финансы» в панели →</button>${many?`<button class="lnk" data-q="Выручка по годам">сравнить динамику по компаниям</button>`:''}</div>${other}`;
   }
   if(/долг|суд|арбитраж|исполнительн/.test(t)){
     S.ctx='legal'; setView('card',c.inn);
     const a=c.arb, ep=c.ep.activeTotal??c.ep.active.length;
-    return `<p>${who}${ep?`активные исполнительные производства: ${ep}${c.ep.activeSum?` на ${c.ep.activeSum}`:''}${c.ep.active.some(e=>!e.a)?', сумма не указана':''} ${ref('executionProceedings[].active')}.`:`исполнительные производства не найдены ${ref('executionProceedings')}.`} ${a?`Арбитраж: всего ${a.total} дел, из них как истец ${a.pf+a.pa+a.pp}, как ответчик ${a.df+a.da+a.dp}${a.dp?`; открытых как ответчик ${a.dp}${a.dpA?' на '+a.dpA:''}`:'; открытых как ответчик нет'} ${ref('arbitrationByStatus')}.`:`Арбитражные дела не найдены ${ref('arbitrationByStatus')}.`}</p>${c.insp?`<p>Проверок: ${c.insp.total}, нарушений не выявлено ${ref('inspections[]')}.</p>`:`<div class="gapbox">Сведений о проверках контролирующих органов в отчёте нет — по этому критерию оценка невозможна.</div>`}<div class="actions"><button class="chip go" data-pview="card" data-inn="${c.inn}" data-block="D">Блок «Юридические события» в панели →</button></div>${other}`;
+    return `<p>${who}${ep?`активные исполнительные производства: ${ep}${c.ep.activeSum?` на ${c.ep.activeSum}`:''}${c.ep.active.some(e=>!e.a)?', сумма не указана':''} ${ref('executionProceedings[].active')}.`:`исполнительные производства не найдены ${ref('executionProceedings')}.`} ${a?`Арбитраж: всего ${a.total} дел, из них как истец ${a.pf+a.pa+a.pp}, как ответчик ${a.df+a.da+a.dp}${a.dp?`; открытых как ответчик ${a.dp}${a.dpA?' на '+a.dpA:''}`:'; открытых как ответчик нет'} ${ref('arbitrationByStatus')}.`:`Арбитражные дела не найдены ${ref('arbitrationByStatus')}.`}</p>${c.insp?`<p>Проверок контролирующих органов: ${c.insp.total}, нарушений не выявлено ${ref('inspections[]')}.</p>`:gapFact({text:'сведений о проверках контролирующих органов в отчёте нет',ref:'inspections'})}<div class="actions"><button class="chip go" data-pview="card" data-inn="${c.inn}" data-block="C">Блок «Юридические события» в панели →</button></div>${other}`;
   }
-  if(/не хватает|пробел|нет данных|недостаточно/.test(t)){ S.ctx='company'; return (c.gaps.length?`<p>${who}оценить нельзя:</p><ul>${c.gaps.map(g=>`<li>${esc(g.text)} ${ref(g.ref)}</li>`).join('')}</ul><p>Отсутствие сведений не означает отсутствие риска.</p>`:`<p>${who}все разделы отчёта заполнены; пробелов в данных нет.</p>`)+other; }
+  if(/не хватает|пробел|нет данных|недостаточно/.test(t)){ S.ctx='company'; return (c.gaps.length?`${c.gaps.map(gapFact).join('')}${gapsNote()}`:`<p>${who}все разделы отчёта банка заполнены; пробелов в данных нет.</p>`)+other; }
   if(/провер|запрос|до сделки|документ/.test(t)){ S.ctx='company'; return `<p>${who}до сделки:</p><ol>${c.steps.map(s=>`<li>${esc(s.text)} <span class="muted small">(${esc(s.why)})</span></li>`).join('')}</ol>${many?`<div class="actions"><button class="lnk" data-pview="compare">шаги по всем ${S.session.length} — в панели</button></div>`:''}${other}`; }
   if(/сотрудник|штат|клиент|сайт|интернет/.test(t)) return `<p>В доступных данных этой информации нет.</p><div class="gapbox">Веб-поиск не подключён; отвечаю только по отчёту банка.</div>`;
-  return `<p>Могу ответить по данным отчёта: оценка банка, финансы, исполнительные производства и арбитраж, реестры ФНС, пробелы в данных, что проверить до сделки${many?'; по нескольким — различия, динамика по годам, «сравни А и Б подробно»':''}. Управление сессией тоже здесь: ИНН добавляет контрагента, «убери …» удаляет, «контракт на 50 млн, поставка» задаёт контекст сделки.</p>`;
+  return `<p>Могу ответить про оценку банка, финансы, исполнительные производства и арбитраж, реестры ФНС, пробелы в данных, что проверить до сделки${many?'; по нескольким — различия, динамика по годам, «сравни А и Б подробно»':''}. Управление сессией тоже здесь: ИНН добавляет контрагента, «убери …» удаляет, «контракт на 50 млн, поставка» задаёт контекст сделки.</p>`;
 }
 /* Три подсказки под последним ответом, по контексту */
 function suggestions(){
@@ -996,7 +1100,7 @@ function finish(sk,a){
 function send(text){
   if(!text.trim()) return;
   $('#chat').classList.remove('empty-session');
-  S.lastQ=text; addMsg('user',esc(text)); $('#chatInput').value='';
+  S.lastQ=text; addMsg('user',esc(text)); $('#chatInput').value=''; $('#launcherInput').value='';
   const isCmd=/\d{10,12}/.test(text)||/^(убери|удали|очист|доступн|расскажи|покажи|сравни|матриц)/i.test(text.trim())||/по годам|различ/i.test(text);
   if(S.llmOff&&!isCmd){ addMsg('agent',`<div class="sys">Языковая модель недоступна. Сводки и сравнение формируются по правилам: напишите ИНН, «расскажи о …», «в чём различия», «покажи матрицу». Команды сессии («убери», «очисти») работают.</div>`); renderSuggest(); return; }
   const sk=addMsg('agent',`<div class="skeleton"><i style="width:80%"></i><i style="width:95%"></i><i style="width:60%"></i></div>`);
@@ -1005,18 +1109,19 @@ function send(text){
 function greet(){
   $('#msgs').innerHTML='';
   $('#chat').classList.toggle('empty-session',!S.session.length);
-  if(!S.session.length){ S.ctx='start'; addMsg('agent','<p><b>С чем вы пришли и что хотите получить от агента?</b></p><p class="muted">Опишите задачу своими словами. Можно сразу указать ИНН, контекст сделки или попросить сравнить контрагентов.</p>'); renderSuggest(); return; }
+  if(!S.session.length){ S.ctx='start'; $('#launcherInput').value=''; return; }
   addMsg('user','проверь '+S.session.join(', '));
-  if(S.session.length===1){ S.ctx='company'; addMsg('agent',summaryHtml(DB[S.session[0]],true)); renderSuggest(); return; }
+  if(S.session.length===1){ S.ctx='company'; addMsg('agent',summaryHtml(DB[S.session[0]])); renderSuggest(); return; }
   S.ctx='compare'; addMsg('agent',totalsHtml(true)); renderSuggest();
 }
 
 /* ---------- Подсветка блока по внутренней привязке факта ---------- */
 function blockFor(r){
-  const map=[[/^(baseInfo\.riskLevel|zskRiskLevel)/,'A'],[/^(status|baseInfo|reportDate)/,'B'],[/^(finReports|coefficient)/,'C'],[/^(executionProceedings|arbitration|inspections)/,'D'],[/^reputationalRisks/,'E'],[/^(foundersInfo|licenses|procurements|relatedCompanies)/,'F']];
-  return (map.find(([re])=>re.test(r))||[0,'B'])[1];
+  const map=[[/^(status|baseInfo|reportDate)/,'A'],[/^(finReports|coefficient)/,'B'],[/^(executionProceedings|arbitration|inspections)/,'C'],[/^reputationalRisks/,'D'],[/^(foundersInfo|licenses|procurements|relatedCompanies)/,'E']];
+  return (map.find(([re])=>re.test(r))||[0,'A'])[1];
 }
-function highlight(b){ const el=$('#blk-'+b); if(el){ el.open=true; el.classList.add('hl'); el.scrollIntoView({block:'start',behavior:'smooth'}); setTimeout(()=>el.classList.remove('hl'),1500); } }
+function collapseCardBlocks(){ document.querySelectorAll('#dBody .block').forEach(el=>{ el.open=false; }); }
+function highlight(b){ collapseCardBlocks(); const el=$('#blk-'+b); if(!el) return; el.open=true; el.classList.add('hl'); el.scrollIntoView({block:'start',behavior:'smooth'}); setTimeout(()=>el.classList.remove('hl'),1500); }
 function openRef(r,inn){ openPanel('card',inn||S.selected); highlight(blockFor(r)); }
 
 /* ---------- События ---------- */
@@ -1051,6 +1156,8 @@ document.addEventListener('mouseover',e=>{ const h=e.target.closest('[data-hover
 $('#llmToggle').onclick=()=>{ S.llmOff=!S.llmOff; $('#llmToggle').textContent='LLM недоступна: '+(S.llmOff?'вкл':'выкл'); $('#llmToggle').classList.toggle('on',S.llmOff); renderAll(); greet(); };
 $('#sendBtn').onclick=()=>send($('#chatInput').value);
 $('#chatInput').addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); send($('#chatInput').value);} });
+$('#launcherBtn').onclick=()=>send($('#launcherInput').value);
+$('#launcherInput').addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); send($('#launcherInput').value);} });
 
 /* Начальное состояние из hash: #empty | #one | #three | #ten · #panel | #wide (панель открыта) · #card | #compare | #chart (что в панели) · #t2 | #t3 · #llmoff · #deal · #focus · #neg (через запятую) */
 const H=(location.hash||'').slice(1).split(',');
