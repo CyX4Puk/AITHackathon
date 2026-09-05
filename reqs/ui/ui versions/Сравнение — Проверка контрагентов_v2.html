@@ -39,27 +39,11 @@
   header .logo{width:28px;height:28px;border-radius:8px;background:var(--accent);color:#fff;display:grid;place-items:center;font-weight:700}
   header .spacer{flex:1}
 
-  /* Сетка: чат по центру, панель «Подробности» справа, по умолчанию свёрнута до рейки */
-  .layout{display:flex;gap:16px;padding:16px 24px 24px;height:calc(100% - 56px);min-width:1200px;justify-content:center}
+  /* Сетка: две колонки */
+  .layout{display:grid;grid-template-columns:1fr 400px;gap:16px;padding:16px 24px 24px;height:calc(100% - 56px);min-width:1200px}
   .panel{background:var(--bg-primary);border-radius:var(--r12);border:1px solid var(--border);display:flex;flex-direction:column;min-height:0}
-  .chat{flex:1 1 800px;max-width:800px;min-width:480px}
-  .details{flex:0 0 580px;min-width:0;display:none}
-  .layout[data-panel="open"] .chat{max-width:none}
-  .layout[data-panel="open"] .details{display:flex}
-  .layout[data-panel="wide"] .chat{flex:0 0 420px;max-width:420px;min-width:420px}
-  .layout[data-panel="wide"] .details{display:flex;flex:1 1 auto}
-  .rail{flex:0 0 44px;border-radius:var(--r12);border:1px solid var(--border);background:var(--bg-primary);display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:12px;cursor:pointer;color:var(--text-secondary)}
-  .rail:hover{background:var(--bg-secondary);color:var(--text-primary)}
-  .rail .vt{writing-mode:vertical-rl;transform:rotate(180deg);font-size:13px;font-weight:500;letter-spacing:.02em;white-space:nowrap}
-  .rail .arr{font-size:16px}
-  .layout:not([data-panel="closed"]) .rail,.layout.nosession .rail{display:none}
   .panel-body{padding:16px;overflow:auto;flex:1;min-height:0}
-  .details-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:flex-start}
-  .details-head .ttl{flex:1;min-width:0}
-  .details-head .ttl h2{font-size:15px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .details-head .icons{display:flex;gap:2px;flex:none}
-  .ibtn{width:28px;height:28px;border:0;background:transparent;border-radius:6px;color:var(--text-secondary);font-size:15px;line-height:1}
-  .ibtn:hover{background:var(--bg-secondary);color:var(--text-primary)}
+  #work{display:flex;flex-direction:column;flex:1;min-height:0}
 
   .btn{height:40px;border-radius:var(--r8);border:0;padding:0 14px;font-weight:500}
   .btn.primary{background:#0b1f35;color:#fff} .btn.primary:disabled{opacity:.4;cursor:default}
@@ -67,23 +51,21 @@
   .btn.ghost{background:transparent;color:var(--text-secondary)}
   .btn.sm{height:30px;padding:0 10px;font-size:13px}
 
-  /* Шапка чата: сессия живёт здесь */
-  .chat-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
-  .chat-head .top{display:flex;gap:10px;align-items:center}
-  .chat-head .top .counter{margin-left:auto;font-size:13px;color:var(--text-secondary);white-space:nowrap}
-  .chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;min-height:28px}
-  .chips .label{font-size:13px;color:var(--text-secondary);margin-right:2px}
-  .cchip{display:inline-flex;align-items:center;gap:7px;height:28px;padding:0 4px 0 9px;border-radius:14px;border:1px solid var(--border);background:var(--bg-primary);cursor:pointer;max-width:240px}
+  /* Панель сессии: ряд чипов над рабочей областью */
+  .sessionbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:12px 16px;border-bottom:1px solid var(--border);min-height:56px}
+  .sessionbar .label{font-size:13px;color:var(--text-secondary);margin-right:4px}
+  .cchip{display:inline-flex;align-items:center;gap:8px;height:32px;padding:0 6px 0 10px;border-radius:16px;border:1px solid var(--border);background:var(--bg-primary);cursor:pointer;max-width:260px}
   .cchip:hover{background:var(--bg-secondary)}
   .cchip.active{border-color:#0b1f35;box-shadow:inset 0 0 0 1px #0b1f35}
   .cchip .name{font-weight:500;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   .cchip .dot{width:8px;height:8px;border-radius:50%;flex:none}
   .dot.green{background:var(--positive)} .dot.orange{background:var(--attention)} .dot.red{background:var(--negative)} .dot.grey{background:var(--text-tertiary)}
   .cchip .warn{color:var(--negative-text);font-weight:700;font-size:12px}
-  .cchip .x{border:0;background:none;color:var(--text-tertiary);font-size:15px;line-height:14px;padding:2px 5px;border-radius:50%}
+  .cchip .x{border:0;background:none;color:var(--text-tertiary);font-size:15px;line-height:14px;padding:2px 4px;border-radius:50%}
   .cchip .x:hover{background:var(--bg-tertiary);color:var(--text-primary)}
   .cchip.deal{background:var(--bg-secondary);border-style:dashed;cursor:default}
   .cchip.deal .name{font-weight:400}
+  .sessionbar .counter{font-size:13px;color:var(--text-secondary);margin-left:auto;white-space:nowrap}
 
   /* Статус-метка */
   .status{display:inline-flex;align-items:center;height:20px;padding:0 8px;border-radius:10px;font-size:12px;line-height:16px;font-weight:500;white-space:nowrap}
@@ -91,15 +73,20 @@
   .status.orange{background:var(--attention-bg);color:var(--attention-text)}
   .status.red{background:var(--negative-bg);color:var(--negative-text)}
   .status.grey{background:var(--bg-tertiary);color:var(--text-secondary)}
+
+  /* Вкладки */
+  .tabs{display:flex;gap:4px;border-bottom:1px solid var(--border);padding:0 16px}
+  .tab{border:0;background:none;padding:12px 12px;font-weight:500;color:var(--text-secondary);border-bottom:2px solid transparent;margin-bottom:-1px;display:flex;gap:6px;align-items:center}
+  .tab.active{color:var(--text-primary);border-bottom-color:#0b1f35}
   .badge{background:var(--bg-tertiary);border-radius:10px;padding:0 6px;font-size:12px;line-height:18px;font-weight:500;color:var(--text-secondary)}
 
-  .subject{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
+  .subject{padding:16px 16px 12px;display:flex;flex-direction:column;gap:6px}
   .subject .title{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 
-  /* Факт сводки (в чате и в панели) */
-  .fact{display:grid;grid-template-columns:22px 1fr;gap:10px;padding:10px 12px;border-radius:var(--r12);border:1px solid var(--border);border-left-width:4px;margin-bottom:6px;cursor:pointer}
+  /* Факт сводки */
+  .fact{display:grid;grid-template-columns:24px 1fr;gap:12px;padding:12px 14px;border-radius:var(--r12);border:1px solid var(--border);border-left-width:4px;margin-bottom:8px;cursor:pointer}
   .fact:hover{filter:brightness(.985)}
-  .fact .slot{font-size:12px;line-height:16px;color:var(--text-secondary);margin-bottom:1px}
+  .fact .slot{font-size:12px;line-height:16px;color:var(--text-secondary);margin-bottom:2px}
   .fact .text{font-weight:500}
   .fact.negative{border-left-color:var(--negative);background:var(--negative-bg)}
   .fact.caution{border-left-color:var(--attention);background:var(--attention-bg)}
@@ -124,8 +111,8 @@
   .plate.common{background:var(--bg-secondary);border-color:transparent}
   .plate ol,.plate ul{margin:0;padding-left:20px} .plate li{margin:4px 0}
   .plate li .why{color:var(--text-secondary);font-size:13px}
-  .alert{display:flex;gap:10px;align-items:center;padding:10px 12px;border-radius:var(--r12);background:var(--negative-bg);color:var(--negative-text);font-weight:600;margin-bottom:8px}
-  .foot{margin-top:10px;font-size:12px;color:var(--text-tertiary);display:flex;gap:8px;align-items:center}
+  .alert{display:flex;gap:10px;align-items:center;padding:12px 14px;border-radius:var(--r12);background:var(--negative-bg);color:var(--negative-text);font-weight:600;margin-bottom:12px}
+  .foot{margin-top:16px;font-size:12px;color:var(--text-tertiary);display:flex;gap:8px;align-items:center}
   .spinner{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--text-secondary);border-radius:50%;animation:spin 1s linear infinite;display:inline-block}
   @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -137,7 +124,7 @@
   .block > summary::after{content:"⌄";margin-left:auto;color:var(--text-tertiary);font-size:18px;transition:transform .2s}
   .block[open] > summary::after{transform:rotate(180deg)}
   .block .body{padding:0 16px 16px}
-  .kv{display:grid;grid-template-columns:200px 1fr;gap:6px 16px;font-size:14px}
+  .kv{display:grid;grid-template-columns:220px 1fr;gap:6px 16px;font-size:14px}
   .kv .k{color:var(--text-secondary)} .kv .v{display:flex;gap:8px;align-items:flex-start;flex-wrap:wrap}
   .sig{display:inline-flex;gap:4px;align-items:center;font-size:12px;color:var(--text-secondary)}
   table{border-collapse:collapse;width:100%;font-size:14px}
@@ -161,13 +148,29 @@
   details.col summary{cursor:pointer;color:var(--text-secondary);font-size:13px;list-style:none}
   details.col summary::before{content:"▸ "} details.col[open] summary::before{content:"▾ "}
 
+  /* Сравнение: итоги */
+  .totals{border-radius:var(--r12);border:1px solid var(--border);padding:16px;margin-bottom:16px;background:var(--bg-primary)}
+  .totals .headlines{display:flex;flex-direction:column;gap:6px;margin:10px 0}
+  .totals .headlines .alert{margin:0;padding:8px 12px;font-size:13px;font-weight:500}
+  .totals .crit{display:grid;grid-template-columns:150px 1fr;gap:4px 12px;font-size:13px;margin-top:10px}
+  .totals .crit .k{color:var(--text-secondary)}
+  .totals .crit .g{display:inline-flex;gap:4px;align-items:flex-start;margin-right:12px}
+  .minis{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:8px;margin-top:12px}
+  .mini{border:1px solid var(--border);border-radius:var(--r8);padding:10px 12px;cursor:pointer;display:flex;flex-direction:column;gap:4px;min-width:0}
+  .mini:hover{background:var(--bg-secondary)}
+  .mini .n{font-weight:600;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1;min-width:0}
+  .mini .row{gap:6px}
+  .mini .f{font-size:12px;line-height:16px;color:var(--text-primary);display:flex;gap:6px;align-items:flex-start}
+  .mini .cnt{font-size:12px;color:var(--text-secondary);display:flex;gap:10px}
+  .mini .cnt span{display:inline-flex;gap:3px;align-items:center}
+
   /* Сравнение: матрица */
-  .toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:0 0 8px}
+  .toolbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin:16px 0 8px}
   .toolbar .grow{flex:1}
   .mx-wrap{overflow:auto;border:1px solid var(--border);border-radius:var(--r12)}
-  .mx{font-size:13px;min-width:760px}
+  .mx{font-size:13px;min-width:820px}
   .mx th{position:sticky;top:0;background:var(--bg-primary);z-index:2;font-size:12px}
-  .mx th:nth-child(2),.mx td:nth-child(2){position:sticky;left:0;background:var(--bg-primary);z-index:1;min-width:170px;max-width:210px}
+  .mx th:nth-child(2),.mx td:nth-child(2){position:sticky;left:0;background:var(--bg-primary);z-index:1;min-width:190px;max-width:220px}
   .mx th:nth-child(2){z-index:3}
   .mx td:first-child,.mx th:first-child{width:28px;padding-right:0}
   .mx td{vertical-align:top;line-height:17px}
@@ -179,18 +182,16 @@
   .mx .more{color:var(--text-secondary);font-size:12px;cursor:pointer;margin-left:20px}
   .mx.expanded .more{display:none}
   .mx .hidden-item{display:none} .mx.expanded .hidden-item{display:flex}
-  .cmp th:first-child,.cmp td:first-child{width:150px;color:var(--text-secondary);font-weight:500;background:var(--bg-primary);position:sticky;left:0}
+  .mx tr.hl td{background:#fff8e1}
+  .cmp th:first-child,.cmp td:first-child{width:160px;color:var(--text-secondary);font-weight:500;background:var(--bg-primary);position:sticky;left:0}
   .cmp th{vertical-align:top}
   .cmp th .cname{color:var(--text-primary);font-weight:600;font-size:14px;cursor:pointer}
   .cmp td{font-size:14px}
   .cmp .item{display:flex;gap:6px;align-items:flex-start;margin:2px 0}
   .gridN{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-top:8px}
   .gridN .plate{margin:0}
-  .crit{display:grid;grid-template-columns:140px 1fr;gap:4px 12px;font-size:13px;margin-top:8px}
-  .crit .k{color:var(--text-secondary)}
-  .crit .g{display:inline-flex;gap:4px;align-items:flex-start;margin-right:12px}
 
-  /* Динамика по годам */
+  /* Сравнение: графики по годам */
   .ychart{margin-top:8px}
   .ychart svg{width:100%;height:auto;display:block}
   .ychart .lbl{font-size:11px;fill:var(--text-secondary)}
@@ -203,48 +204,43 @@
   .lchip{display:inline-flex;gap:6px;align-items:center;font-size:12px;padding:3px 8px;border-radius:12px;border:1px solid var(--border);cursor:pointer;background:var(--bg-primary)}
   .lchip.off{opacity:.4;text-decoration:line-through}
   .lchip i{width:10px;height:3px;border-radius:2px;display:inline-block}
-  .smalls{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:8px}
+  .smalls{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:8px}
   .sm-c{border:1px solid var(--border);border-radius:var(--r8);padding:8px 10px}
   .sm-c .t{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;gap:6px;align-items:center;justify-content:space-between}
   .sm-c svg{width:100%;height:70px;display:block;margin-top:4px}
+  .sm-c .nd{height:70px;border:1.5px dashed var(--text-tertiary);border-radius:6px;display:grid;place-items:center;color:var(--text-tertiary);font-size:12px;margin-top:4px;text-align:center;padding:0 6px}
 
   /* Чат */
-  .msgs{flex:1;overflow:auto;padding:16px 20px;display:flex;flex-direction:column;gap:14px;min-height:0}
-  .msg{max-width:100%;font-size:14px;line-height:20px}
-  .msg.user{align-self:flex-end;background:var(--bg-secondary);border-radius:var(--r12) var(--r12) 4px var(--r12);padding:10px 12px;max-width:80%}
-  .msg.agent{align-self:stretch}
+  .chat{display:flex;flex-direction:column}
+  .chat-head{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:center}
+  .msgs{flex:1;overflow:auto;padding:16px;display:flex;flex-direction:column;gap:12px;min-height:0}
+  .msg{max-width:94%;font-size:14px;line-height:20px}
+  .msg.user{align-self:flex-end;background:var(--bg-secondary);border-radius:var(--r12) var(--r12) 4px var(--r12);padding:10px 12px}
+  .msg.agent{align-self:flex-start}
   .msg.agent p{margin:0 0 8px} .msg.agent p:last-child{margin:0}
   .msg.agent ul,.msg.agent ol{margin:4px 0 8px;padding-left:18px}
-  .msg .hdr{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
-  .msg .hdr b{font-size:15px}
-  .msg .hdr .meta{font-size:12px;color:var(--text-tertiary)}
   .msg .sys{background:var(--bg-secondary);border-left:3px solid var(--text-tertiary);padding:8px 10px;border-radius:0 8px 8px 0;color:var(--text-secondary);font-size:13px}
   .msg .err{background:var(--negative-bg);border-left:3px solid var(--negative);padding:8px 10px;border-radius:0 8px 8px 0;color:var(--negative-text);font-size:13px}
   .msg .gapbox{border:1px dashed var(--text-tertiary);border-radius:8px;padding:6px 10px;color:var(--text-secondary);font-size:13px;margin:6px 0}
-  .msg .okline{display:flex;gap:8px;align-items:center;color:var(--text-secondary);font-size:13px;margin:4px 0 6px}
-  .msg .step{background:var(--attention-bg);border-radius:8px;padding:8px 10px;font-size:13px;margin-top:6px}
-  .msg .step .why{color:var(--text-secondary)}
-  .msg details.fold{margin:4px 0 6px}
-  .msg details.fold summary{cursor:pointer;font-size:13px;color:var(--text-secondary);list-style:none}
-  .msg details.fold summary::before{content:"▸ "} .msg details.fold[open] summary::before{content:"▾ "}
-  .msg details.fold .fact{margin-top:6px}
-  .msg .actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;align-items:center}
-  .msg .actions .lnk{border:0;background:none;color:var(--text-link);font-size:13px;padding:0;text-decoration:underline;text-underline-offset:2px}
+  .msg .actions{display:flex;gap:6px;margin-top:6px;flex-wrap:wrap}
   .msg table{font-size:13px} .msg td,.msg th{padding:4px 6px}
   .msg tr.pick{cursor:pointer} .msg tr.pick:hover td{background:var(--bg-secondary)}
-  .msg .crit{margin-top:6px}
   .chip{border:1px solid var(--border);background:var(--bg-primary);border-radius:16px;padding:4px 10px;font-size:13px;color:var(--text-primary);white-space:nowrap}
   .chip:hover{background:var(--bg-secondary)}
-  .chip.go{border-color:#0b1f35}
   .check{font-size:12px;color:var(--text-tertiary);margin-top:6px} .check summary{cursor:pointer;list-style:none}
-  .suggest{display:flex;gap:6px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:1px dashed var(--border)}
-  .suggest .lbl{font-size:12px;color:var(--text-tertiary);align-self:center}
-  .compose{display:flex;gap:8px;padding:12px 20px 14px;align-items:flex-end;border-top:1px solid var(--border)}
+  .presets{display:flex;gap:6px;overflow-x:auto;padding:8px 16px 0;scrollbar-width:none}
+  .presets::-webkit-scrollbar{display:none}
+  .compose{display:flex;gap:8px;padding:12px 16px 16px;align-items:flex-end}
   .compose textarea{flex:1;resize:none;border:1px solid var(--border);border-radius:var(--r8);padding:12px;font:inherit;min-height:48px;max-height:104px}
   .compose button{width:48px;height:48px;border-radius:var(--r8);border:0;background:#0b1f35;color:#fff;font-size:18px}
-  .compose-hint{padding:0 20px 12px;font-size:12px;color:var(--text-tertiary)}
+  .compose-hint{padding:0 16px 12px;font-size:12px;color:var(--text-tertiary)}
   .skeleton{display:flex;flex-direction:column;gap:6px} .skeleton i{display:block;height:12px;border-radius:6px;background:linear-gradient(90deg,var(--bg-secondary),var(--bg-tertiary),var(--bg-secondary));background-size:200% 100%;animation:sk 1.2s infinite}
   @keyframes sk{to{background-position:-200% 0}}
+
+  .empty{padding:48px 24px;text-align:center;color:var(--text-secondary)}
+  .empty .steps{display:flex;gap:24px;justify-content:center;margin-top:24px}
+  .empty .step{width:220px;padding:16px;border:1px dashed var(--border);border-radius:var(--r12);font-size:14px}
+  .empty .step b{display:block;font-size:24px;color:var(--text-tertiary);margin-bottom:6px}
 
   .devbar{display:flex;gap:6px;align-items:center;font-size:12px;color:var(--text-secondary)}
   .devbar button{background:var(--bg-secondary);color:var(--text-primary);border:0;border-radius:6px;padding:4px 8px;font-size:12px}
@@ -268,28 +264,45 @@
   </div>
 </header>
 
-<div class="layout" id="layout" data-panel="closed">
+<div class="layout">
 
-  <!-- A. Чат — основной инструмент; сессия в шапке чата -->
+  <!-- A+B. Рабочая область с панелью сессии сверху -->
+  <main class="panel">
+    <div class="sessionbar" id="sessionBar"></div>
+    <div id="workEmpty" class="empty hidden">
+      <h2 style="color:var(--text-primary)">Начните с ИНН в чате</h2>
+      <p>Агент найдёт отчёт банка, покажет короткую сводку, а от двух компаний соберёт сравнение по единому набору критериев.</p>
+      <div class="steps">
+        <div class="step"><b>1</b>Напишите ИНН в чат: «проверь 9721159668»</div>
+        <div class="step"><b>2</b>Прочитайте 4–5 фактов и что проверить</div>
+        <div class="step"><b>3</b>Добавьте ещё до 9 компаний и сравните</div>
+      </div>
+    </div>
+    <div id="work">
+      <div class="subject" id="subject"></div>
+      <div class="tabs">
+        <button class="tab active" data-tab="summary">Сводка</button>
+        <button class="tab" data-tab="card">Карточка</button>
+        <button class="tab" data-tab="compare" id="tabCompare">Сравнение <span class="badge" id="cmpBadge">3</span></button>
+      </div>
+      <div class="panel-body" id="tabBody"></div>
+    </div>
+  </main>
+
+  <!-- C. Чат — единственная точка ввода -->
   <section class="panel chat">
     <div class="chat-head">
-      <div class="top"><h2>Чат с агентом</h2><span class="status grey">по данным отчёта</span><span class="counter" id="counter"></span></div>
-      <div class="chips" id="chips"></div>
+      <h2>Чат с агентом</h2>
+      <span class="status grey">по данным отчёта</span>
     </div>
     <div class="msgs" id="msgs"></div>
+    <div class="presets" id="presets"></div>
     <div class="compose">
       <textarea id="chatInput" rows="1" placeholder="ИНН, вопрос или контекст сделки"></textarea>
       <button id="sendBtn" title="Отправить">↑</button>
     </div>
-    <div class="compose-hint">Примеры: «проверь 9721159668» · «убери Техпром» · «контракт на 100 млн, поставка» · «сравни Транслориум и Агилар подробно»</div>
+    <div class="compose-hint">Примеры: «проверь 9721159668» · «убери Техпром» · «контракт на 100 млн, поставка» · «доступные ИНН»</div>
   </section>
-
-  <!-- B. Панель «Подробности» — открывается по ссылке из ответа, содержимое следует за последним ответом -->
-  <aside class="panel details" id="details">
-    <div class="details-head"><div class="ttl" id="dTitle"></div><div class="icons"><button class="ibtn" id="pwide" title="Развернуть">⤢</button><button class="ibtn" data-pclose="1" title="Свернуть панель">×</button></div></div>
-    <div class="panel-body" id="dBody"></div>
-  </aside>
-  <button class="rail" id="rail" title="Открыть подробности"><span class="arr">‹</span><span class="vt" id="railText">Подробности</span></button>
 </div>
 
 <script>
@@ -534,13 +547,9 @@ const METRICS = [['pr','Выручка','finReports[].common.proceeds'],['pf','�
 /* Категориальная палитра линий: без красного/зелёного/оранжевого, чтобы цвет линии не читался как оценка */
 const PALETTE = ['#0b1f35','#3b5bdb','#7048e8','#1098ad','#5c7cfa','#495057','#845ef7','#0c8599','#364fc7','#868e96'];
 
-/* ---------- Состояние ----------
-   panel: closed | open | wide — состояние панели «Подробности»
-   view:  {kind:'card'|'compare'|'chart', inn} — что панель показывает; меняется только вслед за ответом агента или кликом по ссылке из ответа
-   ctx:   контекст последнего ответа, от него зависят три подсказки под ответом */
-const S = { session:[], selected:null, llmOff:false, epView:'active', deal:{goal:null,amount:null},
-  filter:'all', focus:[], focusMode:false, expanded:false, metric:'pr', hiddenLines:new Set(),
-  panel:'closed', view:{kind:'card',inn:null}, ctx:'start' };
+/* ---------- Состояние ---------- */
+const S = { session:[], selected:null, tab:'summary', llmOff:false, epView:'active', deal:{goal:null,amount:null},
+  filter:'all', focus:[], focusMode:false, expanded:false, metric:'pr', scale:'abs', view:'overlay', hiddenLines:new Set() };
 
 /* ---------- Утилиты ---------- */
 const $ = s => document.querySelector(s);
@@ -552,108 +561,60 @@ const ref = r => `<span class="ref" data-ref="${esc(r)}" title="${esc(r)}">${esc
 const ico = (pol,size) => `<span class="ico ${pol}${size?' '+size:''}">${P[pol]||'i'}</span>`;
 const fmt1 = v => v.toLocaleString('ru-RU',{minimumFractionDigits:1,maximumFractionDigits:1});
 const mln = v => v==null ? '<span class="tertiary">нет данных</span>' : (Math.abs(v)>=1000 ? fmt1(v/1000)+' млрд ₽' : Math.abs(v)<1 ? fmt1(v*1000)+' тыс. ₽' : fmt1(v)+' млн ₽');
-const mlnT = v => mln(v).replace(/<[^>]+>/g,'');
 const mlnShort = v => Math.abs(v)>=1000 ? fmt1(v/1000)+' млрд' : Math.abs(v)<1 ? Math.round(v*1000)+' тыс' : (Math.abs(v)>=100?Math.round(v):fmt1(v))+' млн';
 const worst = items => items.reduce((w,[p])=>POL_ORDER[p]<POL_ORDER[w]?p:w,'positive');
 const cs = () => S.session.map(i=>DB[i]);
-const lc = s => s.charAt(0).toLowerCase()+s.slice(1);
-const names = list => list.map(c=>esc(c.short)).join(', ');
 const dealCell = c => {
   const amt=S.deal.amount; const last=[...c.fin].reverse().find(f=>f.pr);
   if(!last) return ['gap','Выручка неизвестна; соразмерность оценить нельзя'];
-  return amt>last.pr ? ['caution',`Сумма сделки (${mlnT(amt)}) превышает выручку за ${last.y} (${mln(last.pr)})`] : ['info',`Сумма сделки в пределах выручки за ${last.y} (${mln(last.pr)})`];
+  return amt>last.pr ? ['caution',`Сумма сделки (${mln(amt).replace(/<[^>]+>/g,'')}) превышает выручку за ${last.y} (${mln(last.pr)})`] : ['info',`Сумма сделки в пределах выручки за ${last.y} (${mln(last.pr)})`];
 };
 const cellItems = (c,k) => k==='deal' ? [dealCell(c)] : c.cmp[k];
 const rows = () => S.deal.amount ? [...ROWS,['Соразмерность сделки','deal']] : ROWS;
 /* Счётчики: сигналы строк сравнения + сигналы слота «Дополнительно» (возраст, смены руководителя/учредителя), которые в таблицу не входят */
 const counts = c => { const all=[...rows().flatMap(([,k])=>cellItems(c,k)), ...c.facts.filter(f=>f.slot==='Дополнительно').map(f=>[f.pol,f.text])]; return {neg:all.filter(([p])=>p==='negative').length, cau:all.filter(([p])=>p==='caution').length, gap:c.gaps.length}; };
-/* Порядок матрицы — по возрастанию риска, ключ явный и показан в подписи под таблицей:
-   метка банка LOW → MEDIUM → HIGH (UNKNOWN в конце) → предупреждение по статусу → число negative → число caution → порядок добавления */
-const RISK_RANK = {LOW:0, MEDIUM:1, HIGH:2, UNKNOWN:3};
-const riskKey = c => { const k=counts(c); return [RISK_RANK[c.risk], c.headline?1:0, k.neg, k.cau, S.session.indexOf(c.inn)]; };
-const byRisk = list => [...list].sort((a,b)=>{ const ka=riskKey(a), kb=riskKey(b); for(let i=0;i<ka.length;i++) if(ka[i]!==kb[i]) return ka[i]-kb[i]; return 0; });
-const findByName = t => cs().find(c=>t.includes(c.short.toLowerCase()) || t.includes(c.short.toLowerCase().replace(/^ип\s+/,'').split(' ')[0]));
-const findAllByName = t => cs().filter(c=>t.includes(c.short.toLowerCase()) || t.includes(c.short.toLowerCase().replace(/^ип\s+/,'').split(' ')[0]));
+const topFact = c => c.facts.slice(1).find(f=>f.pol==='negative') || c.facts.slice(1).find(f=>f.pol==='caution') || c.facts.slice(1).find(f=>f.pol==='gap') || {pol:'positive',text:'Негативных сигналов по данным отчёта нет.'};
 
-/* ---------- Шапка чата: чипы сессии ---------- */
-function renderChips(){
-  const box=$('#chips'), cnt=$('#counter');
-  if(!S.session.length){ box.innerHTML=`<span class="label">В сессии пока никого — начните с ИНН</span>`; cnt.textContent='0 из '+MAX; return; }
-  box.innerHTML = `<span class="label">В сессии</span>` + S.session.map(inn=>{ const c=DB[inn]; return `
-    <span class="cchip${inn===S.selected?' active':''}" data-inn="${inn}" title="${esc(c.name)} · ИНН ${inn} · ${RISK[c.risk][0]} · клик — сводка в чате">
+/* ---------- Панель сессии (чипы) ---------- */
+function renderSession(){
+  const bar=$('#sessionBar');
+  if(!S.session.length){ bar.innerHTML=`<span class="label">Контрагенты в сессии</span><span class="tertiary small">пока никого — напишите ИНН в чат</span>`; return; }
+  bar.innerHTML = `<span class="label">Контрагенты</span>` + S.session.map(inn=>{ const c=DB[inn]; return `
+    <span class="cchip${inn===S.selected&&S.tab!=='compare'?' active':''}" data-inn="${inn}" title="${esc(c.name)} · ИНН ${inn} · ${RISK[c.risk][0]}">
       <span class="dot ${RISK[c.risk][1]}"></span><span class="name">${esc(c.short)}</span>${c.headline?'<span class="warn" title="'+esc(c.headline)+'">!</span>':''}
       <button class="x" title="Удалить из сессии" data-del="${inn}">×</button></span>`; }).join('')
-    + (S.deal.goal||S.deal.amount ? `<span class="cchip deal" title="Контекст сделки; изменить — фразой в чате"><span class="name">Сделка: ${[S.deal.goal, S.deal.amount?mlnT(S.deal.amount):null].filter(Boolean).join(' · ')}</span><button class="x" data-deldeal="1" title="Сбросить контекст">×</button></span>` : '');
-  cnt.innerHTML = `${S.session.length} из ${MAX}${S.session.length>1?' · <a href="#" data-clear="1" style="color:inherit">очистить</a>':''}`;
+    + (S.deal.goal||S.deal.amount ? `<span class="cchip deal" title="Контекст сделки; изменить — в чате"><span class="name">Сделка: ${[S.deal.goal, S.deal.amount?mln(S.deal.amount).replace(/<[^>]+>/g,''):null].filter(Boolean).join(' · ')}</span><button class="x" data-deldeal="1" title="Сбросить контекст">×</button></span>` : '')
+    + `<span class="counter">${S.session.length} из ${MAX}${S.session.length>1?' · <a href="#" data-clear="1" style="color:inherit">очистить</a>':''}</span>`;
 }
 
-/* ---------- Панель «Подробности» ---------- */
-function setView(kind,inn){ S.view={kind,inn:inn||S.view.inn||S.selected}; if(inn) S.selected=inn; }
-/* Матрица и таблица колонками открываются сразу в широкой панели; карточка и график — в обычной (580 px) */
-function openPanel(kind,inn){ setView(kind,inn); if(S.panel==='closed') S.panel=kind==='compare'?'wide':'open'; renderAll(); }
-function renderPanel(){
-  const L=$('#layout'); L.classList.toggle('nosession',!S.session.length);
-  if(!S.session.length) S.panel='closed';
-  if(S.view.kind!=='card'&&S.session.length<2) S.view.kind='card';
-  if(!S.session.includes(S.view.inn)) S.view.inn=S.selected=S.session[0]||null;
-  L.dataset.panel=S.panel;
-  $('#pwide').textContent=S.panel==='wide'?'⤡':'⤢'; $('#pwide').title=S.panel==='wide'?'Обычная ширина':'Развернуть';
-  const c=DB[S.view.inn];
-  const railKind={card:c?esc(c.short):'', compare:`Сравнение ${S.session.length}`, chart:'Динамика по годам'}[S.view.kind];
-  $('#railText').textContent='Подробности · '+railKind;
-  if(S.panel==='closed') return;
-  if(S.view.kind==='card'){
-    $('#dTitle').innerHTML=`<h2>${esc(c.name)} ${riskStatus(c)}${zskStatus(c)}</h2><div class="small muted">ИНН <span class="mono">${c.inn}</span> · ОГРН <span class="mono">${c.ogrn}</span> · ${c.status} · зарегистрирована ${c.reg} · отчёт от ${c.report}</div>`;
-    $('#dBody').innerHTML=renderCard(c);
-  } else if(S.view.kind==='compare'){
-    const fl=S.focusMode&&S.focus.length>=2?S.focus.map(i=>DB[i]):null;
-    $('#dTitle').innerHTML=fl?`<h2>Подробно: ${names(fl)}</h2><div class="small muted">Колонки — выбранные компании; «← Ко всем» возвращает матрицу</div>`:`<h2>Сравнение ${S.session.length} контрагентов</h2><div class="small muted">Строки — по возрастанию риска (ключ под таблицей); баллов и вердикта нет</div>`;
-    $('#dBody').innerHTML=(fl?renderFocus()+renderDiffs(fl)+renderSteps(fl):renderMatrix()+renderDiffs()+renderSteps(byRisk(cs())))+`<div class="row" style="margin-top:16px"><button class="chip" data-pview="chart">Динамика по годам →</button></div>`;
-  } else {
-    $('#dTitle').innerHTML=`<h2>Динамика по годам · ${S.session.length} компаний</h2><div class="small muted">Рубли, линейная ось; год без значения не рисуется</div>`;
-    $('#dBody').innerHTML=renderYearChart()+`<div class="row" style="margin-top:16px"><button class="chip" data-pview="compare">← Матрица сигналов</button></div>`;
-  }
-  document.title=(S.view.kind==='card'?c.name:S.view.kind==='compare'?'Сравнение':'Динамика')+' — Проверка контрагентов';
+/* ---------- Рабочая область ---------- */
+function renderWork(){
+  const empty=S.session.length===0;
+  $('#workEmpty').classList.toggle('hidden',!empty); $('#work').classList.toggle('hidden',empty);
+  if(empty) return;
+  if(!DB[S.selected]||!S.session.includes(S.selected)) S.selected=S.session[0];
+  const many=S.session.length>1;
+  $('#tabCompare').classList.toggle('hidden',!many); $('#cmpBadge').textContent=S.session.length;
+  if(!many&&S.tab==='compare') S.tab='summary';
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.tab===S.tab));
+  const c=DB[S.selected];
+  $('#subject').innerHTML = S.tab==='compare'
+    ? `<div class="title"><h2>Сравнение ${S.session.length} контрагентов</h2></div><div class="small muted">Единый набор критериев. Порядок строк — порядок добавления в сессию; сравнение не ранжирует компании.</div>`
+    : `<div class="title"><h2>${esc(c.name)}</h2>${riskStatus(c)}${zskStatus(c)}</div><div class="small muted">ИНН <span class="mono">${c.inn}</span> · ОГРН <span class="mono">${c.ogrn}</span> · ${c.status} · зарегистрирована ${c.reg} · отчёт от ${c.report}</div>`;
+  document.title=(S.tab==='compare'?'Сравнение':c.name)+' — Проверка контрагентов';
+  $('#tabBody').innerHTML = S.tab==='summary'?renderSummary(c):S.tab==='card'?renderCard(c):renderCompare();
 }
 
-/* ---------- Сводка в чате (основной ответ агента) ---------- */
-function summaryHtml(c, intro){
-  const sorted=[...c.facts].sort((a,b)=>POL_ORDER[a.pol]-POL_ORDER[b.pol]);
-  const main=sorted.filter(f=>f.slot!=='Оценка банка'&&(f.pol==='negative'||f.pol==='caution'||f.pol==='gap'));
-  const rest=sorted.filter(f=>f.slot!=='Оценка банка'&&(f.pol==='info'||f.pol==='positive'));
-  const fact=f=>`<div class="fact ${f.pol}" data-ref="${esc(f.refs[0])}">${ico(f.pol,'sm')}<div><div class="slot">${f.slot}</div><div class="text">${esc(f.text)}</div><div>${f.refs.slice(0,2).map(ref).join('')}</div></div></div>`;
-  return `${intro?`<p>Добавил в сессию (${S.session.length} из ${MAX}). Кратко по данным отчёта:</p>`:''}
-  <div class="hdr"><b>${esc(c.name)}</b>${riskStatus(c)}${zskStatus(c)}<span class="meta">ИНН ${c.inn} · отчёт от ${c.report}</span></div>
-  ${c.headline?`<div class="alert">${ico('negative','sm')} ${esc(c.headline)} ${ref('status.reasonName')}</div>`:''}
-  ${main.map(fact).join('')}
-  ${!main.length?`<div class="okline">${ico('positive','sm')} Негативных и требующих внимания сигналов по данным отчёта нет.</div>`:''}
-  ${rest.length?`<details class="fold"><summary>ещё ${rest.length} ${rest.length===1?'факт':rest.length<5?'факта':'фактов'} без сигналов</summary>${rest.map(fact).join('')}</details>`:''}
-  ${c.gaps.length?`<div class="gapbox">${ico('gap','xs')} Оценить нельзя: ${c.gaps.map(g=>esc(g.text)).join('; ')}. Отсутствие сведений не означает отсутствие риска.</div>`:''}
-  ${c.steps.length?`<div class="step"><b>Что проверить до сделки:</b> ${esc(c.steps[0].text)} <span class="why">(${esc(c.steps[0].why)})</span>${c.steps.length>1?` <details class="fold" style="display:inline-block;margin:0"><summary style="display:inline">ещё ${c.steps.length-1}</summary><ol style="margin:6px 0 0;padding-left:18px">${c.steps.slice(1).map(s=>`<li>${esc(s.text)} <span class="why">(${esc(s.why)})</span></li>`).join('')}</ol></details>`:''}</div>`:''}
-  <div class="actions"><button class="chip go" data-pview="card" data-inn="${c.inn}">Подробности в панели →</button>${S.session.length>1?`<button class="lnk" data-q="В чём различия?">сравнить с остальными</button>`:''}</div>
-  <div class="foot">${S.llmOff?'Текст сформирован по правилам без языковой модели.':'Факты — по правилам; формулировки уточнены языковой моделью.'}</div>`;
-}
-/* Итоги сравнения — ответ агента на «сравни» / «различия» и при добавлении нескольких ИНН */
-function totalsHtml(intro){
-  const list=cs(), n=list.length;
-  const headl=list.filter(c=>c.headline), withNeg=list.filter(c=>counts(c).neg>0), withGap=list.filter(c=>c.gaps.length>0), clean=list.filter(c=>counts(c).neg===0&&counts(c).cau===0);
-  const crit=rows().filter(([,k])=>k!=='bank'&&k!=='gapsRow').map(([name,k])=>{
-    const g=groupsByCriterion(k); const part=[];
-    if(g.negative.length) part.push(`<span class="g">${ico('negative','xs')}<span>${names(g.negative.map(([c])=>c))}</span></span>`);
-    if(g.caution.length) part.push(`<span class="g">${ico('caution','xs')}<span>${names(g.caution.map(([c])=>c))}</span></span>`);
-    if(g.gap.length) part.push(`<span class="g">${ico('gap','xs')}<span>оценить нельзя: ${names(g.gap.map(([c])=>c))}</span></span>`);
-    if(!part.length) part.push(`<span class="g">${ico('positive','xs')}<span>негативных сигналов ни у кого</span></span>`);
-    return `<div class="k">${name}</div><div>${part.join('')}</div>`;
-  }).join('');
-  return `${intro?`<p>В сессии ${n} компаний. Итоги по единому набору критериев:</p>`:''}
-  <p>${headl.length?`Предупреждение по статусу у ${headl.length}: ${names(headl)}. `:''}Негативные сигналы по данным отчёта у ${withNeg.length} из ${n}${withNeg.length?` (${names(withNeg)})`:''}; без негативных и требующих внимания — ${clean.length?names(clean):'никого'}. Пробелы в данных у ${withGap.length}: отсутствие сведений не означает отсутствие риска.</p>
-  ${headl.map(c=>`<div class="alert" style="font-size:13px;font-weight:500;padding:8px 10px">${ico('negative','xs')} <b>${esc(c.short)}:</b> ${esc(c.headline)}</div>`).join('')}
-  <div class="crit">${crit}</div>
-  <div class="actions"><button class="chip go" data-pview="compare">Матрица сигналов в панели →</button><button class="lnk" data-pview="chart">динамика по годам</button></div>
-  <div class="foot">${S.llmOff?'Текст сформирован по правилам без языковой модели. ':''}Баллов и вердикта нет; в матрице строки идут по возрастанию риска, ключ порядка подписан.</div>`;
+function renderSummary(c){
+  let h='';
+  if(c.headline) h+=`<div class="alert">${ico('negative')} ${esc(c.headline)}</div>`;
+  h+=c.facts.map(f=>`<div class="fact ${f.pol}" data-ref="${esc(f.refs[0])}">${ico(f.pol)}<div><div class="slot">${f.slot}</div><div class="text">${esc(f.text)}</div><div>${f.refs.map(ref).join('')}</div></div></div>`).join('');
+  if(c.gaps.length) h+=`<div class="plate gap"><h2>${ico('gap','sm')} Оценить нельзя</h2><div class="muted">Недостаточно данных для оценки: ${c.gaps.map(g=>esc(g.text)).join('; ')}.</div><div>${c.gaps.map(g=>ref(g.ref)).join('')}</div></div>`;
+  h+=`<div class="plate attention"><h2>Что проверить до сделки</h2><ol>${c.steps.map(s=>`<li>${esc(s.text)} <span class="why">(${esc(s.why)})</span></li>`).join('')}</ol><div class="small muted" style="margin-top:8px">Рекомендации — из фиксированной таблицы «сигнал → шаг». Решение о сделке остаётся за вами.</div></div>`;
+  h+=`<div class="foot">${S.llmOff?'Текст сформирован по правилам без языковой модели.':'Формулировки уточнены языковой моделью по фактам правил. <span class="spinner" title="уточняю формулировки"></span>'}</div>`;
+  return h;
 }
 
-/* ---------- Карточка (панель) ---------- */
 function renderCard(c){
   const fin=c.fin.some(f=>f.pr!=null);
   const maxPr=Math.max(...c.fin.map(f=>f.pr||0),1e-9);
@@ -733,20 +694,45 @@ function renderCard(c){
     <div class="k">Госзакупки</div><div class="v muted">участие не найдено ${ref('procurements')}</div>
     <div class="k">Связанные компании</div><div class="v">${c.related?`${c.related} ${c.related===1?'компания':c.related<5?'компании':'компаний'} <span class="tertiary">· риск-профиль связанных компаний недоступен (P3)</span>`:'<span class="muted">не найдены</span>'} ${ref('relatedCompanies[]')}</div>
   </div></div></details>
-  <div class="plate attention"><h2>Что проверить до сделки</h2><ol>${c.steps.map(s=>`<li>${esc(s.text)} <span class="why">(${esc(s.why)})</span></li>`).join('')}</ol><div class="small muted" style="margin-top:8px">Рекомендации — из фиксированной таблицы «сигнал → шаг». Решение о сделке остаётся за вами.</div></div>
-  <button class="btn ghost sm" style="margin-top:12px" onclick="alert('Side-panel с деревом полей исходного отчёта (P3). Для теста RAT скрывается флагом.')">Показать исходный отчёт (JSON)</button>`;
+  <button class="btn ghost sm" onclick="alert('Side-panel с деревом полей исходного отчёта (P3). Для теста RAT скрывается флагом.')">Показать исходный отчёт (JSON)</button>`;
 }
 
-/* ---------- Сравнение (панель) ---------- */
+/* ---------- Сравнение ---------- */
+const lc = s => s.charAt(0).toLowerCase()+s.slice(1);
 function groupsByCriterion(k,list){
   const g={negative:[],caution:[],gap:[],clean:[]};
   (list||cs()).forEach(c=>{ const it=cellItems(c,k); const w=worst(it); (g[w]||g.clean).push([c,it]); });
   return g;
 }
-function filtered(){
-  return byRisk(cs()).filter(c=> S.filter==='all' || (S.filter==='neg'&&counts(c).neg>0) || (S.filter==='gap'&&c.gaps.length>0) || (S.filter==='head'&&c.headline));
+function renderTotals(){
+  const list=cs(), n=list.length;
+  const headl=list.filter(c=>c.headline);
+  const withNeg=list.filter(c=>counts(c).neg>0), withGap=list.filter(c=>c.gaps.length>0), clean=list.filter(c=>counts(c).neg===0&&counts(c).cau===0);
+  const crit=rows().filter(([,k])=>k!=='bank'&&k!=='gapsRow').map(([name,k])=>{
+    const g=groupsByCriterion(k); const part=[];
+    if(g.negative.length) part.push(`<span class="g">${ico('negative','xs')}<span>${g.negative.map(([c])=>esc(c.short)).join(', ')}</span></span>`);
+    if(g.caution.length) part.push(`<span class="g">${ico('caution','xs')}<span>${g.caution.map(([c])=>esc(c.short)).join(', ')}</span></span>`);
+    if(g.gap.length) part.push(`<span class="g">${ico('gap','xs')}<span>оценить нельзя: ${g.gap.map(([c])=>esc(c.short)).join(', ')}</span></span>`);
+    if(!part.length) part.push(`<span class="g">${ico('positive','xs')}<span>негативных сигналов ни у кого</span></span>`);
+    return `<div class="k">${name}</div><div>${part.join('')}</div>`;
+  }).join('');
+  const llmText = S.llmOff ? '' : `<p style="margin:8px 0 0">${esc(`Из ${n} компаний ${headl.length?`у ${headl.length} есть предупреждение по статусу (${headl.map(c=>c.short).join(', ')}); `:''}негативные сигналы по данным отчёта у ${withNeg.length} (${withNeg.map(c=>c.short).join(', ')}); без негативных и требующих внимания сигналов — ${clean.length?clean.map(c=>c.short).join(', '):'никого'}. Пробелы в данных у ${withGap.length}: отсутствие сведений не означает отсутствие риска.`)}</p>`;
+  return `<div class="totals">
+    <div class="row" style="justify-content:space-between;flex-wrap:wrap"><h2>Итоги сравнения · ${n} контрагентов</h2><span class="small tertiary">Ранжирования нет; порядок — порядок добавления</span></div>
+    ${llmText}
+    ${headl.length?`<div class="headlines">${headl.map(c=>`<div class="alert">${ico('negative','sm')} <b>${esc(c.short)}:</b> ${esc(c.headline)}</div>`).join('')}</div>`:''}
+    <div class="crit">${crit}</div>
+    <div class="minis">${list.map(c=>{ const k=counts(c), t=topFact(c); return `<div class="mini" data-open="${c.inn}" data-go="summary" title="Открыть сводку">
+      <div class="row" style="justify-content:space-between"><span class="n">${esc(c.short)}</span>${riskStatus(c)}</div>
+      ${c.headline?`<div class="f">${ico('negative','xs')}<span style="color:var(--negative-text)">${esc(c.headline)}</span></div>`:''}
+      <div class="f">${ico(t.pol,'xs')}<span>${esc(t.text)}</span></div>
+      <div class="cnt"><span>${ico('negative','xs')}${k.neg}</span><span>${ico('caution','xs')}${k.cau}</span><span>${ico('gap','xs')}${k.gap}</span></div></div>`; }).join('')}</div>
+    <div class="small tertiary" style="margin-top:8px">Счётчики — число сработавших правил каждой полярности, не балл. Клик по карточке открывает сводку.</div>
+  </div>`;
 }
-const FILTER_LABEL={neg:'только с негативными сигналами',gap:'только с пробелами в данных',head:'только с предупреждением по статусу'};
+function filtered(){
+  return cs().filter(c=> S.filter==='all' || (S.filter==='neg'&&counts(c).neg>0) || (S.filter==='gap'&&c.gaps.length>0) || (S.filter==='head'&&c.headline));
+}
 function renderMatrix(){
   const list=filtered(), rs=rows();
   const cell=(c,k)=>{ const it=[...cellItems(c,k)].sort((a,b)=>POL_ORDER[a[0]]-POL_ORDER[b[0]]);
@@ -754,31 +740,31 @@ function renderMatrix(){
   return `
   <div class="toolbar">
     <h2>Матрица сигналов</h2>
-    ${S.filter!=='all'?`<span class="badge">${FILTER_LABEL[S.filter]} · ${list.length} из ${S.session.length}</span><button class="btn ghost sm" data-filter="all">показать всех</button>`:''}
+    <div class="seg">${[['all','Все'],['neg','С негативными'],['gap','С пробелами'],['head','С предупреждением']].map(([k,l])=>`<button class="${S.filter===k?'on':''}" data-filter="${k}">${l}</button>`).join('')}</div>
     <div class="grow"></div>
     <button class="btn ghost sm" data-expand="1">${S.expanded?'Свернуть ячейки':'Развернуть ячейки'}</button>
-    <button class="btn ${S.focus.length>=2?'primary':'secondary'} sm" data-focus="1" ${S.focus.length<2?'disabled':''}>Подробно выбранных${S.focus.length?` (${S.focus.length})`:''}</button>
+    <button class="btn ${S.focus.length>=2?'primary':'secondary'} sm" data-focus="1" ${S.focus.length<2?'disabled':''}>Сравнить выбранных${S.focus.length?` (${S.focus.length})`:''}</button>
   </div>
   <div class="mx-wrap"><table class="mx${S.expanded?' expanded':''}">
     <tr><th></th><th>Контрагент</th>${rs.map(([n])=>`<th>${n}</th>`).join('')}</tr>
     ${list.map(c=>`<tr class="${S.focus.includes(c.inn)?'sel':''}" data-row="${c.inn}">
       <td><input type="checkbox" data-pick="${c.inn}" ${S.focus.includes(c.inn)?'checked':''} ${!S.focus.includes(c.inn)&&S.focus.length>=4?'disabled title="В фокусе не больше 4"':''}></td>
-      <td><div class="cn" data-open="${c.inn}">${esc(c.short)}</div><div class="mono muted">${c.inn}</div><div style="margin-top:3px">${riskStatus(c)}</div>${c.headline?`<div class="small" style="color:var(--negative-text);margin-top:3px">${ico('negative','xs')} ${esc(c.headline.split(' (')[0])}</div>`:''}</td>
+      <td><div class="cn" data-open="${c.inn}" data-go="card">${esc(c.short)}</div><div class="mono muted">${c.inn}</div><div style="margin-top:3px">${riskStatus(c)}</div>${c.headline?`<div class="small" style="color:var(--negative-text);margin-top:3px">${ico('negative','xs')} ${esc(c.headline.split(' (')[0])}</div>`:''}</td>
       ${rs.map(([,k])=>`<td>${cell(c,k)}</td>`).join('')}</tr>`).join('')}
     ${!list.length?`<tr><td colspan="${rs.length+2}" class="muted" style="text-align:center;padding:20px">По этому фильтру контрагентов нет</td></tr>`:''}
   </table></div>
-  <div class="small tertiary" style="margin-top:8px">Порядок строк — по возрастанию риска: метка банка (низкий → средний → высокий; «не определён» — в конце), затем предупреждение по статусу, затем число негативных сигналов. Это порядок, а не балл и не вердикт; выбор за вами. Отфильтровать можно фразой в чате («покажи только с негативными»), подробное сравнение 2–4 — чекбоксами или фразой «сравни А и Б подробно».</div>`;
+  <div class="small tertiary" style="margin-top:8px">Фильтр показывает подмножество, не меняя порядок. Итоговой строки, баллов и сортировки по «надёжности» нет; выбор за вами. Отметьте 2–4 компании, чтобы открыть подробное сравнение колонками.</div>`;
 }
 function renderFocus(){
   const list=S.focus.map(i=>DB[i]), rs=rows();
   return `
-  <div class="toolbar"><button class="btn ghost sm" data-unfocus="1">← Ко всем ${S.session.length}</button></div>
+  <div class="toolbar"><button class="btn ghost sm" data-unfocus="1">← Ко всем ${S.session.length}</button><h2>Подробно: ${list.map(c=>esc(c.short)).join(' · ')}</h2></div>
   <div style="overflow:auto"><table class="cmp">
-    <tr><th>Критерий</th>${list.map(c=>`<th><div class="cname" data-open="${c.inn}">${esc(c.name)}</div><div class="mono muted">${c.inn}</div><div style="margin-top:4px">${riskStatus(c)}</div></th>`).join('')}</tr>
+    <tr><th>Критерий</th>${list.map(c=>`<th><div class="cname" data-open="${c.inn}" data-go="card">${esc(c.name)}</div><div class="mono muted">${c.inn}</div><div style="margin-top:4px">${riskStatus(c)}</div></th>`).join('')}</tr>
     ${rs.map(([n,k])=>`<tr><td>${n}</td>${list.map(c=>`<td>${cellItems(c,k).map(([p,t])=>`<div class="item">${ico(p,'sm')}<span>${esc(t)}</span></div>`).join('')}</td>`).join('')}</tr>`).join('')}
   </table></div>`;
 }
-function diffsList(list){
+function renderDiffs(list){
   const out=[];
   rows().forEach(([name,k])=>{
     if(k==='bank') return;
@@ -788,272 +774,221 @@ function diffsList(list){
     const part=[];
     if(g.negative.length) part.push(g.negative.map(([c,it])=>`${esc(c.short)}: ${esc(it.filter(([p])=>p==='negative').map(([,t])=>lc(t)).join('; '))}`).join('. '));
     if(g.caution.length) part.push(g.caution.map(([c,it])=>`${esc(c.short)}: ${esc(lc(it.find(([p])=>p==='caution')[1]))}`).join('. '));
-    if(g.gap.length) part.push(`${k==='gapsRow'?'Есть пробелы':'Оценить нельзя'}: ${names(g.gap.map(([c])=>c))}`);
-    if(g.clean.length) part.push(`${k==='gapsRow'?'Все разделы заполнены':'Без негативных сигналов'}: ${names(g.clean.map(([c])=>c))}`);
+    if(g.gap.length) part.push(`${k==='gapsRow'?'Есть пробелы':'Оценить нельзя'}: ${g.gap.map(([c])=>esc(c.short)).join(', ')}`);
+    if(g.clean.length) part.push(`${k==='gapsRow'?'Все разделы заполнены':'Без негативных сигналов'}: ${g.clean.map(([c])=>esc(c.short)).join(', ')}`);
     out.push(`<li><b>${name}.</b> ${part.join('. ')}.</li>`);
   });
-  return out.length?`<ul>${out.join('')}</ul>`:`<div class="muted">По всем критериям полярности совпадают.</div>`;
+  return out.length?`<div class="plate common"><h2>Различия</h2><ul>${out.join('')}</ul></div>`:`<div class="plate common"><h2>Различия</h2><div class="muted">По всем критериям полярности совпадают.</div></div>`;
 }
-function renderDiffs(list){ return `<div class="plate common"><h2>Различия</h2>${diffsList(list)}</div>`; }
+function renderCompare(){
+  if(S.focusMode&&S.focus.length>=2){ const fl=S.focus.map(i=>DB[i]); return renderFocus()+renderYearChart()+renderDiffs(fl)+renderSteps(fl); }
+  return renderTotals()+renderMatrix()+renderYearChart()+renderDiffs()+renderSteps(cs());
+}
 function renderSteps(list){
   return `<h2 style="margin-top:20px">Что проверить до сделки</h2>
   <div class="gridN">${list.map(c=>`<div class="plate attention"><div style="font-weight:600;margin-bottom:6px">${esc(c.short)} ${riskStatus(c)}</div><ol style="padding-left:18px">${c.steps.map(s=>`<li class="small">${esc(s.text)} <span class="why">(${esc(s.why)})</span></li>`).join('')}</ol></div>`).join('')}</div>`;
 }
 
-/* ---------- Динамика по годам (панель) ---------- */
+/* ---------- График по годам ---------- */
 function seriesFor(list){
   const [k,name,r]=METRICS.find(m=>m[0]===S.metric);
   const ser=[], skipped=[];
-  list.forEach(c=>{
+  list.forEach((c,i)=>{
     const pts=c.fin.filter(f=>f[k]!=null&&!(k==='pr'&&f[k]===0)).map(f=>({y:f.y,v:f[k]}));
     if(!pts.length){ skipped.push([c, c.isIP?'ИП не публикует отчётность':c.fin.length?'показатель не указан':'нет отчётности']); return; }
-    ser.push({c,color:PALETTE[S.session.indexOf(c.inn)%PALETTE.length],pts:pts.map(p=>({y:p.y,raw:p.v,v:p.v}))});
+    if(S.scale==='idx'&&pts.length<2){ skipped.push([c,`только ${pts[0].y}: индекс не считается`]); return; }
+    if(S.scale==='log'&&pts.some(p=>p.v<=0)){ skipped.push([c,'значения ≤ 0: лог-шкала неприменима']); return; }
+    let vals=pts.map(p=>p.v);
+    if(S.scale==='idx'){ const b=pts[0].v; if(b===0){ skipped.push([c,'первый год = 0: индекс не считается']); return; } vals=pts.map(p=>p.v/Math.abs(b)*100); }
+    if(S.scale==='log') vals=pts.map(p=>Math.log10(p.v));
+    ser.push({c,color:PALETTE[S.session.indexOf(c.inn)%PALETTE.length],pts:pts.map((p,j)=>({y:p.y,raw:p.v,v:vals[j]}))});
   });
   return {k,name,r,ser,skipped};
 }
-const yLabel = v => mlnShort(v);
+function yLabel(v){ if(S.scale==='idx') return Math.round(v)+''; if(S.scale==='log') return mlnShort(Math.pow(10,v)); return mlnShort(v); }
 function renderYearChart(){
   const list=S.focusMode&&S.focus.length>=2?S.focus.map(i=>DB[i]):cs();
-  const {name,r,ser,skipped}=seriesFor(list);
+  const {k,name,r,ser,skipped}=seriesFor(list);
   const years=[...new Set(list.flatMap(c=>c.fin.map(f=>f.y)))].sort();
-  /* Единственная шкала — рубли; вид выбирается по числу компаний: до 4 — общий график, от 5 — мини-графики */
-  const view=ser.length>4?'small':'overlay';
   const ctl=`
-  <div class="toolbar"><div class="seg">${METRICS.map(([mk,mn])=>`<button class="${S.metric===mk?'on':''}" data-metric="${mk}">${mn}</button>`).join('')}</div></div>
-  <div class="small muted" style="margin-bottom:6px">${name}, млн ₽ ${ref(r)} · ${view==='small'?'у каждой компании своя ось от нуля; сравнивайте форму линии и процент, не высоту':'одна ось для всех; цвет линии — только для различения компаний'}.</div>`;
-  if(!ser.length) return ctl+`<div class="plate gap" style="margin-top:0">${ico('gap','sm')} Ни у одной компании нет данных по этому показателю.</div>`+skippedNote(skipped);
-  return ctl + (view==='overlay'?overlay(ser,years):smalls(ser,years)) + skippedNote(skipped);
+  <div class="toolbar" style="margin-top:20px"><h2>Динамика по годам</h2>
+    <div class="seg">${METRICS.map(([mk,mn])=>`<button class="${S.metric===mk?'on':''}" data-metric="${mk}">${mn}</button>`).join('')}</div>
+    <div class="grow"></div>
+    <div class="seg">${[['abs','млн ₽'],['idx','Индекс, первый год = 100'],['log','Лог-шкала']].map(([s,l])=>`<button class="${S.scale===s?'on':''}" data-scale="${s}">${l}</button>`).join('')}</div>
+    <div class="seg">${[['overlay','Общий'],['small','По компаниям']].map(([v,l])=>`<button class="${S.view===v?'on':''}" data-view="${v}">${l}</button>`).join('')}</div>
+  </div>
+  <div class="small muted" style="margin-bottom:6px">${name} ${ref(r)} · годы по возрастанию; год без значения не рисуется. Цвет линии — только для различения компаний.</div>`;
+  if(!ser.length) return ctl+`<div class="plate gap" style="margin-top:0">${ico('gap','sm')} Ни у одной компании нет данных для этого показателя в выбранной шкале.</div>`+skippedNote(skipped);
+  return ctl + (S.view==='overlay'?overlay(ser,years):smalls(ser,years)) + skippedNote(skipped);
 }
 function skippedNote(sk){ return sk.length?`<div class="small muted" style="margin-top:8px">${ico('gap','xs')} Не на графике: ${sk.map(([c,why])=>`${esc(c.short)} (${why})`).join('; ')}.</div>`:''; }
 function overlay(ser,years){
-  const W=820,H=280,L=84,R=120,T=16,B=32;
+  const W=820,H=280,L=64,R=120,T=16,B=32;
   const vis=ser.filter(s=>!S.hiddenLines.has(s.c.inn));
   const all=(vis.length?vis:ser).flatMap(s=>s.pts.map(p=>p.v));
-  let mn=Math.min(0,...all), mx=Math.max(0,...all); if(mn===mx){ mn-=1; mx+=1; }
-  const pad=(mx-mn)*0.08; if(mn<0) mn-=pad; if(mx>0) mx+=pad;
+  let mn=Math.min(...all), mx=Math.max(...all); if(S.scale==='abs'){ mn=Math.min(0,mn); mx=Math.max(0,mx); } if(mn===mx){ mn-=1; mx+=1; }
+  const pad=(mx-mn)*0.08; mn-=pad; mx+=pad;
   const x=y=>L+(years.indexOf(y))*((W-L-R)/Math.max(1,years.length-1));
   const yy=v=>T+(H-T-B)*(1-(v-mn)/(mx-mn));
   const ticks=[0,.25,.5,.75,1].map(t=>mn+(mx-mn)*t);
-  const zero=(mn<0&&mx>0)?`<line class="ax" x1="${L}" x2="${W-R}" y1="${yy(0)}" y2="${yy(0)}" stroke-dasharray="3 3"/>`:'';
+  const zero=(S.scale==='abs'&&mn<0&&mx>0)?`<line class="ax" x1="${L}" x2="${W-R}" y1="${yy(0)}" y2="${yy(0)}" stroke-dasharray="3 3"/>`:'';
+  /* Подписи у концов линий раздвигаются, чтобы не накладываться (шаг 12 px) */
   const ends=vis.map(s=>({s,ly:yy(s.pts[s.pts.length-1].v)})).sort((a,b)=>a.ly-b.ly);
-  for(let i=1;i<ends.length;i++) if(ends[i].ly-ends[i-1].ly<13) ends[i].ly=ends[i-1].ly+13;
+  for(let i=1;i<ends.length;i++) if(ends[i].ly-ends[i-1].ly<12) ends[i].ly=ends[i-1].ly+12;
   const labelY=Object.fromEntries(ends.map(e=>[e.s.c.inn,e.ly]));
-  const lines=ser.map(s=>{ if(S.hiddenLines.has(s.c.inn)) return '';
+  const lines=ser.map(s=>{ const on=!S.hiddenLines.has(s.c.inn); if(!on) return '';
     const d=s.pts.map((p,i)=>`${i?'L':'M'}${x(p.y)},${yy(p.v)}`).join(' ');
     const last=s.pts[s.pts.length-1];
-    return `<g data-line="${s.c.inn}"><path class="ln" d="${d}" stroke="${s.color}"/>${s.pts.map(p=>`<circle class="pt" cx="${x(p.y)}" cy="${yy(p.v)}" r="3.5" fill="${s.color}"><title>${esc(s.c.short)} · ${p.y}: ${mlnT(p.raw)}</title></circle>`).join('')}<text class="end" x="${x(last.y)+8}" y="${labelY[s.c.inn]+4}" fill="${s.color}">${esc(s.c.short)}</text></g>`; }).join('');
-  const v=(vis.length?vis:ser).flatMap(s=>s.pts.map(p=>Math.abs(p.raw))).filter(Boolean);
-  const hint=v.length>1&&Math.max(...v)/Math.min(...v)>50?`<div class="small tertiary" style="margin-top:4px">Масштабы компаний различаются на порядки: линии малых компаний прижаты к оси. Скройте крупную компанию кликом по легенде.</div>`:'';
+    return `<g data-line="${s.c.inn}"><path class="ln" d="${d}" stroke="${s.color}"/>${s.pts.map(p=>`<circle class="pt" cx="${x(p.y)}" cy="${yy(p.v)}" r="3.5" fill="${s.color}"><title>${esc(s.c.short)} · ${p.y}: ${mln(p.raw).replace(/<[^>]+>/g,'')}</title></circle>`).join('')}<text class="end" x="${x(last.y)+8}" y="${labelY[s.c.inn]+4}" fill="${s.color}">${esc(s.c.short)}</text></g>`; }).join('');
   return `<div class="ychart" id="ychart"><svg viewBox="0 0 ${W} ${H}">
     ${ticks.map(t=>`<line class="ax" x1="${L}" x2="${W-R}" y1="${yy(t)}" y2="${yy(t)}"/><text class="lbl" x="${L-8}" y="${yy(t)+4}" text-anchor="end">${yLabel(t)}</text>`).join('')}
     ${zero}
     ${years.map(y=>`<text class="lbl" x="${x(y)}" y="${H-10}" text-anchor="middle">${y}</text>`).join('')}
     ${lines}
   </svg></div>
-  <div class="row" style="flex-wrap:wrap;gap:6px;margin-top:6px">${ser.map(s=>`<span class="lchip${S.hiddenLines.has(s.c.inn)?' off':''}" data-toggle="${s.c.inn}" data-hover="${s.c.inn}"><i style="background:${s.color}"></i>${esc(s.c.short)}</span>`).join('')}<span class="small tertiary" style="margin-left:6px">клик скрывает линию, наведение подсвечивает</span></div>${hint}`;
+  <div class="row" style="flex-wrap:wrap;gap:6px;margin-top:6px">${ser.map(s=>`<span class="lchip${S.hiddenLines.has(s.c.inn)?' off':''}" data-toggle="${s.c.inn}" data-hover="${s.c.inn}"><i style="background:${s.color}"></i>${esc(s.c.short)}</span>`).join('')}<span class="small tertiary" style="margin-left:6px">клик скрывает линию, наведение подсвечивает</span></div>
+  ${S.scale==='abs'&&ser.length>1?`<div class="small tertiary" style="margin-top:4px">Масштабы компаний различаются на порядки; для сравнения динамики переключитесь на «Индекс» или «Лог-шкала».</div>`:''}`;
 }
 function smalls(ser,years){
+  const all=ser.flatMap(s=>s.pts.map(p=>p.v)); let gmn=Math.min(...all,S.scale==='abs'?0:Infinity), gmx=Math.max(...all,S.scale==='abs'?0:-Infinity);
   const W=200,H=70,L=20,R=20,T=10,B=14;
-  return `<div class="smalls">${ser.map(s=>{
-    const v=s.pts.map(p=>p.v); let mn=Math.min(0,...v), mx=Math.max(0,...v);
+  return `<div class="row small muted" style="gap:8px;margin-bottom:4px"><span>Шкала:</span><div class="seg"><button class="${S.smallScale!=='shared'?'on':''}" data-sscale="own">своя у каждой</button><button class="${S.smallScale==='shared'?'on':''}" data-sscale="shared">общая</button></div></div>
+  <div class="smalls">${ser.map(s=>{
+    let mn,mx; if(S.smallScale==='shared'){ mn=gmn; mx=gmx; } else { const v=s.pts.map(p=>p.v); mn=Math.min(...v,S.scale==='abs'?0:Infinity); mx=Math.max(...v,S.scale==='abs'?0:-Infinity); }
     if(mn===mx){ mn-=1; mx+=1; } const pad=(mx-mn)*.1; mn-=pad; mx+=pad;
     const x=y=>L+(years.indexOf(y))*((W-L-R)/Math.max(1,years.length-1)), yy=v=>T+(H-T-B)*(1-(v-mn)/(mx-mn));
     const d=s.pts.map((p,i)=>`${i?'L':'M'}${x(p.y)},${yy(p.v)}`).join(' ');
     const first=s.pts[0], last=s.pts[s.pts.length-1];
     const pct=first.raw&&s.pts.length>1?Math.round((last.raw-first.raw)/Math.abs(first.raw)*100):null;
     return `<div class="sm-c"><div class="t"><span title="${esc(s.c.name)}">${esc(s.c.short)}</span>${pct!=null?`<span class="status ${S.metric==='stl'?'grey':pct>5?'green':pct<-5?'red':'grey'}" title="${S.metric==='stl'?'рост обязательств не оценивается цветом':'изменение первый → последний год'}">${pct>0?'+':''}${pct} %</span>`:`<span class="status grey">1 год</span>`}</div>
-      <svg viewBox="0 0 ${W} ${H}"><path class="ln" d="${d}" stroke="#0b1f35" stroke-width="2" fill="none"/>${s.pts.map(p=>`<circle cx="${x(p.y)}" cy="${yy(p.v)}" r="3" fill="#0b1f35"><title>${p.y}: ${mlnT(p.raw)}</title></circle>`).join('')}${years.map(y=>`<text class="lbl" x="${x(y)}" y="${H-2}" text-anchor="middle">${y}</text>`).join('')}</svg>
-      <div class="small muted" style="display:flex;justify-content:space-between"><span>${mlnT(first.raw)}</span><span>${mlnT(last.raw)}</span></div></div>`; }).join('')}</div>`;
-}
-/* Текстовая версия динамики для ответа в чате */
-function trendText(){
-  const {name,r,ser,skipped}=seriesFor(cs());
-  const li=ser.map(s=>{ const f=s.pts[0], l=s.pts[s.pts.length-1]; if(s.pts.length<2) return `<li>${esc(s.c.short)}: ${mlnT(l.raw)} (${l.y}), только один год — тренд оценить нельзя</li>`;
-    const pct=f.raw?Math.round((l.raw-f.raw)/Math.abs(f.raw)*100):null; return `<li>${esc(s.c.short)}: ${mlnT(f.raw)} (${f.y}) → ${mlnT(l.raw)} (${l.y})${pct!=null?`, ${pct>0?'+':''}${pct} %`:''}</li>`; }).join('');
-  return `<p>${name} по годам ${ref(r)}:</p><ul>${li}</ul>${skipped.length?`<div class="gapbox">${ico('gap','xs')} Нет на графике: ${skipped.map(([c,why])=>`${esc(c.short)} (${why})`).join('; ')}.</div>`:''}<div class="actions"><button class="chip go" data-pview="chart">График в панели →</button>${METRICS.filter(m=>m[0]!==S.metric).slice(0,2).map(([k,n])=>`<button class="lnk" data-q="${n} по годам">${lc(n)}</button>`).join('')}</div>`;
+      <svg viewBox="0 0 ${W} ${H}"><path class="ln" d="${d}" stroke="#0b1f35" stroke-width="2" fill="none"/>${s.pts.map(p=>`<circle cx="${x(p.y)}" cy="${yy(p.v)}" r="3" fill="#0b1f35"><title>${p.y}: ${mln(p.raw).replace(/<[^>]+>/g,'')}</title></circle>`).join('')}${years.map(y=>`<text class="lbl" x="${x(y)}" y="${H-2}" text-anchor="middle">${y}</text>`).join('')}</svg>
+      <div class="small muted" style="display:flex;justify-content:space-between"><span>${mln(first.raw).replace(/<[^>]+>/g,'')}</span><span>${mln(last.raw).replace(/<[^>]+>/g,'')}</span></div></div>`; }).join('')}</div>`;
 }
 
 /* ---------- Чат ---------- */
+const PRESETS=['Почему такая оценка банка?','Что с финансами?','Есть ли долги и суды?','Чего не хватает в отчёте?','Что проверить до сделки?','В чём главные различия?','Кто из них лучше?','Доступные ИНН'];
+const findByName = t => cs().find(c=>t.includes(c.short.toLowerCase().split(' ')[0].replace('ип','').trim()||'§') || t.includes(c.short.toLowerCase()));
 function addInn(inn){
   if(!DB[inn]) return {ok:false,html:`<div class="err">Отчёт по ИНН ${inn} в базе не найден.</div><p>В макете доступны 10 компаний — напишите «доступные ИНН».</p>`};
-  if(S.session.includes(inn)){ S.selected=inn; setView('card',inn); S.ctx='company'; return {ok:true,html:`<p>${esc(DB[inn].name)} уже в сессии.</p>`+summaryHtml(DB[inn])}; }
+  if(S.session.includes(inn)){ S.selected=inn; S.tab='summary'; renderAll(); return {ok:true,html:`<p>${esc(DB[inn].name)} уже в сессии — открыл сводку.</p>`}; }
   if(S.session.length>=MAX) return {ok:false,html:`<div class="err">В сессии не больше ${MAX} контрагентов. Удалите одного («убери Техпром»), чтобы добавить нового.</div>`};
-  S.session.push(inn); S.selected=inn; S.focusMode=false; setView('card',inn); S.ctx='company';
-  return {ok:true,html:summaryHtml(DB[inn],true)};
+  S.session.push(inn); S.selected=inn; S.tab=S.session.length>1?'compare':'summary'; S.focusMode=false; renderAll();
+  return {ok:true,html:introHtml(DB[inn])};
 }
+const introHtml = c => `<p>Добавил ${esc(c.name)} (${S.session.length} из ${MAX}). Кратко по данным отчёта:</p>${c.headline?`<div class="err">${esc(c.headline)}</div>`:''}<ul>${c.facts.slice(0,4).map(f=>`<li>${esc(f.text)} ${ref(f.refs[0])}</li>`).join('')}</ul>${c.gaps.length?`<div class="gapbox">Оценить нельзя: ${c.gaps.map(g=>esc(g.text)).join('; ')}.</div>`:''}<div class="actions"><button class="chip" data-go="summary" data-inn="${c.inn}">Открыть сводку</button><button class="chip" data-go="card" data-inn="${c.inn}">Открыть карточку</button>${S.session.length>1?`<button class="chip" data-go="compare">Открыть сравнение</button>`:''}</div>`;
 function agentAnswer(q){
   const t=q.toLowerCase().trim();
   const inns=[...new Set((q.match(/\d{10,12}/g)||[]).filter(x=>x.length===10||x.length===12))];
-  if(/^доступн|доступные инн|какие инн|список компаний/.test(t)){ S.ctx=S.session.length?S.ctx:'start'; return `<p>В моковой базе макета 10 отчётов (в проде — 100, через инструмент <code>list_reports</code>). Клик по строке добавляет в сессию:</p><table><tr><th>ИНН</th><th>Компания</th><th>Метка банка</th></tr>${Object.values(DB).map(c=>`<tr class="pick" data-add="${c.inn}"><td class="mono">${c.inn}</td><td>${esc(c.short)}</td><td>${riskStatus(c)}</td></tr>`).join('')}</table>`; }
-  if(/^(очист|сброс|начать заново|новая сессия)/.test(t)){ S.session=[]; S.deal={goal:null,amount:null}; S.focus=[]; S.focusMode=false; S.filter='all'; S.ctx='start'; return `<p>Сессия очищена. Введите ИНН, чтобы начать.</p>`; }
+  if(/^доступн|доступные инн|какие инн|список компаний/.test(t)) return `<p>В моковой базе макета 10 отчётов (в проде — 100, через инструмент <code>list_reports</code>). Клик по строке добавляет в сессию:</p><table><tr><th>ИНН</th><th>Компания</th><th>Метка</th></tr>${Object.values(DB).map(c=>`<tr class="pick" data-add="${c.inn}"><td class="mono">${c.inn}</td><td>${esc(c.short)}</td><td>${riskStatus(c)}</td></tr>`).join('')}</table>`;
+  if(/^(очист|сброс|начать заново|новая сессия)/.test(t)){ S.session=[]; S.deal={goal:null,amount:null}; S.focus=[]; renderAll(); return `<p>Сессия очищена. Введите ИНН, чтобы начать.</p>`; }
   if(/^(убери|удали|убрать|удалить|исключи)/.test(t)){
     const c = inns.length?DB[inns[0]]:findByName(t);
-    if(!c||!S.session.includes(c.inn)) return `<p>Не нашёл такого контрагента в сессии. Сейчас в сессии: ${names(cs())||'никого'}.</p>`;
-    S.session=S.session.filter(i=>i!==c.inn); S.focus=S.focus.filter(i=>i!==c.inn); if(S.focus.length<2) S.focusMode=false; if(S.selected===c.inn) S.selected=S.session[0];
-    S.ctx=S.session.length>1?'compare':'company';
+    if(!c||!S.session.includes(c.inn)) return `<p>Не нашёл такого контрагента в сессии. Сейчас в сессии: ${cs().map(c=>esc(c.short)).join(', ')||'никого'}.</p>`;
+    S.session=S.session.filter(i=>i!==c.inn); S.focus=S.focus.filter(i=>i!==c.inn); if(S.selected===c.inn) S.selected=S.session[0]; renderAll();
     return `<p>Убрал ${esc(c.name)} из сессии. Осталось ${S.session.length}.</p>`;
   }
   if(inns.length){
-    const res=inns.map(addInn);
-    if(inns.length===1) return res[0].html;
-    S.ctx='compare'; setView('compare');
-    return `<p>Обработал ${inns.length} ИНН: добавлено ${res.filter(r=>r.ok).length}, не найдено ${res.filter(r=>!r.ok).length}.</p>`+res.filter(r=>!r.ok).map(r=>r.html).join('')+(S.session.length>1?totalsHtml():'');
+    const res=inns.map(addInn); if(inns.length===1) return res[0].html;
+    return `<p>Обработал ${inns.length} ИНН: добавлено ${res.filter(r=>r.ok).length}, не найдено ${res.filter(r=>!r.ok).length}.</p>`+res.filter(r=>!r.ok).map(r=>r.html).join('')+`<div class="actions"><button class="chip" data-go="compare">Открыть сравнение</button></div>`;
   }
   const amt=t.match(/(\d+(?:[.,]\d+)?)\s*(млрд|млн|тыс)/); const goal=/госзакуп|тендер/.test(t)?'госзакупка':/поставк/.test(t)?'поставка':/без контекста/.test(t)?null:undefined;
   if((amt&&/контракт|сделк|сумм|планиру|договор/.test(t))||goal!==undefined&&/цель|контекст|поставк|госзакуп/.test(t)){
     if(amt){ const v=parseFloat(amt[1].replace(',','.')); S.deal.amount=amt[2]==='млрд'?v*1000:amt[2]==='млн'?v:v/1000; }
     if(goal!==undefined) S.deal.goal=goal;
+    renderAll();
     const hit=cs().filter(c=>S.deal.amount&&dealCell(c)[0]==='caution');
-    if(S.session.length>1) setView('compare');
-    return `<p>Запомнил контекст сделки: ${[S.deal.goal, S.deal.amount?mlnT(S.deal.amount):null].filter(Boolean).join(', ')}. ${S.deal.amount&&S.session.length?`${S.session.length>1?'В сравнении появилась строка «Соразмерность сделки»':'В сводке появился слот «Соразмерность сделки»'}${hit.length?`: сумма превышает годовую выручку у ${names(hit)} ${ref('finReports[].common.proceeds')}`:''}.`:''} Метки банка не пересчитываются.</p>${S.session.length>1?`<div class="actions"><button class="chip go" data-pview="compare">Матрица в панели →</button></div>`:''}`;
+    return `<p>Запомнил контекст сделки: ${[S.deal.goal, S.deal.amount?mln(S.deal.amount).replace(/<[^>]+>/g,''):null].filter(Boolean).join(', ')}. ${S.deal.amount?`В сравнении появилась строка «Соразмерность сделки»${hit.length?`: сумма превышает годовую выручку у ${hit.map(c=>esc(c.short)).join(', ')} ${ref('finReports[].common.proceeds')}`:''}.`:''} Метки банка не пересчитываются.</p><div class="actions">${S.session.length>1?`<button class="chip" data-go="compare">Открыть сравнение</button>`:''}</div>`;
   }
-  if(!S.session.length) return `<p>В сессии пока никого. Введите ИНН — 10 цифр для юрлица или 12 для ИП, или напишите «доступные ИНН».</p>`;
-  const many=S.session.length>1;
-  /* Явное упоминание компании переключает «текущую» */
-  const mentioned=findAllByName(t);
-  if(mentioned.length===1) S.selected=mentioned[0].inn;
-  if(many&&mentioned.length>=2&&/сравни|подробн|против|и /.test(t)){
-    S.focus=mentioned.slice(0,4).map(c=>c.inn); S.focusMode=true; setView('compare'); S.ctx='focus';
-    return `<p>Подробное сравнение: ${names(mentioned.slice(0,4))}. Различия по критериям:</p>${diffsList(mentioned.slice(0,4))}<div class="actions"><button class="chip go" data-pview="compare">Таблица колонками в панели →</button><button class="lnk" data-q="Покажи матрицу">ко всем ${S.session.length}</button></div>`;
-  }
-  if(/расскажи|покажи сводку|сводк|что по|карточк|подробнее о/.test(t)&&(mentioned.length===1||!many)){ const c=DB[S.selected]; setView('card',c.inn); S.ctx='company'; return summaryHtml(c); }
-  if(many&&/матриц|ко всем|всех|все компании/.test(t)){ S.focusMode=false; S.filter='all'; setView('compare'); S.ctx='compare'; return `<p>Матрица сигналов по всем ${S.session.length} — в панели. Строки идут по возрастанию риска, ключ порядка подписан под таблицей.</p><div class="actions"><button class="chip go" data-pview="compare">Открыть матрицу →</button></div>`; }
-  if(many&&/только с негатив|с негативн/.test(t)){ S.filter='neg'; S.focusMode=false; setView('compare'); S.ctx='compare'; const l=filtered(); return `<p>Негативные сигналы по данным отчёта у ${l.length} из ${S.session.length}:</p><ul>${l.map(c=>`<li><b>${esc(c.short)}</b> — ${esc(rows().flatMap(([,k])=>cellItems(c,k)).filter(([p])=>p==='negative').map(([,x])=>lc(x)).join('; '))}</li>`).join('')}</ul><div class="actions"><button class="chip go" data-pview="compare">Матрица с фильтром в панели →</button><button class="lnk" data-q="Покажи матрицу">показать всех</button></div>`; }
-  if(many&&/предупрежден|статус/.test(t)){ const l=cs().filter(c=>c.headline); S.filter='head'; setView('compare'); S.ctx='compare'; return l.length?`<p>Предупреждение по статусу у ${l.length} из ${S.session.length}:</p>${l.map(c=>`<div class="alert" style="font-size:13px;font-weight:500;padding:8px 10px">${ico('negative','xs')} <b>${esc(c.short)}:</b> ${esc(c.headline)} ${ref('status.reasonName')}</div>`).join('')}<div class="actions"><button class="chip go" data-pview="compare">Матрица с фильтром в панели →</button></div>`:`<p>Предупреждений по статусу ни у кого из ${S.session.length} нет; все действуют ${ref('status.status')}.</p>`; }
-  if(many&&/пробел|не хватает|нет данных|недостаточно/.test(t)&&mentioned.length!==1&&!['company','fin','legal'].includes(S.ctx)){ const l=cs().filter(c=>c.gaps.length); S.filter='gap'; setView('compare'); S.ctx='compare'; return `<p>Пробелы в данных у ${l.length} из ${S.session.length}:</p><ul>${l.map(c=>`<li><b>${esc(c.short)}</b>: ${c.gaps.map(g=>esc(g.text)).join('; ')}</li>`).join('')}</ul><p>Отсутствие сведений не означает отсутствие риска.</p><div class="actions"><button class="chip go" data-pview="compare">Матрица с фильтром в панели →</button></div>`; }
-  if(many&&/по годам|динамик/.test(t)){ S.metric=/прибыл/.test(t)?'pf':/капитал/.test(t)?'cap':/обязательств/.test(t)?'stl':/актив/.test(t)?'ca':'pr'; S.hiddenLines.clear(); setView('chart'); S.ctx='chart'; return trendText(); }
-  if(many&&/лучше|надёжн|надежн|с кем работать|кого выбрать|самый/.test(t)){ setView('compare'); S.ctx='diffs'; return `<p>Не ранжирую компании — перечислю различия по данным отчёта, решение за вами.</p>${diffsList()}<p>Отсутствие фактов не означает отсутствие риска: у ${names(cs().filter(c=>c.gaps.length))||'никого'} есть пробелы в данных.</p><div class="actions"><button class="chip go" data-pview="compare">Матрица в панели →</button></div>`; }
-  if(many&&/различ|сравн|итог/.test(t)){ S.focusMode=false; setView('compare'); S.ctx='diffs'; return totalsHtml()+`<details class="fold"><summary>различия по критериям текстом</summary>${diffsList()}</details>`; }
-  const c=DB[S.selected];
-  const who=many?`${esc(c.short)}: `:'';
-  const other=many?`<div class="small tertiary" style="margin-top:6px">Отвечаю по ${esc(c.short)}; о другой компании — клик по чипу или имя в вопросе.</div>`:'';
+  const c=DB[S.selected]; if(!c) return `<p>В сессии пока никого. Введите ИНН — 10 цифр для юрлица или 12 для ИП.</p>`;
+  if(/лучше|надёжн|надежн|с кем работать|кого выбрать|самый/.test(t)) return `<p>Не ранжирую компании — перечислю различия по данным отчёта, решение за вами.</p>${renderDiffs().replace(/<div class="plate common"><h2>Различия<\/h2>/,'').replace(/<\/div>$/,'')}<p>Отсутствие фактов не означает отсутствие риска: у ${cs().filter(c=>c.gaps.length).map(c=>esc(c.short)).join(', ')||'никого'} есть пробелы в данных.</p><div class="actions"><button class="chip" data-go="compare">Открыть сравнение</button></div>`;
+  if(/различ/.test(t)) return renderDiffs().replace(/<div class="plate common"><h2>Различия<\/h2>/,'').replace(/<\/div>$/,'')+`<div class="actions"><button class="chip" data-go="compare">Открыть сравнение</button></div>`;
   if(/оценк|риск|почему/.test(t)){
-    S.ctx='company'; setView('card',c.inn);
     const neg=c.facts.slice(1).filter(f=>f.pol==='negative'||f.pol==='caution');
-    if(c.risk==='HIGH'&&!neg.some(f=>f.pol==='negative')) return `<p>Банк присвоил ${esc(c.name)} высокий уровень риска ${ref('baseInfo.riskLevel')}${c.zsk!=='GREEN'?` и метку ЗСК «${ZSK[c.zsk][0].replace('ЗСК ','')}» ${ref('zskRiskLevel')}`:''}. Факты отчёта эту метку не раскрывают: негативных сигналов правила не нашли${neg.length?`, требуют внимания: ${neg.map(f=>esc(lc(f.text).replace(/\.$/,''))).join('; ')}`:''}.</p><div class="gapbox">Модель риска банка учитывает данные, которых в отчёте нет; объяснить метку по отчёту нельзя, и оспаривать её я не буду.</div><p>Что проверить: ${c.steps.map(s=>esc(lc(s.text).replace(/\.$/,''))).join('; ')}.</p>${other}`;
-    return `<p>Банк присвоил ${esc(c.name)} метку «${RISK[c.risk][0]}» ${ref('baseInfo.riskLevel')}, ЗСК — «${ZSK[c.zsk][0].replace('ЗСК ','')}» ${ref('zskRiskLevel')}. Метку я не пересчитываю. Факты отчёта рядом с ней:</p>${c.headline?`<div class="err">${esc(c.headline)}</div>`:''}<ul>${c.facts.slice(1).map(f=>`<li>${esc(f.text)} ${ref(f.refs[0])}</li>`).join('')}</ul>${other}`;
+    if(c.risk==='HIGH'&&!neg.some(f=>f.pol==='negative')) return `<p>Банк присвоил ${esc(c.name)} высокий уровень риска ${ref('baseInfo.riskLevel')}${c.zsk!=='GREEN'?` и метку ЗСК «${ZSK[c.zsk][0].replace('ЗСК ','')}» ${ref('zskRiskLevel')}`:''}. Факты отчёта эту метку не раскрывают: негативных сигналов правила не нашли${neg.length?`, требуют внимания: ${neg.map(f=>esc(f.text.toLowerCase().replace(/\.$/,''))).join('; ')}`:''}.</p><div class="gapbox">Модель риска банка учитывает данные, которых в отчёте нет; объяснить метку по отчёту нельзя, и оспаривать её я не буду.</div><p>Что проверить: ${c.steps.map(s=>esc(s.text.toLowerCase().replace(/\.$/,''))).join('; ')}.</p>`;
+    return `<p>Банк присвоил ${esc(c.name)} метку «${RISK[c.risk][0]}» ${ref('baseInfo.riskLevel')}, ЗСК — «${ZSK[c.zsk][0].replace('ЗСК ','')}» ${ref('zskRiskLevel')}. Метку я не пересчитываю. Факты отчёта рядом с ней:</p>${c.headline?`<div class="err">${esc(c.headline)}</div>`:''}<ul>${c.facts.slice(1).map(f=>`<li>${esc(f.text)} ${ref(f.refs[0])}</li>`).join('')}</ul>`;
   }
   if(/финанс|выручк|прибыл/.test(t)){
-    S.ctx='fin'; setView('card',c.inn);
-    const fin=c.fin.filter(f=>f.pr); if(!fin.length) return `<p>${who}выручка в отчётности не указана ни за один год ${ref('finReports')}.</p><div class="gapbox">Недостаточно данных для оценки финансов${c.isIP?' — ИП не публикует отчётность':''}.</div>${other}`;
-    return `<p>${who}выручка ${fin.map(f=>`${mln(f.pr)} (${f.y})`).join(' → ')} ${ref('finReports[].common.proceeds')}. ${fin.length<2?'Тренд по одному году оценить нельзя.':''} ${esc(c.facts.find(f=>f.slot==='Финансы').text)}</p>${c.fin.every(f=>f.pf==null)?'<div class="gapbox">Прибыль в отчётности не указана.</div>':''}<div class="actions"><button class="chip go" data-pview="card" data-inn="${c.inn}" data-block="C">Блок «Финансы» в панели →</button>${many?`<button class="lnk" data-q="Выручка по годам">сравнить динамику по компаниям</button>`:''}</div>${other}`;
+    const fin=c.fin.filter(f=>f.pr); if(!fin.length) return `<p>Выручка в отчётности ${esc(c.name)} не указана ни за один год ${ref('finReports')}.</p><div class="gapbox">Недостаточно данных для оценки финансов${c.isIP?' — ИП не публикует отчётность':''}.</div>`;
+    return `<p>${esc(c.name)}: выручка ${fin.map(f=>`${mln(f.pr)} (${f.y})`).join(' → ')} ${ref('finReports[].common.proceeds')}. ${fin.length<2?'Тренд по одному году оценить нельзя.':''} ${esc(c.facts.find(f=>f.slot==='Финансы').text)}</p>${c.fin.every(f=>f.pf==null)?'<div class="gapbox">Прибыль в отчётности не указана.</div>':''}<div class="actions">${S.session.length>1?`<button class="chip" data-go="compare" data-scroll="ychart">Динамика по годам</button>`:''}<button class="chip" data-go="card" data-inn="${c.inn}">Открыть карточку</button></div>`;
   }
   if(/долг|суд|арбитраж|исполнительн/.test(t)){
-    S.ctx='legal'; setView('card',c.inn);
     const a=c.arb, ep=c.ep.activeTotal??c.ep.active.length;
-    return `<p>${who}${ep?`активные исполнительные производства: ${ep}${c.ep.activeSum?` на ${c.ep.activeSum}`:''}${c.ep.active.some(e=>!e.a)?', сумма не указана':''} ${ref('executionProceedings[].active')}.`:`исполнительные производства не найдены ${ref('executionProceedings')}.`} ${a?`Арбитраж: всего ${a.total} дел, из них как истец ${a.pf+a.pa+a.pp}, как ответчик ${a.df+a.da+a.dp}${a.dp?`; открытых как ответчик ${a.dp}${a.dpA?' на '+a.dpA:''}`:'; открытых как ответчик нет'} ${ref('arbitrationByStatus')}.`:`Арбитражные дела не найдены ${ref('arbitrationByStatus')}.`}</p>${c.insp?`<p>Проверок: ${c.insp.total}, нарушений не выявлено ${ref('inspections[]')}.</p>`:`<div class="gapbox">Сведений о проверках контролирующих органов в отчёте нет — по этому критерию оценка невозможна.</div>`}<div class="actions"><button class="chip go" data-pview="card" data-inn="${c.inn}" data-block="D">Блок «Юридические события» в панели →</button></div>${other}`;
+    return `<p>${ep?`Активные исполнительные производства: ${ep}${c.ep.activeSum?` на ${c.ep.activeSum}`:''}${c.ep.active.some(e=>!e.a)?', сумма не указана':''} ${ref('executionProceedings[].active')}.`:`Исполнительные производства не найдены ${ref('executionProceedings')}.`} ${a?`Арбитраж: всего ${a.total} дел, из них как истец ${a.pf+a.pa+a.pp}, как ответчик ${a.df+a.da+a.dp}${a.dp?`; открытых как ответчик ${a.dp}${a.dpA?' на '+a.dpA:''}`:'; открытых как ответчик нет'} ${ref('arbitrationByStatus')}.`:`Арбитражные дела не найдены ${ref('arbitrationByStatus')}.`}</p>${c.insp?`<p>Проверок: ${c.insp.total}, нарушений не выявлено ${ref('inspections[]')}.</p>`:`<div class="gapbox">Сведений о проверках контролирующих органов в отчёте нет — по этому критерию оценка невозможна.</div>`}`;
   }
-  if(/не хватает|пробел|нет данных|недостаточно/.test(t)){ S.ctx='company'; return (c.gaps.length?`<p>${who}оценить нельзя:</p><ul>${c.gaps.map(g=>`<li>${esc(g.text)} ${ref(g.ref)}</li>`).join('')}</ul><p>Отсутствие сведений не означает отсутствие риска.</p>`:`<p>${who}все разделы отчёта заполнены; пробелов в данных нет.</p>`)+other; }
-  if(/провер|запрос|до сделки|документ/.test(t)){ S.ctx='company'; return `<p>${who}до сделки:</p><ol>${c.steps.map(s=>`<li>${esc(s.text)} <span class="muted small">(${esc(s.why)})</span></li>`).join('')}</ol>${many?`<div class="actions"><button class="lnk" data-pview="compare">шаги по всем ${S.session.length} — в панели</button></div>`:''}${other}`; }
+  if(/не хватает|пробел|нет данных|недостаточно/.test(t)) return c.gaps.length?`<p>По ${esc(c.name)} оценить нельзя:</p><ul>${c.gaps.map(g=>`<li>${esc(g.text)} ${ref(g.ref)}</li>`).join('')}</ul><p>Отсутствие сведений не означает отсутствие риска.</p>`:`<p>По ${esc(c.name)} все разделы отчёта заполнены; пробелов в данных нет.</p>`;
+  if(/провер|запрос|до сделки|документ/.test(t)) return `<p>По ${esc(c.name)} до сделки:</p><ol>${c.steps.map(s=>`<li>${esc(s.text)} <span class="muted small">(${esc(s.why)})</span></li>`).join('')}</ol>`;
   if(/сотрудник|штат|клиент|сайт|интернет/.test(t)) return `<p>В доступных данных этой информации нет.</p><div class="gapbox">Веб-поиск не подключён; отвечаю только по отчёту банка.</div>`;
-  return `<p>Могу ответить по данным отчёта: оценка банка, финансы, исполнительные производства и арбитраж, реестры ФНС, пробелы в данных, что проверить до сделки${many?'; по нескольким — различия, динамика по годам, «сравни А и Б подробно»':''}. Управление сессией тоже здесь: ИНН добавляет контрагента, «убери …» удаляет, «контракт на 50 млн, поставка» задаёт контекст сделки.</p>`;
-}
-/* Три подсказки под последним ответом, по контексту */
-function suggestions(){
-  const base=suggestBase(), last=(S.lastQ||'').toLowerCase();
-  const pool=['В чём различия?','Выручка по годам','Что проверить до сделки?','У кого предупреждения?','Что с финансами?'];
-  const out=base.filter(p=>p.toLowerCase()!==last);
-  if(!S.session.length) return out;
-  for(const p of pool){ if(out.length>=3||S.session.length<2&&/различ|предупрежд|по годам/.test(p)) continue; if(!out.includes(p)&&p.toLowerCase()!==last) out.push(p); }
-  return out.slice(0,3);
-}
-function suggestBase(){
-  const n=S.session.length, c=DB[S.selected];
-  if(!n) return ['Доступные ИНН','проверь 9721159668'];
-  if(n===1){
-    if(S.ctx==='fin') return ['Есть ли долги и суды?','Чего не хватает в отчёте?','Что проверить до сделки?'];
-    if(S.ctx==='legal') return ['Что с финансами?','Чего не хватает в отчёте?','Что проверить до сделки?'];
-    return ['Что с финансами?','Что проверить до сделки?','Доступные ИНН'];
-  }
-  const two=cs().slice(0,2);
-  switch(S.ctx){
-    case 'compare': case 'diffs': return n<=4?['У кого предупреждения?',`Сравни ${two[0].short} и ${two[1].short} подробно`,'Выручка по годам']:['Покажи только с негативными','У кого предупреждения?','Выручка по годам'];
-    case 'focus': return ['Выручка по годам','Покажи матрицу','Что проверить до сделки?'];
-    case 'chart': return [S.metric==='pr'?'Прибыль по годам':'Выручка по годам','В чём различия?','Покажи матрицу'];
-    case 'fin': return ['Выручка по годам',`Есть ли долги и суды?`,'В чём различия?'];
-    case 'legal': return ['Что с финансами?','В чём различия?','Что проверить до сделки?'];
-    default: return c?[`Что с финансами?`,'В чём различия?','Что проверить до сделки?']:['В чём различия?','У кого предупреждения?','Выручка по годам'];
-  }
-}
-function renderSuggest(){
-  document.querySelectorAll('.suggest').forEach(e=>e.remove());
-  const last=[...document.querySelectorAll('.msg.agent')].pop(); if(!last) return;
-  const s=document.createElement('div'); s.className='suggest';
-  s.innerHTML=`<span class="lbl">Дальше:</span>`+suggestions().map(p=>`<button class="chip" data-q="${esc(p)}">${esc(p)}</button>`).join('');
-  last.appendChild(s); $('#msgs').scrollTop=1e9;
+  return `<p>Могу ответить по данным отчёта: оценка банка, финансы, исполнительные производства и арбитраж, реестры ФНС, учредители и руководитель, пробелы в данных, что проверить до сделки. Управление сессией тоже здесь: ИНН добавляет контрагента, «убери …» удаляет, «контракт на 50 млн, поставка» задаёт контекст сделки.</p>`;
 }
 function addMsg(role,html){ const m=document.createElement('div'); m.className='msg '+role; m.innerHTML=html; $('#msgs').appendChild(m); $('#msgs').scrollTop=1e9; return m; }
-function finish(sk,a){
-  const n=(a.match(/class="ref"/g)||[]).length;
-  sk.innerHTML=a+(n&&!S.llmOff?`<details class="check"><summary>Проверка ответа: ${n} ${n===1?'поле':n<5?'поля':'полей'}, 0 замечаний</summary>Каждое число и дата сверены с результатом инструмента; все ссылки на поля существуют в отчёте.</details>`:'');
-  renderAll(); renderSuggest();
-}
 function send(text){
   if(!text.trim()) return;
-  S.lastQ=text; addMsg('user',esc(text)); $('#chatInput').value='';
-  const isCmd=/\d{10,12}/.test(text)||/^(убери|удали|очист|доступн|расскажи|покажи|сравни|матриц)/i.test(text.trim())||/по годам|различ/i.test(text);
-  if(S.llmOff&&!isCmd){ addMsg('agent',`<div class="sys">Языковая модель недоступна. Сводки и сравнение формируются по правилам: напишите ИНН, «расскажи о …», «в чём различия», «покажи матрицу». Команды сессии («убери», «очисти») работают.</div>`); renderSuggest(); return; }
+  addMsg('user',esc(text)); $('#chatInput').value='';
+  const isCmd=/\d{10,12}/.test(text)||/^(убери|удали|очист|доступн)/i.test(text.trim());
+  if(S.llmOff&&!isCmd){ addMsg('agent',`<div class="sys">Языковая модель недоступна. Данные отчёта доступны в сводке и карточке; команды сессии (ИНН, «убери», «очисти») работают.</div>`); return; }
   const sk=addMsg('agent',`<div class="skeleton"><i style="width:80%"></i><i style="width:95%"></i><i style="width:60%"></i></div>`);
-  setTimeout(()=>finish(sk,agentAnswer(text)),500);
+  setTimeout(()=>{ const a=agentAnswer(text); const n=(a.match(/class="ref"/g)||[]).length; sk.innerHTML=a+(n&&!S.llmOff?`<details class="check"><summary>Проверка ответа: ${n} ${n===1?'поле':n<5?'поля':'полей'}, 0 замечаний</summary>Каждое число и дата сверены с результатом инструмента; все ссылки на поля существуют в отчёте.</details>`:''); $('#msgs').scrollTop=1e9; renderPresets(); },500);
 }
 function greet(){
   $('#msgs').innerHTML='';
-  if(!S.session.length){ S.ctx='start'; addMsg('agent','<p>Введите ИНН контрагента — покажу сводку по данным отчёта банка: предупреждения, сигналы по финансам, судам и реестрам, что проверить до сделки. До 10 компаний в одной сессии; от двух — сравнение.</p>'); renderSuggest(); return; }
+  if(!S.session.length){ addMsg('agent','<p>Введите ИНН контрагента — покажу сводку по данным отчёта банка. До 10 компаний в одной сессии.</p>'); return; }
   addMsg('user','проверь '+S.session.join(', '));
-  if(S.session.length===1){ S.ctx='company'; addMsg('agent',summaryHtml(DB[S.session[0]],true)); renderSuggest(); return; }
-  S.ctx='compare'; addMsg('agent',totalsHtml(true)); renderSuggest();
+  if(S.llmOff){ addMsg('agent',`<div class="sys">Языковая модель недоступна. ${S.session.length===1?'Контрагент добавлен':'Контрагенты добавлены'} в сессию; сводки и сравнение сформированы по правилам и доступны слева.</div>`); return; }
+  if(S.session.length===1){ addMsg('agent',introHtml(DB[S.session[0]])); return; }
+  const list=cs(), headl=list.filter(c=>c.headline), neg=list.filter(c=>counts(c).neg>0);
+  addMsg('agent',`<p>Добавил в сессию ${list.length} компаний и открыл сравнение по единому набору критериев.</p><p>Коротко: ${headl.length?`предупреждение по статусу у ${headl.map(c=>`${esc(c.short)} (${esc(c.headline.split(' (')[0])} ${ref('status.reasonName')})`).join(', ')}; `:''}негативные сигналы у ${neg.length} из ${list.length}: ${neg.map(c=>esc(c.short)).join(', ')}. Без негативных и требующих внимания сигналов — ${list.filter(c=>counts(c).neg===0&&counts(c).cau===0).map(c=>esc(c.short)).join(', ')||'никого'}. Итоги и матрица сигналов — в рабочей области.</p><div class="actions"><button class="chip" data-go="compare">Открыть сравнение</button></div>`);
 }
+function renderPresets(){ $('#presets').innerHTML=PRESETS.filter(p=>(S.session.length>1||!/различ|лучше/.test(p))&&(S.session.length>0||/Доступные/.test(p))).map(p=>`<button class="chip" data-q="${esc(p)}">${esc(p)}</button>`).join(''); }
 
 /* ---------- Подсветка блока по ссылке на поле ---------- */
-function blockFor(r){
+function openRef(r){
   const map=[[/^(baseInfo\.riskLevel|zskRiskLevel)/,'A'],[/^(status|baseInfo|reportDate)/,'B'],[/^(finReports|coefficient)/,'C'],[/^(executionProceedings|arbitration|inspections)/,'D'],[/^reputationalRisks/,'E'],[/^(foundersInfo|licenses|procurements|relatedCompanies)/,'F']];
-  return (map.find(([re])=>re.test(r))||[0,'B'])[1];
+  const b=(map.find(([re])=>re.test(r))||[0,'B'])[1];
+  S.tab='card'; renderAll();
+  const el=$('#blk-'+b); if(el){ el.open=true; el.classList.add('hl'); el.scrollIntoView({block:'start',behavior:'smooth'}); setTimeout(()=>el.classList.remove('hl'),1500); }
 }
-function highlight(b){ const el=$('#blk-'+b); if(el){ el.open=true; el.classList.add('hl'); el.scrollIntoView({block:'start',behavior:'smooth'}); setTimeout(()=>el.classList.remove('hl'),1500); } }
-function openRef(r,inn){ openPanel('card',inn||S.selected); highlight(blockFor(r)); }
 
 /* ---------- События ---------- */
-function renderAll(){ renderChips(); renderPanel(); }
-const innOf = el => { const m=el.closest('.msg'); const h=m&&m.querySelector('[data-inn]'); return h?h.dataset.inn:null; };
+function renderAll(){ renderSession(); renderWork(); renderPresets(); }
 document.addEventListener('click',e=>{
   const t=e.target, d=t.dataset, cl=s=>t.closest(s);
-  if(d.del){ e.stopPropagation(); send('убери '+DB[d.del].short); }
+  if(cl('.tab')){ S.tab=cl('.tab').dataset.tab; renderAll(); }
+  else if(d.del){ e.stopPropagation(); S.session=S.session.filter(i=>i!==d.del); S.focus=S.focus.filter(i=>i!==d.del); if(S.selected===d.del) S.selected=S.session[0]; renderAll(); }
   else if(d.deldeal){ S.deal={goal:null,amount:null}; renderAll(); }
-  else if(d.clear){ e.preventDefault(); if(confirm('Очистить сессию? Контрагенты, контекст сделки и история чата будут сброшены.')){ S.session=[]; S.deal={goal:null,amount:null}; S.focus=[]; S.focusMode=false; S.panel='closed'; renderAll(); greet(); } }
-  else if(cl('.cchip[data-inn]')){ send('расскажи о '+DB[cl('.cchip').dataset.inn].short); }
-  else if(t.classList.contains('ref')){ e.stopPropagation(); openRef(d.ref, cl('.msg')?innOf(t):null); }
-  else if(cl('.fact')){ openRef(cl('.fact').dataset.ref, cl('.msg')?innOf(t):null); }
-  else if(d.pview){ openPanel(d.pview, d.inn); if(d.block) highlight(d.block); }
-  else if(d.pclose){ S.panel='closed'; renderAll(); }
-  else if(t.id==='pwide'||cl('#pwide')){ S.panel=S.panel==='wide'?'open':'wide'; renderAll(); }
-  else if(cl('#rail')){ S.panel='open'; renderAll(); }
-  else if(d.pick!==undefined){ S.focus=t.checked?[...S.focus,d.pick]:S.focus.filter(i=>i!==d.pick); renderPanel(); }
-  else if(d.focus){ S.focusMode=true; renderPanel(); }
-  else if(d.unfocus){ S.focusMode=false; renderPanel(); }
-  else if(d.filter){ S.filter=d.filter; renderPanel(); }
-  else if(d.expand){ S.expanded=!S.expanded; renderPanel(); }
-  else if(d.metric){ S.metric=d.metric; S.hiddenLines.clear(); renderPanel(); }
-  else if(d.toggle){ S.hiddenLines.has(d.toggle)?S.hiddenLines.delete(d.toggle):S.hiddenLines.add(d.toggle); renderPanel(); }
-  else if(cl('[data-open]')){ openPanel('card', cl('[data-open]').dataset.open); }
-  else if(d.ep){ S.epView=d.ep; renderPanel(); }
+  else if(d.clear){ e.preventDefault(); if(confirm('Очистить сессию? Контрагенты, контекст сделки и история чата будут сброшены.')){ S.session=[]; S.deal={goal:null,amount:null}; S.focus=[]; renderAll(); greet(); } }
+  else if(cl('.cchip[data-inn]')){ S.selected=cl('.cchip').dataset.inn; if(S.tab==='compare') S.tab='summary'; renderAll(); }
+  else if(t.classList.contains('ref')){ e.stopPropagation(); openRef(d.ref); }
+  else if(cl('.fact')){ openRef(cl('.fact').dataset.ref); }
+  else if(d.pick!==undefined){ S.focus=t.checked?[...S.focus,d.pick]:S.focus.filter(i=>i!==d.pick); renderWork(); }
+  else if(d.focus){ S.focusMode=true; renderWork(); }
+  else if(d.unfocus){ S.focusMode=false; renderWork(); }
+  else if(d.filter){ S.filter=d.filter; renderWork(); }
+  else if(d.expand){ S.expanded=!S.expanded; renderWork(); }
+  else if(d.metric){ S.metric=d.metric; S.hiddenLines.clear(); renderWork(); }
+  else if(d.scale){ S.scale=d.scale; renderWork(); }
+  else if(d.view){ S.view=d.view; renderWork(); }
+  else if(d.sscale){ S.smallScale=d.sscale; renderWork(); }
+  else if(d.toggle){ S.hiddenLines.has(d.toggle)?S.hiddenLines.delete(d.toggle):S.hiddenLines.add(d.toggle); renderWork(); }
+  else if(cl('[data-open]')){ const el=cl('[data-open]'); S.selected=el.dataset.open; S.tab=el.dataset.go||'card'; renderAll(); }
+  else if(d.ep){ S.epView=d.ep; renderWork(); }
   else if(d.q){ send(d.q); }
-  else if(cl('tr.pick')){ send('проверь '+cl('tr.pick').dataset.add); }
-  else if(d.state){ document.querySelectorAll('.devbar [data-state]').forEach(b=>b.classList.toggle('on',b===t)); S.session=[...SETS[d.state]]; S.selected=S.session[0]; S.focus=[]; S.focusMode=false; S.filter='all'; S.panel='closed'; S.view={kind:S.session.length>1?'compare':'card',inn:S.selected}; renderAll(); greet(); }
+  else if(cl('tr.pick')){ const r=addInn(cl('tr.pick').dataset.add); addMsg('agent',r.html); }
+  else if(d.go){ if(d.inn) S.selected=d.inn; S.tab=d.go; S.focusMode=false; renderAll(); if(d.scroll){ const el=$('#'+d.scroll); el&&el.scrollIntoView({behavior:'smooth'}); } }
+  else if(d.state){ document.querySelectorAll('.devbar [data-state]').forEach(b=>b.classList.toggle('on',b===t)); S.session=[...SETS[d.state]]; S.selected=S.session[0]; S.tab=S.session.length>1?'compare':'summary'; S.focus=[]; S.focusMode=false; S.filter='all'; renderAll(); greet(); }
 });
 document.addEventListener('mouseover',e=>{ const h=e.target.closest('[data-hover]'); const ch=$('#ychart'); if(!ch) return; if(h){ ch.classList.add('dim'); ch.querySelectorAll('[data-line]').forEach(g=>g.querySelectorAll('.ln,.pt,.end').forEach(x=>x.classList.toggle('on',g.dataset.line===h.dataset.hover))); } else { ch.classList.remove('dim'); } });
-$('#llmToggle').onclick=()=>{ S.llmOff=!S.llmOff; $('#llmToggle').textContent='LLM недоступна: '+(S.llmOff?'вкл':'выкл'); $('#llmToggle').classList.toggle('on',S.llmOff); renderAll(); greet(); };
+$('#llmToggle').onclick=()=>{ S.llmOff=!S.llmOff; $('#llmToggle').textContent='LLM недоступна: '+(S.llmOff?'вкл':'выкл'); $('#llmToggle').classList.toggle('on',S.llmOff); renderWork(); greet(); };
 $('#sendBtn').onclick=()=>send($('#chatInput').value);
 $('#chatInput').addEventListener('keydown',e=>{ if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); send($('#chatInput').value);} });
 
-/* Начальное состояние из hash: #empty | #one | #three | #ten · #panel | #wide (панель открыта) · #card | #compare | #chart (что в панели) · #t2 | #t3 · #llmoff · #deal · #focus · #neg (через запятую) */
+/* Начальное состояние из hash: #empty | #one | #three | #ten · #summary | #card | #compare · #t2 | #t3 · #llmoff · #deal (через запятую) */
 const H=(location.hash||'').slice(1).split(',');
 const setName=['empty','one','three','ten'].find(s=>H.includes(s))||'ten';
 S.session=[...SETS[setName]];
-S.selected=H.includes('t3')?'9714079997':H.includes('t2')?'1660266560':S.session[0];
-S.view={kind:H.includes('card')?'card':H.includes('chart')?'chart':H.includes('compare')?'compare':(S.session.length>1?'compare':'card'),inn:S.selected};
-if(H.includes('panel')) S.panel='open'; if(H.includes('wide')) S.panel='wide';
+S.selected=H.includes('t3')?'9714079997':H.includes('t2')?'1660266560':S.session[0]; S.tab=H.includes('summary')?'summary':H.includes('card')?'card':(S.session.length>1?'compare':'summary');
 if(H.includes('llmoff')){S.llmOff=true; $('#llmToggle').textContent='LLM недоступна: вкл'; $('#llmToggle').classList.add('on');}
 if(H.includes('deal')){S.deal={goal:'поставка',amount:100};}
+if(H.includes('idx')) S.scale='idx'; if(H.includes('log')) S.scale='log'; if(H.includes('small')) S.view='small';
 if(H.includes('focus')&&S.session.length>=3){ S.focus=S.session.slice(0,3); S.focusMode=true; }
 if(H.includes('neg')) S.filter='neg';
 document.querySelectorAll('.devbar [data-state]').forEach(b=>b.classList.toggle('on',b.dataset.state===setName));
