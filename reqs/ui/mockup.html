@@ -215,7 +215,17 @@
   .lchip i{width:10px;height:3px;border-radius:2px;display:inline-block}
   .smalls{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;margin-top:8px}
   .sm-c{border:1px solid var(--border);border-radius:var(--r8);padding:8px 10px}
-  .sm-c .t{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;gap:6px;align-items:center;justify-content:space-between}
+  .sm-c .t{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:flex;gap:6px;align-items:flex-start;justify-content:space-between}
+  .sm-c-n{min-width:0;overflow:hidden}
+  .sm-c-n .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .sm-c-n .u{font-size:11px;font-weight:400;color:var(--text-tertiary);margin-top:1px}
+  .sm-c-axis{display:grid;margin-top:2px;overflow:hidden}
+  .sm-c-col{display:flex;flex-direction:column;font-size:11px;line-height:14px;color:var(--text-secondary);min-width:0}
+  .sm-c-col:first-child{align-items:flex-start}
+  .sm-c-col:last-child{align-items:flex-end}
+  .sm-c-col:first-child:last-child{align-items:flex-start}
+  .sm-c-col:not(:first-child):not(:last-child){align-items:center}
+  .sm-c-col .v{color:var(--text-tertiary);font-size:11px;font-weight:400}
   .sm-c svg{width:100%;height:70px;display:block;margin-top:4px}
 
   /* Чат */
@@ -595,7 +605,9 @@ const ico = () => '';
 const fmt1 = v => v.toLocaleString('ru-RU',{minimumFractionDigits:1,maximumFractionDigits:1});
 const mln = v => v==null ? '<span class="tertiary">нет данных</span>' : (Math.abs(v)>=1000 ? fmt1(v/1000)+' млрд ₽' : Math.abs(v)<1 ? fmt1(v*1000)+' тыс. ₽' : fmt1(v)+' млн ₽');
 const mlnT = v => mln(v).replace(/<[^>]+>/g,'');
-const mlnShort = v => Math.abs(v)>=1000 ? fmt1(v/1000)+' млрд' : Math.abs(v)<1 ? Math.round(v*1000)+' тыс' : (Math.abs(v)>=100?Math.round(v):fmt1(v))+' млн';
+const mlnShort = v => Math.abs(v)>=1000 ? fmt1(v/1000)+' млрд' : Math.abs(v)<1 ? fmt1(v*1000)+' тыс' : fmt1(v)+' млн';
+const finScaleOf = vals => { const m=Math.max(0,...vals.map(v=>Math.abs(v))); return m>=1000?{k:1/1000,u:'млрд'}:m>0&&m<1?{k:1000,u:'тыс'}:{k:1,u:'млн'}; };
+const finVal = (v,sc) => fmt1(v*sc.k);
 const worst = items => items.reduce((w,[p])=>POL_ORDER[p]<POL_ORDER[w]?p:w,'positive');
 const cs = () => S.session.map(i=>DB[i]);
 const lc = s => s.charAt(0).toLowerCase()+s.slice(1);
@@ -692,7 +704,7 @@ function renderPanel(){
     $('#dTitle').innerHTML=fl?`<h2>Подробно: ${names(fl)}</h2><div class="small muted">Колонки — выбранные компании; «← Ко всем» возвращает матрицу</div>`:`<h2>Сравнение ${S.session.length} контрагентов</h2>`;
     $('#dBody').innerHTML=(fl?renderFocus()+renderDiffs(fl)+renderSteps(fl):renderMatrix()+renderDiffs()+renderSteps(byRisk(cs())))+`<div class="row" style="margin-top:16px"><button class="chip" data-pview="chart">Финансовые показатели →</button></div>`;
   } else {
-    $('#dTitle').innerHTML=`<h2>Финансовые показатели · ${S.session.length} компаний</h2><div class="small muted">Рубли, линейная ось; год без значения не рисуется</div>`;
+    $('#dTitle').innerHTML=`<h2>Финансовые показатели</h2>`;
     $('#dBody').innerHTML=renderYearChart()+`<div class="row" style="margin-top:16px"><button class="chip" data-pview="compare">← Сравнение</button></div>`;
   }
   document.title=(S.view.kind==='card'?c.name:S.view.kind==='compare'?'Сравнение':'Финансовые показатели')+' — Проверка контрагентов';
@@ -985,7 +997,7 @@ function seriesFor(list){
   });
   return {k,name,r,ser,skipped};
 }
-const yLabel = v => mlnShort(v);
+const yLabel = (v,sc) => finVal(v,sc);
 function renderYearChart(){
   const list=S.focusMode&&S.focus.length>=2?S.focus.map(i=>DB[i]):cs();
   const {name,r,ser,skipped}=seriesFor(list);
@@ -994,7 +1006,7 @@ function renderYearChart(){
   const view=ser.length>4?'small':'overlay';
   const ctl=`
   <div class="toolbar"><div class="seg">${METRICS.map(([mk,mn])=>`<button class="${S.metric===mk?'on':''}" data-metric="${mk}">${mn}</button>`).join('')}</div></div>
-  <div class="small muted" style="margin-bottom:6px">${name}, млн ₽ ${ref(r)} · ${view==='small'?'у каждой компании своя ось от нуля; сравнивайте форму линии и процент, не высоту':'одна ось для всех; цвет линии — только для различения компаний'}.</div>`;
+  <div class="small muted" style="margin-bottom:6px">${name} ${ref(r)} · ${view==='small'?'у каждой компании своя ось от нуля; сравнивайте форму линии и процент, не высоту':'одна ось для всех; цвет линии — только для различения компаний'}.</div>`;
   if(!ser.length) return ctl+`<div class="plate gap" style="margin-top:0">${ico('gap','sm')} Ни у одной компании нет данных по этому показателю.</div>`+skippedNote(skipped);
   return ctl + (view==='overlay'?overlay(ser,years):smalls(ser,years)) + skippedNote(skipped);
 }
@@ -1005,6 +1017,7 @@ function overlay(ser,years){
   const all=(vis.length?vis:ser).flatMap(s=>s.pts.map(p=>p.v));
   let mn=Math.min(0,...all), mx=Math.max(0,...all); if(mn===mx){ mn-=1; mx+=1; }
   const pad=(mx-mn)*0.08; if(mn<0) mn-=pad; if(mx>0) mx+=pad;
+  const sc=finScaleOf(all);
   const x=y=>L+(years.indexOf(y))*((W-L-R)/Math.max(1,years.length-1));
   const yy=v=>T+(H-T-B)*(1-(v-mn)/(mx-mn));
   const ticks=[0,.25,.5,.75,1].map(t=>mn+(mx-mn)*t);
@@ -1015,11 +1028,12 @@ function overlay(ser,years){
   const lines=ser.map(s=>{ if(S.hiddenLines.has(s.c.inn)) return '';
     const d=s.pts.map((p,i)=>`${i?'L':'M'}${x(p.y)},${yy(p.v)}`).join(' ');
     const last=s.pts[s.pts.length-1];
-    return `<g data-line="${s.c.inn}"><path class="ln" d="${d}" stroke="${s.color}"/>${s.pts.map(p=>`<circle class="pt" cx="${x(p.y)}" cy="${yy(p.v)}" r="3.5" fill="${s.color}"><title>${esc(s.c.short)} · ${p.y}: ${mlnT(p.raw)}</title></circle>`).join('')}<text class="end" x="${x(last.y)+8}" y="${labelY[s.c.inn]+4}" fill="${s.color}">${esc(s.c.short)}</text></g>`; }).join('');
+    return `<g data-line="${s.c.inn}"><path class="ln" d="${d}" stroke="${s.color}"/>${s.pts.map(p=>`<circle class="pt" cx="${x(p.y)}" cy="${yy(p.v)}" r="3.5" fill="${s.color}"><title>${esc(s.c.short)} · ${p.y}: ${finVal(p.raw,sc)}</title></circle>`).join('')}<text class="end" x="${x(last.y)+8}" y="${labelY[s.c.inn]+4}" fill="${s.color}">${esc(s.c.short)}</text></g>`; }).join('');
   const v=(vis.length?vis:ser).flatMap(s=>s.pts.map(p=>Math.abs(p.raw))).filter(Boolean);
   const hint=v.length>1&&Math.max(...v)/Math.min(...v)>50?`<div class="small tertiary" style="margin-top:4px">Масштабы компаний различаются на порядки: линии малых компаний прижаты к оси. Скройте крупную компанию кликом по легенде.</div>`:'';
   return `<div class="ychart" id="ychart"><svg viewBox="0 0 ${W} ${H}">
-    ${ticks.map(t=>`<line class="ax" x1="${L}" x2="${W-R}" y1="${yy(t)}" y2="${yy(t)}"/><text class="lbl" x="${L-8}" y="${yy(t)+4}" text-anchor="end">${yLabel(t)}</text>`).join('')}
+    <text class="lbl" x="${L-8}" y="${T-2}" text-anchor="end">${sc.u}</text>
+    ${ticks.map(t=>`<line class="ax" x1="${L}" x2="${W-R}" y1="${yy(t)}" y2="${yy(t)}"/><text class="lbl" x="${L-8}" y="${yy(t)+4}" text-anchor="end">${yLabel(t,sc)}</text>`).join('')}
     ${zero}
     ${years.map(y=>`<text class="lbl" x="${x(y)}" y="${H-10}" text-anchor="middle">${y}</text>`).join('')}
     ${lines}
@@ -1031,13 +1045,14 @@ function smalls(ser,years){
   return `<div class="smalls">${ser.map(s=>{
     const v=s.pts.map(p=>p.v); let mn=Math.min(0,...v), mx=Math.max(0,...v);
     if(mn===mx){ mn-=1; mx+=1; } const pad=(mx-mn)*.1; mn-=pad; mx+=pad;
+    const sc=finScaleOf(v);
     const x=y=>L+(years.indexOf(y))*((W-L-R)/Math.max(1,years.length-1)), yy=v=>T+(H-T-B)*(1-(v-mn)/(mx-mn));
     const d=s.pts.map((p,i)=>`${i?'L':'M'}${x(p.y)},${yy(p.v)}`).join(' ');
     const first=s.pts[0], last=s.pts[s.pts.length-1];
     const pct=first.raw&&s.pts.length>1?Math.round((last.raw-first.raw)/Math.abs(first.raw)*100):null;
-    return `<div class="sm-c"><div class="t"><span title="${esc(s.c.name)}">${esc(s.c.short)}</span>${pct!=null?`<span class="status ${S.metric==='stl'?'grey':pct>5?'green':pct<-5?'red':'grey'}" title="${S.metric==='stl'?'рост обязательств не оценивается цветом':'изменение первый → последний год'}">${pct>0?'+':''}${pct} %</span>`:`<span class="status grey">1 год</span>`}</div>
-      <svg viewBox="0 0 ${W} ${H}"><path class="ln" d="${d}" stroke="#0b1f35" stroke-width="2" fill="none"/>${s.pts.map(p=>`<circle cx="${x(p.y)}" cy="${yy(p.v)}" r="3" fill="#0b1f35"><title>${p.y}: ${mlnT(p.raw)}</title></circle>`).join('')}${years.map(y=>`<text class="lbl" x="${x(y)}" y="${H-2}" text-anchor="middle">${y}</text>`).join('')}</svg>
-      <div class="small muted" style="display:flex;justify-content:space-between"><span>${mlnT(first.raw)}</span><span>${mlnT(last.raw)}</span></div></div>`; }).join('')}</div>`;
+    return `<div class="sm-c"><div class="t"><div class="sm-c-n"><div class="nm" title="${esc(s.c.name)}">${esc(s.c.short)}</div><div class="u">${sc.u}</div></div>${pct!=null?`<span class="status ${S.metric==='stl'?'grey':pct>5?'green':pct<-5?'red':'grey'}" title="${S.metric==='stl'?'рост обязательств не оценивается цветом':'изменение первый → последний год'}">${pct>0?'+':''}${pct} %</span>`:`<span class="status grey">1 год</span>`}</div>
+      <svg viewBox="0 0 ${W} ${H}"><path class="ln" d="${d}" stroke="#0b1f35" stroke-width="2" fill="none"/>${s.pts.map(p=>`<circle cx="${x(p.y)}" cy="${yy(p.v)}" r="3" fill="#0b1f35"><title>${p.y}: ${finVal(p.raw,sc)}</title></circle>`).join('')}</svg>
+      <div class="sm-c-axis" style="grid-template-columns:repeat(${years.length},1fr)">${years.map(y=>{ const pt=s.pts.find(p=>p.y===y); return `<div class="sm-c-col"><span>${y}</span>${pt?`<span class="v">${finVal(pt.raw,sc)}</span>`:''}</div>`; }).join('')}</div></div>`; }).join('')}</div>`;
 }
 /* Текстовая версия динамики для ответа в чате */
 function trendText(){
