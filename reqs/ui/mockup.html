@@ -99,9 +99,8 @@
   .steps-block{margin-top:0;margin-bottom:12px}
   .steps-block h2{font-size:15px;margin-bottom:8px}
   .llm-summary{margin:0 0 12px;padding:12px 16px}
-  .llm-summary h2{font-size:13px;line-height:16px;font-weight:500;margin-bottom:8px;color:var(--text-secondary)}
   .llm-summary p{margin:0 0 8px;font-size:14px;line-height:1.5;font-weight:400}
-  .llm-summary p:last-child{margin-bottom:0;font-size:13px;color:var(--text-secondary)}
+  .llm-summary p:last-child{margin-bottom:0}
 
   .subject{display:flex;flex-direction:column;gap:4px;margin-bottom:12px}
   .subject .title{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
@@ -643,8 +642,7 @@ const cellItems = (c,k) => k==='deal' ? [dealCell(c)] : c.cmp[k];
 const rows = () => S.deal.amount ? [...ROWS,['Соразмерность сделки','deal']] : ROWS;
 /* Счётчики: сигналы строк сравнения + сигналы слота «Дополнительно» (возраст, смены руководителя/учредителя), которые в таблицу не входят */
 const counts = c => { const all=[...rows().flatMap(([,k])=>cellItems(c,k)), ...c.facts.filter(f=>f.slot==='Дополнительно').map(f=>[f.pol,f.text])]; return {neg:all.filter(([p])=>p==='negative').length, cau:all.filter(([p])=>p==='caution').length, gap:c.gaps.length}; };
-/* Порядок матрицы — по возрастанию риска, ключ явный и показан в подписи под таблицей:
-   метка банка LOW → MEDIUM → HIGH (UNKNOWN в конце) → предупреждение по статусу → число negative → число caution → порядок добавления */
+/* Порядок матрицы — по возрастанию риска (метка банка → предупреждение по статусу → число negative → порядок добавления); без подписи в UI */
 const RISK_RANK = {LOW:0, MEDIUM:1, HIGH:2, UNKNOWN:3};
 const riskKey = c => { const k=counts(c); return [RISK_RANK[c.risk], c.headline?1:0, k.neg, k.cau, S.session.indexOf(c.inn)]; };
 const byRisk = list => [...list].sort((a,b)=>{ const ka=riskKey(a), kb=riskKey(b); for(let i=0;i<ka.length;i++) if(ka[i]!==kb[i]) return ka[i]-kb[i]; return 0; });
@@ -656,8 +654,8 @@ function renderChips(){
   const box=$('#chips'), cnt=$('#counter');
   if(!S.session.length){ box.innerHTML=''; cnt.textContent=''; return; }
   box.innerHTML = `<span class="label">В сессии</span>` + S.session.map(inn=>{ const c=DB[inn]; return `
-    <span class="cchip${inn===S.selected?' active':''}" data-inn="${inn}" title="${esc(c.name)} · ИНН ${inn} · ${RISK[c.risk][0]} · клик — сводка в чате">
-      <span class="name">${esc(c.short)}</span>${c.headline?'<span class="warn" title="'+esc(c.headline)+'">!</span>':''}
+    <span class="cchip${inn===S.selected?' active':''}" data-inn="${inn}" title="${esc(c.name)} · ИНН ${inn} · ${RISK[c.risk][0]} · клик — сводка и сигналы">
+      <span class="name">${esc(c.short)}</span>${compareAlertText(c)?'<span class="warn" title="'+esc(compareAlertText(c))+'">!</span>':''}
       <button class="x" title="Удалить из сессии" data-del="${inn}">×</button></span>`; }).join('')
     + (S.deal.goal||S.deal.amount ? `<span class="cchip deal" title="Контекст сделки; изменить — фразой в чате"><span class="name">Сделка: ${[S.deal.goal, S.deal.amount?mlnT(S.deal.amount):null].filter(Boolean).join(' · ')}</span><button class="x" data-deldeal="1" title="Сбросить контекст">×</button></span>` : '');
   cnt.innerHTML = `${S.session.length} из ${MAX}${S.session.length>1?' · <a href="#" data-clear="1" style="color:inherit">очистить</a>':''}`;
@@ -665,6 +663,14 @@ function renderChips(){
 
 /* ---------- Панель «Подробности» ---------- */
 function setView(kind,inn){ S.view={kind,inn:inn||S.view.inn||S.selected}; if(inn) S.selected=inn; }
+function selectCompany(inn){
+  if(!S.session.includes(inn)) return false;
+  S.selected=inn;
+  setView('card',inn);
+  renderChips();
+  if(S.panel!=='closed') renderPanel();
+  return true;
+}
 /* Матрица и таблица колонками открываются сразу в широкой панели; карточка и график — в обычной (580 px) */
 function openPanel(kind,inn){ setView(kind,inn); if(S.panel==='closed') S.panel=kind==='compare'?'wide':'open'; renderAll(); }
 function renderPanel(){
@@ -675,7 +681,7 @@ function renderPanel(){
   L.dataset.panel=S.panel;
   $('#pwide').textContent=S.panel==='wide'?'⤡':'⤢'; $('#pwide').title=S.panel==='wide'?'Обычная ширина':'Развернуть';
   const c=DB[S.view.inn];
-  const railKind={card:c?esc(c.short):'', compare:`Сравнение ${S.session.length}`, chart:'Динамика по годам'}[S.view.kind];
+  const railKind={card:c?esc(c.short):'', compare:`Сравнение ${S.session.length}`, chart:'Финансовые показатели'}[S.view.kind];
   $('#railText').textContent='Подробности · '+railKind;
   if(S.panel==='closed') return;
   if(S.view.kind==='card'){
@@ -683,13 +689,13 @@ function renderPanel(){
     $('#dBody').innerHTML=renderCard(c);
   } else if(S.view.kind==='compare'){
     const fl=S.focusMode&&S.focus.length>=2?S.focus.map(i=>DB[i]):null;
-    $('#dTitle').innerHTML=fl?`<h2>Подробно: ${names(fl)}</h2><div class="small muted">Колонки — выбранные компании; «← Ко всем» возвращает матрицу</div>`:`<h2>Сравнение ${S.session.length} контрагентов</h2><div class="small muted">Строки — по возрастанию риска (ключ под таблицей); баллов и вердикта нет</div>`;
-    $('#dBody').innerHTML=(fl?renderFocus()+renderDiffs(fl)+renderSteps(fl):renderMatrix()+renderDiffs()+renderSteps(byRisk(cs())))+`<div class="row" style="margin-top:16px"><button class="chip" data-pview="chart">Динамика по годам →</button></div>`;
+    $('#dTitle').innerHTML=fl?`<h2>Подробно: ${names(fl)}</h2><div class="small muted">Колонки — выбранные компании; «← Ко всем» возвращает матрицу</div>`:`<h2>Сравнение ${S.session.length} контрагентов</h2>`;
+    $('#dBody').innerHTML=(fl?renderFocus()+renderDiffs(fl)+renderSteps(fl):renderMatrix()+renderDiffs()+renderSteps(byRisk(cs())))+`<div class="row" style="margin-top:16px"><button class="chip" data-pview="chart">Финансовые показатели →</button></div>`;
   } else {
-    $('#dTitle').innerHTML=`<h2>Динамика по годам · ${S.session.length} компаний</h2><div class="small muted">Рубли, линейная ось; год без значения не рисуется</div>`;
-    $('#dBody').innerHTML=renderYearChart()+`<div class="row" style="margin-top:16px"><button class="chip" data-pview="compare">← Матрица сигналов</button></div>`;
+    $('#dTitle').innerHTML=`<h2>Финансовые показатели · ${S.session.length} компаний</h2><div class="small muted">Рубли, линейная ось; год без значения не рисуется</div>`;
+    $('#dBody').innerHTML=renderYearChart()+`<div class="row" style="margin-top:16px"><button class="chip" data-pview="compare">← Сравнение</button></div>`;
   }
-  document.title=(S.view.kind==='card'?c.name:S.view.kind==='compare'?'Сравнение':'Динамика')+' — Проверка контрагентов';
+  document.title=(S.view.kind==='card'?c.name:S.view.kind==='compare'?'Сравнение':'Финансовые показатели')+' — Проверка контрагентов';
 }
 
 /* ---------- Сводка в чате (основной ответ агента) ---------- */
@@ -724,7 +730,84 @@ function llmBriefText(c){
 }
 function llmBriefHtml(c){
   if(S.llmOff) return '';
-  return `<div class="plate common llm-summary"><h2>Краткий вывод</h2>${llmBriefText(c).map(p=>`<p>${esc(p)}</p>`).join('')}</div>`;
+  return `<div class="plate common llm-summary">${llmBriefText(c).map(p=>`<p>${esc(p)}</p>`).join('')}</div>`;
+}
+function hasDealContext(){ return !!(S.deal.goal||S.deal.amount); }
+function isCriticalBank(c){ return c.risk==='HIGH'||c.zsk==='RED'; }
+function compareAlertText(c){
+  if(c.headline) return c.headline;
+  if(!isCriticalBank(c)) return null;
+  const parts=[RISK[c.risk][0]];
+  if(c.zsk==='RED') parts.push('ЗСК красный');
+  else if(c.zsk==='YELLOW') parts.push('ЗСК жёлтый');
+  return `Банк оценивает: ${parts.join(', ')}`;
+}
+function compareAlertCompanies(list){ return list.filter(c=>compareAlertText(c)); }
+function companyFitScore(c){
+  const k=counts(c);
+  let s=0;
+  s-=k.neg*4; s-=k.cau*1.5; s-=k.gap*0.5; s-=RISK_RANK[c.risk]*3;
+  if(c.headline) s-=20;
+  if(c.zsk==='RED') s-=4; else if(c.zsk==='YELLOW') s-=1.5;
+  if(S.deal.amount){ const [dc]=dealCell(c); if(dc==='caution') s-=8; else if(dc==='gap') s-=3; }
+  return s;
+}
+function compareFitTag(c){
+  if(c.headline) return 'статус под вопросом';
+  const k=counts(c);
+  if(k.neg>=2||(k.neg&&legalNeg(c))) return 'долги и суды';
+  if(k.neg) return 'негативные сигналы';
+  if(c.risk==='HIGH') return 'высокий риск банка';
+  if(S.deal.amount&&dealCell(c)[0]==='caution') return 'сумма не по масштабу';
+  if(k.cau) return 'есть поводы для внимания';
+  if(k.gap) return 'мало данных';
+  return 'риски в норме';
+}
+function legalNeg(c){ return c.facts.some(f=>f.pol==='negative'&&(f.slot==='Юридические события'||f.slot==='Дополнительно')); }
+function compareFitWhy(c){
+  const k=counts(c);
+  if(!k.neg&&!c.headline&&c.risk==='LOW') return 'самый спокойный профиль в сессии';
+  if(!k.neg&&c.risk!=='HIGH') return 'меньше всего красных флагов';
+  return 'наименьшие риски в сравнении';
+}
+function llmCompareBriefText(list){
+  if(!hasDealContext())
+    return ['Для какой сделки сравниваете? Напишите цель и сумму — например: «поставка на 100 млн». Тогда подскажу, с кем логичнее начать.'];
+  const ranked=[...list].sort((a,b)=>companyFitScore(b)-companyFitScore(a));
+  const best=ranked[0], bestScore=companyFitScore(best);
+  const goalLbl=[S.deal.goal,S.deal.amount?`на ${mlnT(S.deal.amount)}`:null].filter(Boolean).join(' ');
+  const tied=ranked.filter(c=>companyFitScore(c)===bestScore);
+  if(tied.length===list.length&&bestScore<=0)
+    return [`Для ${goalLbl} профили близки — явного фаворита нет. Смотрите матрицу и выбирайте по деталям.`];
+  if(tied.length>1){
+    const tail=ranked.filter(c=>!tied.includes(c));
+    return [`Для ${goalLbl} подходят ${names(tied)} — сопоставимый уровень риска.${tail.length?` Остальные с оговорками: ${tail.map(c=>`${c.short} (${compareFitTag(c)})`).join(', ')}.`:''}`];
+  }
+  let t=`Для ${goalLbl} начните с ${best.short} — ${compareFitWhy(best)}.`;
+  const rest=ranked.slice(1);
+  if(rest.length) t+=` ${names(rest)} — с оговорками (${rest.map(c=>compareFitTag(c)).join('; ')}).`;
+  return [t];
+}
+function llmCompareBriefHtml(list,skipHeadline){
+  if(S.llmOff) return '';
+  return `<div class="plate common llm-summary"><p>${esc(llmCompareBriefText(list,skipHeadline)[0])}</p></div>`;
+}
+function compareFallbackHtml(list,skipHeadline){
+  return `<div class="plate common llm-summary"><p>${esc(llmCompareBriefText(list,skipHeadline)[0])}</p></div>`;
+}
+function chatCompareHtml(status){
+  const list=cs(), alerts=compareAlertCompanies(list);
+  return `${status?`<p>${esc(status)}</p>`:''}
+  ${alerts.map(c=>`<div class="alert">${ico('negative','xs')} <b>${esc(c.short)}:</b> ${esc(compareAlertText(c))}</div>`).join('')}
+  ${S.llmOff?compareFallbackHtml(list,alerts.length):llmCompareBriefHtml(list,alerts.length)}
+  <div class="actions"><button class="chip go" data-pview="compare">Сравнение в панели →</button><button class="lnk" data-pview="chart">финансовые показатели</button></div>
+  ${S.llmOff?`<div class="foot">Текст сформирован по правилам без языковой модели.</div>`:''}`;
+}
+function showCompanySummary(inn){
+  if(!selectCompany(inn)) return;
+  S.ctx='company';
+  addMsg('agent',summaryHtml(DB[inn]));
+  renderSuggest();
 }
 function stepsHtml(c,full){
   if(!c.steps.length) return '';
@@ -749,25 +832,7 @@ function summaryHtml(c){
   <div class="actions"><button class="chip go" data-pview="card" data-inn="${c.inn}">Подробности в панели →</button>${S.session.length>1?`<button class="lnk" data-q="В чём различия?">сравнить с остальными</button>`:''}</div>
   ${S.llmOff?`<div class="foot">Текст сформирован по правилам без языковой модели.</div>`:''}`;
 }
-/* Итоги сравнения — ответ агента на «сравни» / «различия» и при добавлении нескольких ИНН */
-function totalsHtml(intro){
-  const list=cs(), n=list.length;
-  const headl=list.filter(c=>c.headline), withNeg=list.filter(c=>counts(c).neg>0), withGap=list.filter(c=>c.gaps.length>0), clean=list.filter(c=>counts(c).neg===0&&counts(c).cau===0);
-  const crit=rows().filter(([,k])=>k!=='bank'&&k!=='gapsRow').map(([name,k])=>{
-    const g=groupsByCriterion(k); const part=[];
-    if(g.negative.length) part.push(`<span class="g negative"><span>${names(g.negative.map(([c])=>c))}</span></span>`);
-    if(g.caution.length) part.push(`<span class="g caution"><span>${names(g.caution.map(([c])=>c))}</span></span>`);
-    if(g.gap.length) part.push(`<span class="g gap"><span>оценить нельзя: ${names(g.gap.map(([c])=>c))}</span></span>`);
-    if(!part.length) part.push(`<span class="g positive"><span>негативных сигналов ни у кого</span></span>`);
-    return `<div class="k">${name}</div><div>${part.join('')}</div>`;
-  }).join('');
-  return `${intro?`<p>В сессии ${n} компаний. Итоги по единому набору критериев:</p>`:''}
-  <p>${headl.length?`Предупреждение по статусу у ${headl.length}: ${names(headl)}. `:''}Негативные сигналы у ${withNeg.length} из ${n}${withNeg.length?` (${names(withNeg)})`:''}; без негативных и требующих внимания — ${clean.length?names(clean):'никого'}. Пробелы в данных у ${withGap.length}: отсутствие сведений не означает отсутствие риска.</p>
-  ${headl.map(c=>`<div class="alert" style="font-size:13px;font-weight:500;padding:8px 10px">${ico('negative','xs')} <b>${esc(c.short)}:</b> ${esc(c.headline)}</div>`).join('')}
-  <div class="crit">${crit}</div>
-  <div class="actions"><button class="chip go" data-pview="compare">Матрица сигналов в панели →</button><button class="lnk" data-pview="chart">динамика по годам</button></div>
-  <div class="foot">${S.llmOff?'Текст сформирован по правилам без языковой модели. ':''}Баллов и вердикта нет; в матрице строки идут по возрастанию риска, ключ порядка подписан.</div>`;
-}
+/* Итоги сравнения в панели — матрица, различия, шаги; в чате — chatCompareHtml */
 
 /* ---------- Карточка (панель) ---------- */
 function renderCard(c){
@@ -854,9 +919,9 @@ function groupsByCriterion(k,list){
   return g;
 }
 function filtered(){
-  return byRisk(cs()).filter(c=> S.filter==='all' || (S.filter==='neg'&&counts(c).neg>0) || (S.filter==='gap'&&c.gaps.length>0) || (S.filter==='head'&&c.headline));
+  return byRisk(cs()).filter(c=> S.filter==='all' || (S.filter==='neg'&&counts(c).neg>0) || (S.filter==='gap'&&c.gaps.length>0) || (S.filter==='head'&&compareAlertText(c)));
 }
-const FILTER_LABEL={neg:'только с негативными сигналами',gap:'только с пробелами в данных',head:'только с предупреждением по статусу'};
+const FILTER_LABEL={neg:'только с негативными сигналами',gap:'только с пробелами в данных',head:'только с предупреждениями'};
 function renderMatrix(){
   const list=filtered(), rs=rows();
   const cell=(c,k)=>{ const it=[...cellItems(c,k)].sort((a,b)=>POL_ORDER[a[0]]-POL_ORDER[b[0]]);
@@ -873,11 +938,10 @@ function renderMatrix(){
     <tr><th></th><th>Контрагент</th>${rs.map(([n])=>`<th>${n}</th>`).join('')}</tr>
     ${list.map(c=>`<tr class="${S.focus.includes(c.inn)?'sel':''}" data-row="${c.inn}">
       <td><input type="checkbox" data-pick="${c.inn}" ${S.focus.includes(c.inn)?'checked':''} ${!S.focus.includes(c.inn)&&S.focus.length>=4?'disabled title="В фокусе не больше 4"':''}></td>
-      <td><div class="cn" data-open="${c.inn}">${esc(c.short)}</div><div class="mono muted">${c.inn}</div><div style="margin-top:3px">${riskStatus(c)}</div>${c.headline?`<div class="small" style="color:var(--negative-text);margin-top:3px">${ico('negative','xs')} ${esc(c.headline.split(' (')[0])}</div>`:''}</td>
+      <td><div class="cn" data-open="${c.inn}">${esc(c.short)}</div><div class="mono muted">${c.inn}</div><div style="margin-top:3px">${riskStatus(c)}</div></td>
       ${rs.map(([,k])=>`<td>${cell(c,k)}</td>`).join('')}</tr>`).join('')}
     ${!list.length?`<tr><td colspan="${rs.length+2}" class="muted" style="text-align:center;padding:20px">По этому фильтру контрагентов нет</td></tr>`:''}
-  </table></div>
-  <div class="small tertiary" style="margin-top:8px">Порядок строк — по возрастанию риска: метка банка (низкий → средний → высокий; «не определён» — в конце), затем предупреждение по статусу, затем число негативных сигналов. Это порядок, а не балл и не вердикт; выбор за вами. Отфильтровать можно фразой в чате («покажи только с негативными»), подробное сравнение 2–4 — чекбоксами или фразой «сравни А и Б подробно».</div>`;
+  </table></div>`;
 }
 function renderFocus(){
   const list=S.focus.map(i=>DB[i]), rs=rows();
@@ -1007,7 +1071,7 @@ function agentAnswer(q){
     const res=inns.map(addInn);
     if(inns.length===1) return res[0].html;
     S.ctx='compare'; setView('compare');
-    return `<p>Обработал ${inns.length} ИНН: добавлено ${res.filter(r=>r.ok).length}, не найдено ${res.filter(r=>!r.ok).length}.</p>`+res.filter(r=>!r.ok).map(r=>r.html).join('')+(S.session.length>1?totalsHtml():'');
+    return (res.some(r=>!r.ok)?`<p>Добавлено ${res.filter(r=>r.ok).length} из ${inns.length}.</p>${res.filter(r=>!r.ok).map(r=>r.html).join('')}`:'')+chatCompareHtml();
   }
   const amt=t.match(/(\d+(?:[.,]\d+)?)\s*(млрд|млн|тыс)/); const goal=/госзакуп|тендер/.test(t)?'госзакупка':/поставк/.test(t)?'поставка':/без контекста/.test(t)?null:undefined;
   if((amt&&/контракт|сделк|сумм|планиру|договор/.test(t))||goal!==undefined&&/цель|контекст|поставк|госзакуп/.test(t)){
@@ -1015,7 +1079,7 @@ function agentAnswer(q){
     if(goal!==undefined) S.deal.goal=goal;
     const hit=cs().filter(c=>S.deal.amount&&dealCell(c)[0]==='caution');
     if(S.session.length>1) setView('compare');
-    return `<p>Запомнил контекст сделки: ${[S.deal.goal, S.deal.amount?mlnT(S.deal.amount):null].filter(Boolean).join(', ')}. ${S.deal.amount&&S.session.length?`${S.session.length>1?'В сравнении появилась строка «Соразмерность сделки»':'Краткий вывод обновлён с учётом сделки'}${hit.length?`: сумма превышает годовую выручку у ${names(hit)} ${ref('finReports[].common.proceeds')}`:''}.`:''} Метки банка не пересчитываются.</p>${S.session.length===1&&!S.llmOff?llmBriefHtml(DB[S.session[0]]):''}${S.session.length>1?`<div class="actions"><button class="chip go" data-pview="compare">Матрица в панели →</button></div>`:''}`;
+    return `<p>Запомнил контекст сделки: ${[S.deal.goal, S.deal.amount?mlnT(S.deal.amount):null].filter(Boolean).join(', ')}. ${S.deal.amount&&S.session.length?`${S.session.length>1?'В сравнении появилась строка «Соразмерность сделки»':'Краткий вывод обновлён с учётом сделки'}${hit.length?`: сумма превышает годовую выручку у ${names(hit)} ${ref('finReports[].common.proceeds')}`:''}.`:''} Метки банка не пересчитываются.</p>${S.session.length===1&&!S.llmOff?llmBriefHtml(DB[S.session[0]]):''}${S.session.length>1?chatCompareHtml():''}`;
   }
   if(!S.session.length) return `<p>В сессии пока никого. Введите ИНН — 10 цифр для юрлица или 12 для ИП, или напишите «доступные ИНН».</p>`;
   const many=S.session.length>1;
@@ -1029,11 +1093,11 @@ function agentAnswer(q){
   if(/расскажи|покажи сводку|сводк|что по|карточк|подробнее о/.test(t)&&(mentioned.length===1||!many)){ const c=DB[S.selected]; setView('card',c.inn); S.ctx='company'; return summaryHtml(c); }
   if(many&&/матриц|ко всем|всех|все компании/.test(t)){ S.focusMode=false; S.filter='all'; setView('compare'); S.ctx='compare'; return `<p>Матрица сигналов по всем ${S.session.length} — в панели. Строки идут по возрастанию риска, ключ порядка подписан под таблицей.</p><div class="actions"><button class="chip go" data-pview="compare">Открыть матрицу →</button></div>`; }
   if(many&&/только с негатив|с негативн/.test(t)){ S.filter='neg'; S.focusMode=false; setView('compare'); S.ctx='compare'; const l=filtered(); return `<p>Негативные сигналы у ${l.length} из ${S.session.length}:</p><ul>${l.map(c=>`<li><b>${esc(c.short)}</b> — ${esc(rows().flatMap(([,k])=>cellItems(c,k)).filter(([p])=>p==='negative').map(([,x])=>lc(x)).join('; '))}</li>`).join('')}</ul><div class="actions"><button class="chip go" data-pview="compare">Матрица с фильтром в панели →</button><button class="lnk" data-q="Покажи матрицу">показать всех</button></div>`; }
-  if(many&&/предупрежден|статус/.test(t)){ const l=cs().filter(c=>c.headline); S.filter='head'; setView('compare'); S.ctx='compare'; return l.length?`<p>Предупреждение по статусу у ${l.length} из ${S.session.length}:</p>${l.map(c=>`<div class="alert" style="font-size:13px;font-weight:500;padding:8px 10px">${ico('negative','xs')} <b>${esc(c.short)}:</b> ${esc(c.headline)} ${ref('status.reasonName')}</div>`).join('')}<div class="actions"><button class="chip go" data-pview="compare">Матрица с фильтром в панели →</button></div>`:`<p>Предупреждений по статусу ни у кого из ${S.session.length} нет; все действуют ${ref('status.status')}.</p>`; }
+  if(many&&/предупрежден|статус/.test(t)){ const l=compareAlertCompanies(cs()); S.filter='head'; setView('compare'); S.ctx='compare'; return l.length?`<p>Предупреждения у ${l.length} из ${S.session.length}:</p>${l.map(c=>`<div class="alert" style="font-size:13px;font-weight:500;padding:8px 10px">${ico('negative','xs')} <b>${esc(c.short)}:</b> ${esc(compareAlertText(c))} ${c.headline?ref('status.reasonName'):ref('baseInfo.riskLevel')}</div>`).join('')}<div class="actions"><button class="chip go" data-pview="compare">Матрица с фильтром в панели →</button></div>`:`<p>Предупреждений по статусу и критической оценке банка ни у кого из ${S.session.length} нет.</p>`; }
   if(many&&/пробел|не хватает|нет данных|недостаточно/.test(t)&&mentioned.length!==1&&!['company','fin','legal'].includes(S.ctx)){ const l=cs().filter(c=>c.gaps.length); S.filter='gap'; setView('compare'); S.ctx='compare'; return `<p>Пробелы в данных у ${l.length} из ${S.session.length}:</p>${l.map(c=>`<p><b>${esc(c.short)}</b></p>${c.gaps.map(gapFact).join('')}`).join('')}${gapsNote()}<div class="actions"><button class="chip go" data-pview="compare">Матрица с фильтром в панели →</button></div>`; }
   if(many&&/по годам|динамик/.test(t)){ S.metric=/прибыл/.test(t)?'pf':/капитал/.test(t)?'cap':/обязательств/.test(t)?'stl':/актив/.test(t)?'ca':'pr'; S.hiddenLines.clear(); setView('chart'); S.ctx='chart'; return trendText(); }
-  if(many&&/лучше|надёжн|надежн|с кем работать|кого выбрать|самый/.test(t)){ setView('compare'); S.ctx='diffs'; return `<p>Не ранжирую компании — перечислю различия, решение за вами.</p>${diffsList()}<p>Отсутствие фактов не означает отсутствие риска: у ${names(cs().filter(c=>c.gaps.length))||'никого'} есть пробелы в данных.</p><div class="actions"><button class="chip go" data-pview="compare">Матрица в панели →</button></div>`; }
-  if(many&&/различ|сравн|итог/.test(t)){ S.focusMode=false; setView('compare'); S.ctx='diffs'; return totalsHtml()+`<details class="fold"><summary>различия по критериям текстом</summary>${diffsList()}</details>`; }
+  if(many&&/лучше|надёжн|надежн|с кем работать|кого выбрать|самый|кому подходит|кого выбрать/.test(t)){ setView('compare'); S.ctx='compare'; return chatCompareHtml(); }
+  if(many&&/различ|сравн|итог/.test(t)){ S.focusMode=false; setView('compare'); S.ctx='diffs'; return chatCompareHtml()+`<details class="fold"><summary>Различия по критериям</summary>${diffsList()}</details>`; }
   const c=DB[S.selected];
   const who=many?`${esc(c.short)}: `:'';
   const other=many?`<div class="small tertiary" style="margin-top:6px">Отвечаю по ${esc(c.short)}; о другой компании — клик по чипу или имя в вопросе.</div>`:'';
@@ -1056,7 +1120,7 @@ function agentAnswer(q){
   if(/не хватает|пробел|нет данных|недостаточно/.test(t)){ S.ctx='company'; return (c.gaps.length?`${c.gaps.map(gapFact).join('')}${gapsNote()}`:`<p>${who}все разделы отчёта банка заполнены; пробелов в данных нет.</p>`)+other; }
   if(/провер|запрос|до сделки|документ/.test(t)){ S.ctx='company'; return `<p>${who}до сделки:</p><ol>${c.steps.map(s=>`<li>${esc(s.text)} <span class="muted small">(${esc(s.why)})</span></li>`).join('')}</ol>${many?`<div class="actions"><button class="lnk" data-pview="compare">шаги по всем ${S.session.length} — в панели</button></div>`:''}${other}`; }
   if(/сотрудник|штат|клиент|сайт|интернет/.test(t)) return `<p>В доступных данных этой информации нет.</p><div class="gapbox">Веб-поиск не подключён; отвечаю только по отчёту банка.</div>`;
-  return `<p>Могу ответить про оценку банка, финансы, исполнительные производства и арбитраж, реестры ФНС, пробелы в данных, что проверить до сделки${many?'; по нескольким — различия, динамика по годам, «сравни А и Б подробно»':''}. Управление сессией тоже здесь: ИНН добавляет контрагента, «убери …» удаляет, «контракт на 50 млн, поставка» задаёт контекст сделки.</p>`;
+  return `<p>Могу ответить про оценку банка, финансы, исполнительные производства и арбитраж, реестры ФНС, пробелы в данных, что проверить до сделки${many?'; по нескольким — различия, финансовые показатели, «сравни А и Б подробно»':''}. Управление сессией тоже здесь: ИНН добавляет контрагента, «убери …» удаляет, «контракт на 50 млн, поставка» задаёт контекст сделки.</p>`;
 }
 /* Три подсказки под последним ответом, по контексту */
 function suggestions(){
@@ -1076,6 +1140,10 @@ function suggestBase(){
     return ['Что с финансами?','Что проверить до сделки?','Доступные ИНН'];
   }
   const two=cs().slice(0,2);
+  if(n>1&&(S.ctx==='compare'||S.ctx==='diffs')){
+    if(!hasDealContext()) return ['Планируется поставка на 100 млн','Госзакупка','В чём различия?'];
+    return ['В чём различия?','Что проверить до сделки?','Выручка по годам'];
+  }
   switch(S.ctx){
     case 'compare': case 'diffs': return n<=4?['У кого предупреждения?',`Сравни ${two[0].short} и ${two[1].short} подробно`,'Выручка по годам']:['Покажи только с негативными','У кого предупреждения?','Выручка по годам'];
     case 'focus': return ['Выручка по годам','Покажи матрицу','Что проверить до сделки?'];
@@ -1112,7 +1180,7 @@ function greet(){
   if(!S.session.length){ S.ctx='start'; $('#launcherInput').value=''; return; }
   addMsg('user','проверь '+S.session.join(', '));
   if(S.session.length===1){ S.ctx='company'; addMsg('agent',summaryHtml(DB[S.session[0]])); renderSuggest(); return; }
-  S.ctx='compare'; addMsg('agent',totalsHtml(true)); renderSuggest();
+  S.ctx='compare'; addMsg('agent',chatCompareHtml()); renderSuggest();
 }
 
 /* ---------- Подсветка блока по внутренней привязке факта ---------- */
@@ -1132,7 +1200,7 @@ document.addEventListener('click',e=>{
   if(d.del){ e.stopPropagation(); send('убери '+DB[d.del].short); }
   else if(d.deldeal){ S.deal={goal:null,amount:null}; renderAll(); }
   else if(d.clear){ e.preventDefault(); if(confirm('Очистить сессию? Контрагенты, контекст сделки и история чата будут сброшены.')){ S.session=[]; S.deal={goal:null,amount:null}; S.focus=[]; S.focusMode=false; S.panel='closed'; renderAll(); greet(); } }
-  else if(cl('.cchip[data-inn]')){ send('расскажи о '+DB[cl('.cchip').dataset.inn].short); }
+  else if(cl('.cchip[data-inn]')){ showCompanySummary(cl('.cchip[data-inn]').dataset.inn); }
   else if(t.classList.contains('ref')){ e.stopPropagation(); openRef(d.ref, cl('.msg')?innOf(t):null); }
   else if(cl('.fact')){ openRef(cl('.fact').dataset.ref, cl('.msg')?innOf(t):null); }
   else if(d.pview){ openPanel(d.pview, d.inn); if(d.block) highlight(d.block); }
