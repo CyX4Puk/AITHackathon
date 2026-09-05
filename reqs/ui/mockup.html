@@ -113,9 +113,6 @@
   .ico.sm{width:16px;height:16px;font-size:10px;margin-top:2px}
   .ico.xs{width:12px;height:12px;font-size:8px;margin-top:0}
 
-  .ref{display:inline-block;font-family:var(--mono);font-size:12px;line-height:16px;color:var(--text-secondary);background:rgba(11,31,53,.06);border-radius:6px;padding:1px 6px;margin:4px 4px 0 0;cursor:pointer;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;vertical-align:bottom}
-  .ref:hover{background:rgba(11,31,53,.12);color:var(--text-primary)}
-
   .plate{border-radius:var(--r12);padding:14px 16px;margin-top:16px;border:1px solid var(--border)}
   .plate h2{margin-bottom:8px;font-size:15px}
   .plate.gap{border-style:dashed;background:transparent}
@@ -209,6 +206,7 @@
   .sm-c svg{width:100%;height:70px;display:block;margin-top:4px}
 
   /* Чат */
+  .chat-flow{display:flex;flex-direction:column;flex:1;min-height:0}
   .msgs{flex:1;overflow:auto;padding:16px 20px;display:flex;flex-direction:column;gap:14px;min-height:0}
   .msg{max-width:100%;font-size:14px;line-height:20px}
   .msg.user{align-self:flex-end;background:var(--bg-secondary);border-radius:var(--r12) var(--r12) 4px var(--r12);padding:10px 12px;max-width:80%}
@@ -243,6 +241,12 @@
   .compose textarea{flex:1;resize:none;border:1px solid var(--border);border-radius:var(--r8);padding:12px;font:inherit;min-height:48px;max-height:104px}
   .compose button{width:48px;height:48px;border-radius:var(--r8);border:0;background:#0b1f35;color:#fff;font-size:18px}
   .compose-hint{padding:0 20px 12px;font-size:12px;color:var(--text-tertiary)}
+  .chat.empty-session .chat-flow{justify-content:center;padding-bottom:8vh}
+  .chat.empty-session .msgs{flex:0 0 auto;overflow:visible;padding-bottom:8px;align-items:center}
+  .chat.empty-session .msg.agent{align-self:center;max-width:560px;text-align:center;font-size:16px;line-height:22px}
+  .chat.empty-session .suggest{justify-content:center;border-top:0;padding-top:4px}
+  .chat.empty-session .compose{width:100%;border-top:0}
+  .chat.empty-session .compose-hint{text-align:center}
   .skeleton{display:flex;flex-direction:column;gap:6px} .skeleton i{display:block;height:12px;border-radius:6px;background:linear-gradient(90deg,var(--bg-secondary),var(--bg-tertiary),var(--bg-secondary));background-size:200% 100%;animation:sk 1.2s infinite}
   @keyframes sk{to{background-position:-200% 0}}
 
@@ -271,17 +275,19 @@
 <div class="layout" id="layout" data-panel="closed">
 
   <!-- A. Чат — основной инструмент; сессия в шапке чата -->
-  <section class="panel chat">
+  <section class="panel chat" id="chat">
     <div class="chat-head">
       <div class="top"><h2>Чат с агентом</h2><span class="status grey">по данным отчёта</span><span class="counter" id="counter"></span></div>
       <div class="chips" id="chips"></div>
     </div>
-    <div class="msgs" id="msgs"></div>
-    <div class="compose">
-      <textarea id="chatInput" rows="1" placeholder="ИНН, вопрос или контекст сделки"></textarea>
-      <button id="sendBtn" title="Отправить">↑</button>
+    <div class="chat-flow">
+      <div class="msgs" id="msgs"></div>
+      <div class="compose">
+        <textarea id="chatInput" rows="1" placeholder="Опишите задачу, введите ИНН или контекст сделки"></textarea>
+        <button id="sendBtn" title="Отправить">↑</button>
+      </div>
+      <div class="compose-hint">Примеры: «проверь 9721159668» · «убери Техпром» · «контракт на 100 млн, поставка» · «сравни Транслориум и Агилар подробно»</div>
     </div>
-    <div class="compose-hint">Примеры: «проверь 9721159668» · «убери Техпром» · «контракт на 100 млн, поставка» · «сравни Транслориум и Агилар подробно»</div>
   </section>
 
   <!-- B. Панель «Подробности» — открывается по ссылке из ответа, содержимое следует за последним ответом -->
@@ -548,7 +554,8 @@ const esc = s => String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt
 const status = (label,color) => `<span class="status ${color}">${label}</span>`;
 const riskStatus = c => status(...RISK[c.risk]);
 const zskStatus = c => status(...ZSK[c.zsk]);
-const ref = r => `<span class="ref" data-ref="${esc(r)}" title="${esc(r)}">${esc(r)}</span>`;
+/* Технические пути полей хранятся в данных и data-ref, но не выводятся пользователю. */
+const ref = () => '';
 const ico = (pol,size) => `<span class="ico ${pol}${size?' '+size:''}">${P[pol]||'i'}</span>`;
 const fmt1 = v => v.toLocaleString('ru-RU',{minimumFractionDigits:1,maximumFractionDigits:1});
 const mln = v => v==null ? '<span class="tertiary">нет данных</span>' : (Math.abs(v)>=1000 ? fmt1(v/1000)+' млрд ₽' : Math.abs(v)<1 ? fmt1(v*1000)+' тыс. ₽' : fmt1(v)+' млн ₽');
@@ -578,7 +585,7 @@ const findAllByName = t => cs().filter(c=>t.includes(c.short.toLowerCase()) || t
 /* ---------- Шапка чата: чипы сессии ---------- */
 function renderChips(){
   const box=$('#chips'), cnt=$('#counter');
-  if(!S.session.length){ box.innerHTML=`<span class="label">В сессии пока никого — начните с ИНН</span>`; cnt.textContent='0 из '+MAX; return; }
+  if(!S.session.length){ box.innerHTML=`<span class="label">Сессия начнётся после первого запроса</span>`; cnt.textContent='0 из '+MAX; return; }
   box.innerHTML = `<span class="label">В сессии</span>` + S.session.map(inn=>{ const c=DB[inn]; return `
     <span class="cchip${inn===S.selected?' active':''}" data-inn="${inn}" title="${esc(c.name)} · ИНН ${inn} · ${RISK[c.risk][0]} · клик — сводка в чате">
       <span class="dot ${RISK[c.risk][1]}"></span><span class="name">${esc(c.short)}</span>${c.headline?'<span class="warn" title="'+esc(c.headline)+'">!</span>':''}
@@ -696,8 +703,7 @@ function renderCard(c){
   ${c.headline?`<div class="alert">${ico('negative')} ${esc(c.headline)} ${ref('status.reasonName')}</div>`:''}
   <details class="block" id="blk-A" open><summary>A. Оценка банка ${sc('A')}</summary><div class="body">
     <div class="kv"><div class="k">Уровень риска банка</div><div class="v">${riskStatus(c)} ${c.risk==='UNKNOWN'?`<span class="sig">${ico('gap','sm')} пробел</span>`:''} ${ref('baseInfo.riskLevel')}</div>
-    <div class="k">Знай своего клиента (ЗСК)</div><div class="v">${zskStatus(c)} ${ref('zskRiskLevel')}</div></div>
-    <div class="small muted" style="margin-top:8px">Метки рассчитаны банком по собственной модели и не пересчитываются агентом.</div></div></details>
+    <div class="k">Знай своего клиента (ЗСК)</div><div class="v">${zskStatus(c)} ${ref('zskRiskLevel')}</div></div></div></details>
 
   <details class="block" id="blk-B" open><summary>B. Профиль ${sc('B')}</summary><div class="body"><div class="kv">
     <div class="k">${c.isIP?'ФИО':'Полное наименование'}</div><div class="v">${esc(c.full)}</div>
@@ -984,12 +990,12 @@ function renderSuggest(){
 }
 function addMsg(role,html){ const m=document.createElement('div'); m.className='msg '+role; m.innerHTML=html; $('#msgs').appendChild(m); $('#msgs').scrollTop=1e9; return m; }
 function finish(sk,a){
-  const n=(a.match(/class="ref"/g)||[]).length;
-  sk.innerHTML=a+(n&&!S.llmOff?`<details class="check"><summary>Проверка ответа: ${n} ${n===1?'поле':n<5?'поля':'полей'}, 0 замечаний</summary>Каждое число и дата сверены с результатом инструмента; все ссылки на поля существуют в отчёте.</details>`:'');
+  sk.innerHTML=a;
   renderAll(); renderSuggest();
 }
 function send(text){
   if(!text.trim()) return;
+  $('#chat').classList.remove('empty-session');
   S.lastQ=text; addMsg('user',esc(text)); $('#chatInput').value='';
   const isCmd=/\d{10,12}/.test(text)||/^(убери|удали|очист|доступн|расскажи|покажи|сравни|матриц)/i.test(text.trim())||/по годам|различ/i.test(text);
   if(S.llmOff&&!isCmd){ addMsg('agent',`<div class="sys">Языковая модель недоступна. Сводки и сравнение формируются по правилам: напишите ИНН, «расскажи о …», «в чём различия», «покажи матрицу». Команды сессии («убери», «очисти») работают.</div>`); renderSuggest(); return; }
@@ -998,13 +1004,14 @@ function send(text){
 }
 function greet(){
   $('#msgs').innerHTML='';
-  if(!S.session.length){ S.ctx='start'; addMsg('agent','<p>Введите ИНН контрагента — покажу сводку по данным отчёта банка: предупреждения, сигналы по финансам, судам и реестрам, что проверить до сделки. До 10 компаний в одной сессии; от двух — сравнение.</p>'); renderSuggest(); return; }
+  $('#chat').classList.toggle('empty-session',!S.session.length);
+  if(!S.session.length){ S.ctx='start'; addMsg('agent','<p><b>С чем вы пришли и что хотите получить от агента?</b></p><p class="muted">Опишите задачу своими словами. Можно сразу указать ИНН, контекст сделки или попросить сравнить контрагентов.</p>'); renderSuggest(); return; }
   addMsg('user','проверь '+S.session.join(', '));
   if(S.session.length===1){ S.ctx='company'; addMsg('agent',summaryHtml(DB[S.session[0]],true)); renderSuggest(); return; }
   S.ctx='compare'; addMsg('agent',totalsHtml(true)); renderSuggest();
 }
 
-/* ---------- Подсветка блока по ссылке на поле ---------- */
+/* ---------- Подсветка блока по внутренней привязке факта ---------- */
 function blockFor(r){
   const map=[[/^(baseInfo\.riskLevel|zskRiskLevel)/,'A'],[/^(status|baseInfo|reportDate)/,'B'],[/^(finReports|coefficient)/,'C'],[/^(executionProceedings|arbitration|inspections)/,'D'],[/^reputationalRisks/,'E'],[/^(foundersInfo|licenses|procurements|relatedCompanies)/,'F']];
   return (map.find(([re])=>re.test(r))||[0,'B'])[1];
