@@ -193,7 +193,7 @@ CSV — плоская развёртка JSON-отчёта: путь в име�
 
 | Слот | Правила (первое сработавшее) |
 |---|---|
-| 0. Заголовок (вне лимита) | `STATUS_CLOSED` или `STATUS_PENDING_EXCLUSION`, если сработал |
+| 0. Заголовок (вне лимита) | `STATUS_CLOSED` или `STATUS_PENDING_EXCLUSION`, если сработал |f
 | 1. Оценка банка | `BANK_RISK` / `BANK_RISK_UNKNOWN` + `BANK_ZSK` — одна строка |
 | 2. Финансы | `FIN_PROCEEDS_DOWN`, `FIN_PROFIT_LOSS`, `FIN_NEGATIVE_CAPITAL`, `FIN_DEBT_LOAD`, `FIN_PROFIT_DOWN`, `FIN_MISSING`, `FIN_EMPTY`, `FIN_TREND_INSUFFICIENT`, `FIN_PROCEEDS_FLAT`, `FIN_PROCEEDS_UP`, `FIN_PROFIT_UP` |
 | 3. Юридические события | `EP_ACTIVE`, `ARB_DEFENDANT_OPEN`, `INSPECTION_VIOLATION`, `ARB_DEFENDANT_DOMINANT`, `EP_MISSING`, `ARB_MISSING`, `EP_HISTORY_ONLY`, `ARB_SUMMARY`, `EP_NONE`, `ARB_NONE` |

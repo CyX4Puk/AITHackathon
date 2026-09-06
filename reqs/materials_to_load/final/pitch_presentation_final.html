@@ -497,11 +497,11 @@
     /* Slide 6 */
     .architecture {
       display: grid;
-      grid-template-columns: minmax(180px, .9fr) minmax(230px, 1.16fr) minmax(210px, 1fr);
+      grid-template-columns: minmax(180px, .9fr) minmax(108px, 150px) minmax(230px, 1.16fr) minmax(108px, 150px) minmax(210px, 1fr);
       grid-template-rows: repeat(2, minmax(112px, 1fr));
-      gap: clamp(14px, 1.8vw, 24px) clamp(46px, 6vw, 94px);
+      column-gap: 0;
+      row-gap: clamp(14px, 1.8vw, 24px);
       align-items: stretch;
-      position: relative;
     }
     .arch-node {
       position: relative;
@@ -513,8 +513,9 @@
     }
     .arch-node .icon-box { flex: 0 0 auto; margin: 0; }
     .arch-node p { margin: 6px 0 0; color: var(--muted); font-size: clamp(11px, .9vw, 14px); line-height: 1.35; }
-    .arch-chat { grid-row: 1 / 3; align-self: center; min-height: 170px; }
+    .arch-chat { grid-column: 1; grid-row: 1 / 3; align-self: center; min-height: 170px; }
     .arch-backend {
+      grid-column: 3;
       grid-row: 1 / 3;
       align-self: center;
       min-height: 218px;
@@ -524,42 +525,56 @@
     }
     .arch-backend p { color: #bdbdb8; }
     .arch-backend .icon-box { color: #fff; background: rgba(255,255,255,.12); }
-    .arch-mcp { grid-column: 3; grid-row: 1; }
-    .arch-llm { grid-column: 3; grid-row: 2; }
-    .connector {
-      position: absolute;
-      z-index: 1;
-      height: 2px;
-      background: #bbbcb8;
+    .arch-mcp { grid-column: 5; grid-row: 1; }
+    .arch-llm { grid-column: 5; grid-row: 2; }
+    .arch-link {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 0;
+      padding: 0 4px;
+      color: #888884;
     }
-    .connector::after {
+    .arch-link.left { grid-column: 2; grid-row: 1 / 3; }
+    .arch-link.upper { grid-column: 4; grid-row: 1; color: var(--red); }
+    .arch-link.lower { grid-column: 4; grid-row: 2; color: var(--blue); }
+    .arch-link::before {
       content: "";
       position: absolute;
-      right: -1px;
-      top: -4px;
+      left: 8px;
+      right: 12px;
+      top: 50%;
+      height: 2px;
+      background: currentColor;
+    }
+    .arch-link::after {
+      content: "";
+      position: absolute;
+      right: 8px;
+      top: 50%;
       width: 8px;
       height: 8px;
       border-top: 2px solid currentColor;
       border-right: 2px solid currentColor;
-      transform: rotate(45deg);
+      transform: translateY(-50%) rotate(45deg);
     }
-    .connector.left { left: 27%; right: 61%; top: 50%; color: #888884; }
-    .connector.upper { left: 62%; right: 26%; top: 25%; color: var(--red); background: var(--red); }
-    .connector.lower { left: 62%; right: 26%; top: 75%; color: var(--blue); background: var(--blue); }
     .connector-label {
-      position: absolute;
-      z-index: 3;
+      position: relative;
+      z-index: 1;
+      max-width: 100%;
       padding: 4px 8px;
+      border: 1px solid var(--line);
       border-radius: 999px;
-      color: #696965;
-      background: var(--paper);
+      color: #4e4e4a;
+      background: #fff;
+      box-shadow: 0 6px 16px rgba(17, 17, 17, .06);
       font-size: 10px;
       font-weight: 750;
-      white-space: nowrap;
+      line-height: 1.2;
+      text-align: center;
+      transform: translateY(-13px);
     }
-    .label-left { left: 31%; top: calc(50% - 23px); }
-    .label-upper { left: 66%; top: calc(25% - 23px); }
-    .label-lower { left: 65%; top: calc(75% - 23px); }
     .arch-legend {
       display: flex;
       flex-wrap: wrap;
@@ -638,6 +653,8 @@
       font-size: clamp(14px, 1.25vw, 20px);
       line-height: 1.42;
     }
+    .thanks-slide .slide-main { align-items: flex-start; }
+    .thanks-slide h1 { margin-bottom: 28px; }
 
     /* Controls */
     .controls {
@@ -744,7 +761,7 @@
       .metric-value { font-size: 40px; }
       .state-card, .feature-card, .value-card { min-height: 245px; padding: 22px; }
       .icon-box { margin-bottom: 15px; }
-      .architecture { gap: 14px 54px; }
+      .architecture { grid-template-columns: minmax(150px, .9fr) 96px minmax(190px, 1.16fr) 96px minmax(170px, 1fr); }
       .arch-node { padding: 17px; }
       .arch-backend { min-height: 184px; }
     }
@@ -766,7 +783,7 @@
       .value-plus { width: 54px; height: 54px; }
       .architecture { grid-template-columns: 1fr; grid-template-rows: auto; gap: 12px; }
       .arch-chat, .arch-backend, .arch-mcp, .arch-llm { grid-column: 1; grid-row: auto; min-height: auto; }
-      .connector, .connector-label { display: none; }
+      .arch-link { display: none; }
       .key-hint { display: none; }
       .slide.demo-slide { min-height: 100vh; height: 100vh; }
     }
@@ -818,7 +835,7 @@
           </div>
         </div>
       </div>
-      <footer class="slide-footer"><span>Альфа-Банк · сентябрь 2026</span><span><strong>01</strong> / 07</span></footer>
+      <footer class="slide-footer"><span>Альфа-Банк · сентябрь 2026</span><span><strong>01</strong> / 08</span></footer>
       <aside class="speaker-notes" hidden>Мы создали ИИ-агента для малого бизнеса, клиента банка, который проверяет контрагентов перед сделкой и хочет снизить риск столкнуться с недобросовестным поставщиком.</aside>
     </section>
 
@@ -868,7 +885,7 @@
           </article>
         </div>
       </div>
-      <footer class="slide-footer"><span>Сводка · сравнение · вопросы в чате</span><span><strong>02</strong> / 07</span></footer>
+      <footer class="slide-footer"><span>Сводка · сравнение · вопросы в чате</span><span><strong>02</strong> / 08</span></footer>
       <aside class="speaker-notes" hidden>Клиент получает объёмный отчёт по каждому контрагенту отдельно. Когда кандидатов несколько, он изучает их по очереди. Агент по ИНН собирает короткую сводку и позволяет сравнить несколько компаний в одной сессии.</aside>
     </section>
 
@@ -904,7 +921,7 @@
           </article>
         </div>
       </div>
-      <footer class="slide-footer"><span>Ценность проверим на пилоте</span><span><strong>03</strong> / 07</span></footer>
+      <footer class="slide-footer"><span>Ценность проверим на пилоте</span><span><strong>03</strong> / 08</span></footer>
       <aside class="speaker-notes" hidden>Предприниматель решает проблему трудоёмкого сравнения компаний. Для банка это способ сделать отчёт более полезным и повысить лояльность клиентов. Эффект на поведение пользователей мы проверим на пилоте.</aside>
     </section>
 
@@ -944,7 +961,7 @@
           </article>
         </div>
       </div>
-      <footer class="slide-footer"><span>Центральный принцип: вывод можно проверить</span><span><strong>04</strong> / 07</span></footer>
+      <footer class="slide-footer"><span>Центральный принцип: вывод можно проверить</span><span><strong>04</strong> / 08</span></footer>
       <aside class="speaker-notes" hidden>Три вещи отличают продукт. Каждый вывод привязан к факту из профиля. Несколько кандидатов сравниваются в одной сессии по одним критериям. По отобранным компаниям можно включить подписку и следить за изменениями.</aside>
     </section>
 
@@ -963,7 +980,7 @@
           <iframe class="demo-frame" data-src="../ui/mockup.html#three" title="Интерактивный прототип проверки контрагентов" loading="lazy"></iframe>
         </div>
       </div>
-      <footer class="slide-footer"><span>Интерактивный прототип</span><span><strong>05</strong> / 07</span></footer>
+      <footer class="slide-footer"><span>Интерактивный прототип</span><span><strong>05</strong> / 08</span></footer>
       <aside class="speaker-notes" hidden>Покажите проверку нескольких ИНН, сводку по одной компании, переход к факту в профиле, сравнение кандидатов и подписку. На демо отведите не больше 1 минуты 50 секунд.</aside>
     </section>
 
@@ -1000,12 +1017,9 @@
             </div>
             <div><h3>Qwen 3.8 27B</h3><p>Формулирует структурированный ответ</p></div>
           </article>
-          <div class="connector left" aria-hidden="true"></div>
-          <div class="connector upper" aria-hidden="true"></div>
-          <div class="connector lower" aria-hidden="true"></div>
-          <span class="connector-label label-left">сообщение ↔ ответ</span>
-          <span class="connector-label label-upper">отчёт по ИНН</span>
-          <span class="connector-label label-lower">запрос ↔ текст</span>
+          <div class="arch-link left" aria-hidden="true"><span class="connector-label">сообщение ↔ ответ</span></div>
+          <div class="arch-link upper" aria-hidden="true"><span class="connector-label">отчёт по ИНН</span></div>
+          <div class="arch-link lower" aria-hidden="true"><span class="connector-label">запрос ↔ текст</span></div>
         </div>
         <div class="arch-legend reveal" style="--delay:220ms">
           <span class="chip"><span class="chip-dot" style="color:var(--red)"></span>LangChain + память сессии</span>
@@ -1013,7 +1027,7 @@
           <span class="chip"><span class="chip-dot" style="color:var(--green)"></span>MCP · streamable HTTP</span>
         </div>
       </div>
-      <footer class="slide-footer"><span>Данные остаются отделены от языковой модели</span><span><strong>06</strong> / 07</span></footer>
+      <footer class="slide-footer"><span>Данные остаются отделены от языковой модели</span><span><strong>06</strong> / 08</span></footer>
       <aside class="speaker-notes" hidden>Пользователь пишет в чат. Бэкенд-агент решает, нужны ли данные, вызывает MCP-инструмент и получает отчёт по ИНН. Затем он извлекает нужные сигналы, передаёт их Qwen и возвращает структурированный ответ на фронт.</aside>
     </section>
 
@@ -1051,8 +1065,26 @@
         </div>
         <p class="closing-line reveal" style="--delay:290ms">Мы превращаем отчёты о компаниях в понятный диалог — теперь хотим измерить, сколько времени это экономит клиенту.</p>
       </div>
-      <footer class="slide-footer"><span>Команда AI Product Hack</span><span><strong>07</strong> / 07</span></footer>
+      <footer class="slide-footer"><span>Команда AI Product Hack</span><span><strong>07</strong> / 08</span></footer>
       <aside class="speaker-notes" hidden>Мы сделали агента, который превращает отчёты в рекомендации. Следующий шаг — пилот на реальных проверках, чтобы измерить выигрыш во времени и рост повторного использования продукта.</aside>
+    </section>
+
+    <section class="slide thanks-slide" data-title="Вопросы" aria-hidden="true">
+      <header class="topline">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span>Проверка контрагентов</div>
+        <div class="section-label">Вопросы</div>
+      </header>
+      <div class="slide-main">
+        <div class="eyebrow reveal">Готовы обсудить</div>
+        <h1 class="reveal" style="--delay:80ms">Спасибо,<br><span class="hero-title-mark">Ваши вопросы</span></h1>
+        <div class="team reveal" style="--delay:160ms">
+          <span><strong>Илья Спевак</strong> · AI Product</span>
+          <span><strong>Алексей Коновалов</strong> · AI Engineer</span>
+          <span><strong>Павел Милютин</strong> · AI Engineer</span>
+        </div>
+      </div>
+      <footer class="slide-footer"><span>Альфа-Банк · Demo Day</span><span><strong>08</strong> / 08</span></footer>
+      <aside class="speaker-notes" hidden>Спасибо. Готовы ответить на вопросы.</aside>
     </section>
   </main>
 
@@ -1124,7 +1156,7 @@
         prevButton.disabled = current === 0;
         nextButton.disabled = current === slides.length - 1;
         progress.style.width = `${((current + 1) / slides.length) * 100}%`;
-        document.title = `${current + 1}/7 · ${slides[current].dataset.title} · AI-агент`;
+        document.title = `${current + 1}/${slides.length} · ${slides[current].dataset.title} · AI-агент`;
         loadDemo(slides[current]);
         updateNotes();
         if (updateHash) history.replaceState(null, "", `#${current + 1}`);
@@ -1132,7 +1164,7 @@
 
       function updateNotes() {
         const source = slides[current].querySelector(".speaker-notes");
-        notesTitle.textContent = `${current + 1}/7 · ${slides[current].dataset.title}`;
+        notesTitle.textContent = `${current + 1}/${slides.length} · ${slides[current].dataset.title}`;
         notesText.textContent = source ? source.textContent.trim() : "Для этого слайда заметок нет.";
       }
 
