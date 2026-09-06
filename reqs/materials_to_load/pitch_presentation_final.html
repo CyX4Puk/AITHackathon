@@ -1,441 +1,662 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="slides-format" content="viewport">
-  <title>Агент проверки контрагентов · Demo Day</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ef3124">
+  <title>AI-агент проверки контрагентов · Demo Day</title>
   <style>
     :root {
-      --bg: #f5f8fc;
-      --bg-deep: #e9eff7;
-      --surface: rgba(255, 255, 255, .9);
-      --text: #18253a;
-      --secondary: #4d617f;
-      --muted: #8194ac;
-      --blue: #2a7dc4;
-      --cyan: #50c8ff;
-      --violet: #7c5cff;
-      --green: #25d0a5;
-      --orange: #ff9f43;
-      --red: #ff5a6b;
-      --border: rgba(24, 37, 58, .09);
-      --shadow: 0 18px 48px rgba(39, 71, 109, .12);
-      --display: "Space Grotesk", sans-serif;
-      --body: "Inter", sans-serif;
+      --red: #ef3124;
+      --red-dark: #c9251a;
+      --ink: #171717;
+      --muted: #676767;
+      --line: #deded9;
+      --paper: #f6f6f3;
+      --white: #ffffff;
+      --blue: #2f6fed;
+      --green: #159b68;
+      --amber: #e79a21;
+      --shadow: 0 20px 55px rgba(17, 17, 17, .09);
+      --radius-xl: 30px;
+      --radius-lg: 22px;
+      --pad-x: clamp(34px, 5.4vw, 86px);
+      --pad-y: clamp(28px, 4.8vh, 52px);
     }
 
     * { box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; }
-    body { background: var(--bg); color: var(--text); font-family: var(--body); }
+    html, body { width: 100%; height: 100%; margin: 0; }
+    html { background: #111; }
+    body {
+      overflow: hidden;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: Inter, "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
     button { font: inherit; }
+    svg { display: block; }
 
-    .deck { position: relative; width: 100vw; height: 100vh; }
+    .deck { position: relative; width: 100vw; height: 100vh; background: var(--paper); }
     .slide {
       position: absolute;
       inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      gap: clamp(12px, 2vh, 24px);
+      padding: var(--pad-y) var(--pad-x) clamp(70px, 10vh, 92px);
       overflow: hidden;
       opacity: 0;
-      transform: scale(.975);
+      transform: translate3d(3.5%, 0, 0);
       pointer-events: none;
-      background: linear-gradient(180deg, #f9fbff 0%, #edf3fa 100%);
-      transition: opacity .45s ease, transform .45s ease;
-    }
-    .slide.active { opacity: 1; transform: scale(1); pointer-events: auto; }
-    .slide::before {
-      content: "";
-      position: absolute;
-      inset: 0;
-      z-index: 1;
-      pointer-events: none;
-      opacity: .025;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      visibility: hidden;
+      transition: opacity .42s ease, transform .42s cubic-bezier(.22, .8, .22, 1), visibility .42s;
+      background:
+        radial-gradient(circle at 83% 12%, rgba(239, 49, 36, .08), transparent 24%),
+        radial-gradient(circle at 8% 88%, rgba(47, 111, 237, .055), transparent 25%),
+        var(--paper);
     }
     .slide::after {
       content: "";
       position: absolute;
       inset: 0;
-      z-index: 1;
       pointer-events: none;
-      background: radial-gradient(ellipse at center, transparent 50%, rgba(24, 37, 58, .045) 100%);
+      opacity: .15;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.11'/%3E%3C/svg%3E");
+      mix-blend-mode: multiply;
     }
-
-    .mesh { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
-    .blob {
-      position: absolute;
-      border-radius: 50%;
-      filter: blur(88px);
-      animation: drift 17s ease-in-out infinite;
-    }
-    .blob:nth-child(2) { animation-duration: 20s; animation-direction: reverse; }
-    .blob:nth-child(3) { animation-duration: 23s; }
-    @keyframes drift {
-      0%, 100% { transform: translate(0, 0) scale(1); }
-      50% { transform: translate(28px, -24px) scale(1.07); }
-    }
-
-    .content {
-      position: relative;
+    .slide.active {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+      pointer-events: auto;
+      visibility: visible;
       z-index: 2;
-      width: min(1180px, calc(100vw - 72px));
-      max-height: calc(100vh - 112px);
     }
-    .content.wide { width: min(1420px, calc(100vw - 56px)); }
-    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .slide.was-before { transform: translate3d(-3.5%, 0, 0); }
 
-    .glass {
-      border: 1px solid var(--border);
-      border-radius: 24px;
-      background: var(--surface);
-      box-shadow: var(--shadow);
-      backdrop-filter: blur(12px);
+    .topline, .slide-main, .slide-footer { position: relative; z-index: 2; }
+    .topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 26px;
+      color: var(--muted);
+      font-size: clamp(11px, .9vw, 14px);
+      letter-spacing: .02em;
     }
-    .kicker {
-      color: #7890af;
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: .2em;
-      text-transform: uppercase;
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--ink);
+      font-weight: 750;
     }
-    .title {
-      margin: 10px 0 24px;
-      font-family: var(--display);
-      font-size: clamp(36px, 4.5vw, 64px);
-      line-height: .98;
-      letter-spacing: -.045em;
+    .brand-mark {
+      position: relative;
+      width: 24px;
+      height: 24px;
+      border-radius: 7px;
+      background: var(--red);
+      transform: skew(-8deg);
+      box-shadow: 0 8px 18px rgba(239, 49, 36, .22);
     }
-    .section-title {
-      margin: 8px 0 22px;
-      font-family: var(--display);
-      font-size: clamp(29px, 3.4vw, 48px);
-      line-height: 1.04;
-      letter-spacing: -.035em;
+    .brand-mark::before {
+      content: "";
+      position: absolute;
+      width: 5px;
+      height: 16px;
+      left: 9px;
+      top: 4px;
+      border-radius: 5px;
+      background: #fff;
     }
-    .lead { color: #344b69; font-size: clamp(18px, 1.6vw, 23px); line-height: 1.48; }
-    .muted { color: var(--secondary); }
-    .accent { color: var(--blue); }
-    .green { color: #0a8a70; }
-    .pill {
+    .section-label {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      padding: 8px 14px;
-      border: 1px solid rgba(42, 125, 196, .12);
-      border-radius: 999px;
-      background: rgba(80, 200, 255, .09);
-      color: #274460;
-      font-size: 14px;
-      font-weight: 600;
+      font-weight: 650;
     }
-    .metric { font-size: clamp(38px, 4vw, 58px); font-weight: 900; line-height: .95; letter-spacing: -.05em; }
-    .metric-label { margin-top: 8px; color: #617895; font-size: 14px; line-height: 1.35; }
-    .roadline {
-      height: 6px;
-      border-radius: 99px;
-      background: linear-gradient(90deg, var(--green), var(--cyan) 48%, var(--violet));
-      box-shadow: 0 0 28px rgba(80, 200, 255, .24);
+    .section-label::before {
+      content: "";
+      width: 18px;
+      height: 2px;
+      background: var(--red);
+    }
+    .slide-main { min-height: 0; display: flex; flex-direction: column; justify-content: center; }
+    .slide-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: #8a8a86;
+      font-size: clamp(10px, .78vw, 12px);
+    }
+    .slide-footer strong { color: var(--ink); }
+
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2, h3 { letter-spacing: -.045em; }
+    h1 {
+      max-width: 930px;
+      margin-bottom: clamp(16px, 2.4vh, 28px);
+      font-size: clamp(52px, 7.1vw, 108px);
+      line-height: .92;
+      font-weight: 850;
+    }
+    h2 {
+      max-width: 1050px;
+      margin-bottom: clamp(22px, 3.4vh, 38px);
+      font-size: clamp(35px, 4.35vw, 67px);
+      line-height: 1.02;
+      font-weight: 820;
+    }
+    h3 {
+      margin-bottom: 10px;
+      font-size: clamp(20px, 1.7vw, 28px);
+      line-height: 1.08;
+    }
+    .lead {
+      max-width: 840px;
+      margin-bottom: 0;
+      color: #4f4f4c;
+      font-size: clamp(17px, 1.65vw, 25px);
+      line-height: 1.48;
+    }
+    .red { color: var(--red); }
+    .muted { color: var(--muted); }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      width: fit-content;
+      margin-bottom: clamp(14px, 2.3vh, 25px);
+      padding: 8px 13px;
+      border: 1px solid rgba(239, 49, 36, .18);
+      border-radius: 999px;
+      color: var(--red-dark);
+      background: rgba(239, 49, 36, .06);
+      font-size: clamp(10px, .82vw, 13px);
+      font-weight: 750;
+      text-transform: uppercase;
+      letter-spacing: .11em;
     }
 
-    .reveal { opacity: 0; transform: translateY(14px); }
+    .card {
+      background: rgba(255, 255, 255, .86);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+    }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(14px, 2vw, 28px); }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: clamp(14px, 1.7vw, 24px); }
+    .icon-box {
+      display: inline-grid;
+      place-items: center;
+      width: 46px;
+      height: 46px;
+      margin-bottom: 24px;
+      border-radius: 14px;
+      color: var(--red);
+      background: rgba(239, 49, 36, .08);
+    }
+    .icon-box svg { width: 25px; height: 25px; stroke: currentColor; }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: #f0f0ec;
+      color: #4e4e4a;
+      font-size: clamp(11px, .82vw, 13px);
+      font-weight: 650;
+      white-space: nowrap;
+    }
+    .chip-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+    .reveal {
+      opacity: 0;
+      transform: translateY(16px);
+      transition: opacity .52s ease, transform .52s cubic-bezier(.2, .8, .2, 1);
+      transition-delay: var(--delay, 0ms);
+    }
+    .active .reveal { opacity: 1; transform: translateY(0); }
 
     /* Slide 1 */
-    .hero { display: grid; grid-template-columns: 1.1fr .9fr; align-items: center; gap: 46px; }
-    .hero-title {
-      margin: 16px 0 20px;
-      font-family: var(--display);
-      font-size: clamp(52px, 6vw, 82px);
-      line-height: .93;
-      letter-spacing: -.055em;
-      background: linear-gradient(135deg, var(--text), var(--blue) 52%, var(--green));
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
+    .hero-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.32fr) minmax(340px, .68fr);
+      gap: clamp(30px, 5vw, 78px);
+      align-items: center;
     }
-    .team { display: flex; flex-wrap: wrap; gap: 10px 20px; margin-top: 26px; color: #617895; font-size: 14px; }
-    .hero-card { padding: 28px; }
-    .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin: 22px 0; }
+    .hero-title-mark {
+      position: relative;
+      display: inline-block;
+    }
+    .hero-title-mark::after {
+      content: "";
+      position: absolute;
+      left: 3px;
+      right: -4px;
+      bottom: 5px;
+      z-index: -1;
+      height: .13em;
+      border-radius: 999px;
+      background: var(--red);
+      transform: rotate(-1.2deg);
+    }
+    .metrics {
+      overflow: hidden;
+      color: #fff;
+      background: var(--red);
+      border: 0;
+      box-shadow: 0 30px 75px rgba(239, 49, 36, .23);
+    }
+    .metric-row {
+      display: grid;
+      grid-template-columns: 112px 1fr;
+      align-items: center;
+      gap: 18px;
+      min-height: clamp(92px, 13vh, 126px);
+      padding: 20px 26px;
+      border-bottom: 1px solid rgba(255, 255, 255, .22);
+    }
+    .metric-row:last-child { border-bottom: 0; }
+    .metric-value {
+      font-size: clamp(36px, 4.2vw, 62px);
+      font-weight: 850;
+      line-height: .9;
+      letter-spacing: -.06em;
+    }
+    .metric-label { font-size: clamp(14px, 1.1vw, 18px); line-height: 1.28; }
+    .team {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 24px;
+      margin-top: clamp(22px, 3vh, 34px);
+      color: var(--muted);
+      font-size: clamp(11px, .86vw, 14px);
+    }
+    .team strong { color: var(--ink); }
 
     /* Slide 2 */
-    .problem-flow { display: grid; gap: 12px; padding: 22px; }
-    .problem-row {
+    .comparison {
       display: grid;
-      grid-template-columns: 48px 1fr;
-      gap: 14px;
+      grid-template-columns: minmax(0, .87fr) 54px minmax(0, 1.13fr);
+      align-items: stretch;
+      gap: 16px;
+    }
+    .state-card { min-height: 300px; padding: clamp(22px, 2.5vw, 36px); }
+    .state-card.before { background: rgba(255,255,255,.58); box-shadow: none; }
+    .state-card.after { border-color: rgba(239,49,36,.27); }
+    .state-label {
+      display: flex;
       align-items: center;
-      padding: 14px;
-      border-radius: 16px;
-      background: rgba(255, 255, 255, .68);
-      border: 1px solid rgba(24, 37, 58, .06);
-    }
-    .problem-icon {
-      display: grid;
-      place-items: center;
-      width: 48px;
-      height: 48px;
-      border-radius: 14px;
-      background: rgba(255, 159, 67, .12);
-      color: #d87516;
-      font-size: 21px;
-      font-weight: 800;
-    }
-    .solution-card { padding: 22px; }
-    .steps { display: grid; gap: 9px; margin-top: 16px; }
-    .step {
-      display: grid;
-      grid-template-columns: 30px 1fr;
-      gap: 10px;
-      align-items: center;
-      color: #38506f;
-      font-size: 15px;
-    }
-    .step b {
-      display: grid;
-      place-items: center;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: rgba(37, 208, 165, .13);
-      color: #0a8a70;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      color: var(--muted);
       font-size: 13px;
+      font-weight: 750;
+      text-transform: uppercase;
+      letter-spacing: .1em;
     }
-    .guardrail {
+    .report-stack { position: relative; height: 128px; margin: 28px 18px 26px; }
+    .report {
+      position: absolute;
+      inset: 0;
+      padding: 18px 20px;
+      border: 1px solid #d8d8d3;
+      border-radius: 16px;
+      background: #fff;
+      box-shadow: 0 14px 30px rgba(17,17,17,.08);
+    }
+    .report:nth-child(1) { transform: translate(-14px, 14px) rotate(-4deg); }
+    .report:nth-child(2) { transform: translate(6px, 5px) rotate(2.5deg); }
+    .report:nth-child(3) { transform: translate(0, 0); }
+    .report-line { height: 7px; margin-bottom: 10px; border-radius: 99px; background: #e7e7e3; }
+    .report-line.short { width: 58%; }
+    .flow-arrow { display: grid; place-items: center; color: var(--red); }
+    .flow-arrow svg { width: 38px; height: 38px; stroke: currentColor; }
+    .mini-app {
+      overflow: hidden;
+      border: 1px solid #ddddda;
+      border-radius: 17px;
+      background: #fafaf8;
+    }
+    .mini-app-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 11px 14px;
+      border-bottom: 1px solid #e7e7e4;
+      background: #fff;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .mini-app-body { display: grid; grid-template-columns: 1fr .85fr; min-height: 156px; }
+    .mini-chat { padding: 14px; border-right: 1px solid #e7e7e4; }
+    .bubble {
+      width: fit-content;
+      max-width: 92%;
+      margin-bottom: 9px;
+      padding: 9px 11px;
+      border-radius: 11px;
+      color: #464643;
+      background: #e9e9e5;
+      font-size: 10px;
+      line-height: 1.35;
+    }
+    .bubble.answer { background: #fff; border: 1px solid #e2e2de; }
+    .mini-table { padding: 14px 12px; }
+    .mini-table-row { display: grid; grid-template-columns: 1fr 34px; gap: 8px; padding: 8px 0; border-bottom: 1px solid #e4e4df; font-size: 9px; }
+    .mini-table-row span:last-child { color: var(--red); font-weight: 800; text-align: right; }
+    .outcome-strip {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
       margin-top: 16px;
-      padding: 13px 16px;
-      border-left: 3px solid var(--green);
-      border-radius: 10px;
-      background: rgba(37, 208, 165, .08);
-      color: #31556a;
-      font-size: 14px;
-      font-weight: 600;
+    }
+    .outcome {
+      padding: 12px 14px;
+      border-radius: 13px;
+      background: #f1f1ed;
+      color: #464643;
+      font-size: clamp(11px, .86vw, 14px);
+      font-weight: 650;
     }
 
     /* Slide 3 */
-    .value-card { min-height: 210px; padding: 22px; }
-    .value-num { color: #8ca3c6; font-size: 13px; font-weight: 700; letter-spacing: .16em; }
-    .value-word { margin: 10px 0 9px; font-family: var(--display); font-size: 28px; font-weight: 700; letter-spacing: -.03em; }
-    .value-card p { margin: 0; color: #526985; font-size: 15px; line-height: 1.48; }
-    .value-for { display: inline-block; margin-top: 17px; color: #0a8a70; font-size: 12px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
-    .hypothesis {
+    .value-layout {
       display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 16px;
+      grid-template-columns: 1fr 92px 1fr;
       align-items: center;
-      margin-top: 18px;
-      padding: 18px 22px;
+      gap: clamp(14px, 2.4vw, 34px);
     }
-    .hypothesis .badge {
-      padding: 9px 12px;
-      border-radius: 9px;
-      background: rgba(124, 92, 255, .1);
-      color: #6546d9;
-      font-size: 12px;
-      font-weight: 800;
-      letter-spacing: .1em;
-      text-transform: uppercase;
+    .value-card {
+      min-height: 310px;
+      padding: clamp(26px, 3vw, 42px);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .value-card.bank { color: white; background: var(--ink); border-color: var(--ink); }
+    .value-card.bank .muted { color: #bcbcb6; }
+    .value-result {
+      margin-top: 28px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+      color: var(--red-dark);
+      font-size: clamp(18px, 1.65vw, 26px);
+      font-weight: 780;
+      line-height: 1.2;
+    }
+    .bank .value-result { border-color: #3c3c3a; color: #fff; }
+    .value-plus {
+      display: grid;
+      place-items: center;
+      width: 72px;
+      height: 72px;
+      margin: auto;
+      border-radius: 50%;
+      color: #fff;
+      background: var(--red);
+      font-size: 36px;
+      font-weight: 300;
+      box-shadow: 0 18px 40px rgba(239,49,36,.24);
     }
 
     /* Slide 4 */
     .feature-card {
       position: relative;
-      min-height: 260px;
-      padding: 22px;
+      min-height: 305px;
+      padding: clamp(24px, 2.5vw, 38px);
       overflow: hidden;
     }
-    .feature-card::after {
-      content: "";
+    .feature-card.primary { color: white; background: var(--red); border-color: var(--red); }
+    .feature-card.primary .icon-box { color: white; background: rgba(255,255,255,.16); }
+    .feature-card.primary p { color: rgba(255,255,255,.84); }
+    .feature-card p { margin-bottom: 0; color: var(--muted); font-size: clamp(14px, 1.12vw, 18px); line-height: 1.5; }
+    .feature-number {
       position: absolute;
-      right: -38px;
-      bottom: -38px;
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      background: var(--feature-color, rgba(80, 200, 255, .11));
-      filter: blur(2px);
+      right: 18px;
+      bottom: -28px;
+      color: rgba(23,23,23,.04);
+      font-size: 138px;
+      font-weight: 900;
+      letter-spacing: -.08em;
     }
-    .feature-icon {
-      position: relative;
-      z-index: 1;
-      display: grid;
-      place-items: center;
-      width: 52px;
-      height: 52px;
-      border-radius: 15px;
-      background: var(--feature-color, rgba(80, 200, 255, .12));
-      color: var(--feature-text, var(--blue));
-      font-family: var(--display);
-      font-size: 22px;
-      font-weight: 700;
-    }
-    .feature-card h3 {
-      position: relative;
-      z-index: 1;
-      margin: 18px 0 10px;
-      font-family: var(--display);
-      font-size: 23px;
-      letter-spacing: -.025em;
-    }
-    .feature-card p {
-      position: relative;
-      z-index: 1;
-      margin: 0;
-      color: #526985;
-      font-size: 14px;
-      line-height: 1.5;
-    }
-    .feature-proof {
+    .primary .feature-number { color: rgba(255,255,255,.1); }
+    .proof-path {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 12px;
-      margin-top: 18px;
-      padding: 14px 18px;
-      color: #31556a;
-      font-size: 15px;
+      gap: 8px;
+      width: fit-content;
+      margin-top: 20px;
+      padding: 8px 11px;
+      border-radius: 10px;
+      color: #fff;
+      background: rgba(255,255,255,.16);
+      font-size: 11px;
       font-weight: 700;
-    }
-    .feature-proof span:first-child {
-      display: grid;
-      place-items: center;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: rgba(37, 208, 165, .14);
-      color: #0a8a70;
     }
 
     /* Slide 5 */
+    .slide.demo-slide { padding: 22px 28px 72px; gap: 10px; background: #e9e9e6; }
+    .demo-slide .topline { padding: 0 6px; }
     .demo-shell {
-      position: relative;
-      height: min(74vh, 780px);
+      min-height: 0;
+      height: 100%;
       overflow: hidden;
-      border: 1px solid rgba(24, 37, 58, .13);
+      border: 1px solid #d2d2ce;
       border-radius: 20px;
       background: #fff;
-      box-shadow: 0 24px 64px rgba(39, 71, 109, .17);
+      box-shadow: 0 24px 65px rgba(17,17,17,.14);
     }
     .browser-bar {
-      position: absolute;
-      top: 0;
-      right: 0;
-      left: 0;
-      z-index: 3;
-      display: flex;
+      display: grid;
+      grid-template-columns: 90px 1fr 90px;
       align-items: center;
-      gap: 7px;
-      height: 34px;
+      height: 42px;
       padding: 0 14px;
-      border-bottom: 1px solid rgba(24, 37, 58, .08);
-      background: #f9fbfe;
+      border-bottom: 1px solid #dededa;
+      background: #f6f6f3;
     }
-    .browser-dot { width: 8px; height: 8px; border-radius: 50%; background: #d8e0eb; }
-    .browser-label { margin-left: 8px; color: #8294aa; font-size: 11px; }
-    .demo-shell iframe {
-      position: absolute;
-      top: 34px;
-      left: 0;
-      width: 125%;
-      height: calc(125% - 42px);
-      border: 0;
-      transform: scale(.8);
-      transform-origin: top left;
+    .browser-dots { display: flex; gap: 7px; }
+    .browser-dots i { width: 10px; height: 10px; border-radius: 50%; background: #cacac5; }
+    .browser-dots i:first-child { background: var(--red); }
+    .browser-address {
+      justify-self: center;
+      min-width: 260px;
+      padding: 6px 16px;
+      border: 1px solid #ddddda;
+      border-radius: 999px;
+      color: #6f6f6b;
       background: #fff;
-    }
-
-    /* Slide 6 intentionally empty */
-    .slide-technical-empty { background: linear-gradient(180deg, #f9fbff 0%, #edf3fa 100%); }
-
-    /* Slide 7 */
-    .final-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
-    .final-card { padding: 23px; }
-    .final-card h3 { margin: 8px 0 14px; font-family: var(--display); font-size: 25px; letter-spacing: -.025em; }
-    .check-list { display: grid; gap: 10px; }
-    .check-item {
-      display: grid;
-      grid-template-columns: 22px 1fr;
-      gap: 9px;
-      color: #415976;
-      font-size: 14px;
-      line-height: 1.4;
-    }
-    .check-item span:first-child { color: #0a8a70; font-weight: 900; }
-    .roadmap {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-top: 16px;
-    }
-    .roadmap div {
-      position: relative;
-      padding: 13px 12px;
-      border: 1px solid rgba(42, 125, 196, .1);
-      border-radius: 13px;
-      background: rgba(80, 200, 255, .06);
-      color: #46617f;
-      font-size: 12px;
-      line-height: 1.35;
+      font-size: 11px;
       text-align: center;
     }
-    .roadmap div:not(:last-child)::after {
-      content: "→";
-      position: absolute;
-      top: 50%;
-      right: -10px;
-      z-index: 2;
-      transform: translate(50%, -50%);
-      color: #8ca3c6;
-      font-weight: 800;
-    }
-    .closing {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 20px;
+    .live-badge {
+      justify-self: end;
+      display: flex;
       align-items: center;
-      margin-top: 18px;
-      padding: 20px 22px;
-      border-left: 4px solid var(--green);
+      gap: 6px;
+      color: var(--red-dark);
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: .06em;
     }
-    .closing q {
-      color: #283e5c;
-      font-family: var(--display);
-      font-size: 18px;
-      font-weight: 600;
-      line-height: 1.42;
+    .live-badge::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--red);
+      box-shadow: 0 0 0 5px rgba(239,49,36,.1);
     }
-    .qr {
-      width: 94px;
-      height: 94px;
-      padding: 6px;
-      border: 1px solid var(--border);
-      border-radius: 11px;
-      background: #fff;
+    .demo-frame { display: block; width: 100%; height: calc(100% - 42px); border: 0; background: #fff; }
+
+    /* Slide 6 */
+    .architecture {
+      display: grid;
+      grid-template-columns: minmax(180px, .9fr) minmax(230px, 1.16fr) minmax(210px, 1fr);
+      grid-template-rows: repeat(2, minmax(112px, 1fr));
+      gap: clamp(14px, 1.8vw, 24px) clamp(46px, 6vw, 94px);
+      align-items: stretch;
+      position: relative;
+    }
+    .arch-node {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      gap: 17px;
+      padding: clamp(18px, 2vw, 28px);
+    }
+    .arch-node .icon-box { flex: 0 0 auto; margin: 0; }
+    .arch-node p { margin: 6px 0 0; color: var(--muted); font-size: clamp(11px, .9vw, 14px); line-height: 1.35; }
+    .arch-chat { grid-row: 1 / 3; align-self: center; min-height: 170px; }
+    .arch-backend {
+      grid-row: 1 / 3;
+      align-self: center;
+      min-height: 218px;
+      color: #fff;
+      background: var(--ink);
+      border-color: var(--ink);
+    }
+    .arch-backend p { color: #bdbdb8; }
+    .arch-backend .icon-box { color: #fff; background: rgba(255,255,255,.12); }
+    .arch-mcp { grid-column: 3; grid-row: 1; }
+    .arch-llm { grid-column: 3; grid-row: 2; }
+    .connector {
+      position: absolute;
+      z-index: 1;
+      height: 2px;
+      background: #bbbcb8;
+    }
+    .connector::after {
+      content: "";
+      position: absolute;
+      right: -1px;
+      top: -4px;
+      width: 8px;
+      height: 8px;
+      border-top: 2px solid currentColor;
+      border-right: 2px solid currentColor;
+      transform: rotate(45deg);
+    }
+    .connector.left { left: 27%; right: 61%; top: 50%; color: #888884; }
+    .connector.upper { left: 62%; right: 26%; top: 25%; color: var(--red); background: var(--red); }
+    .connector.lower { left: 62%; right: 26%; top: 75%; color: var(--blue); background: var(--blue); }
+    .connector-label {
+      position: absolute;
+      z-index: 3;
+      padding: 4px 8px;
+      border-radius: 999px;
+      color: #696965;
+      background: var(--paper);
+      font-size: 10px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+    .label-left { left: 31%; top: calc(50% - 23px); }
+    .label-upper { left: 66%; top: calc(25% - 23px); }
+    .label-lower { left: 65%; top: calc(75% - 23px); }
+    .arch-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 20px;
     }
 
-    /* Navigation */
-    .nav {
-      position: fixed;
-      bottom: 18px;
-      left: 50%;
-      z-index: 20;
+    /* Slide 7 */
+    .pilot-layout {
+      display: grid;
+      grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+      gap: clamp(18px, 2.4vw, 34px);
+      align-items: stretch;
+    }
+    .pilot-card {
+      padding: clamp(26px, 3vw, 44px);
+      color: #fff;
+      background: var(--red);
+      border: 0;
+      box-shadow: 0 30px 72px rgba(239,49,36,.22);
+    }
+    .pilot-number {
+      margin: 12px 0 6px;
+      font-size: clamp(60px, 7.5vw, 112px);
+      font-weight: 880;
+      line-height: .86;
+      letter-spacing: -.075em;
+    }
+    .pilot-list { display: grid; gap: 12px; margin-top: 28px; }
+    .pilot-item {
       display: flex;
       align-items: center;
       gap: 11px;
-      padding: 8px 13px;
-      border: 1px solid rgba(24, 37, 58, .09);
+      padding: 11px 0;
+      border-top: 1px solid rgba(255,255,255,.24);
+      font-size: clamp(13px, 1.05vw, 17px);
+    }
+    .pilot-item::before { content: "✓"; font-weight: 900; }
+    .roadmap-card { padding: clamp(25px, 3vw, 42px); }
+    .roadmap {
+      position: relative;
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 0 17px;
+      margin-top: 22px;
+    }
+    .roadmap::before {
+      content: "";
+      position: absolute;
+      left: 16px;
+      top: 16px;
+      bottom: 16px;
+      width: 2px;
+      background: linear-gradient(var(--red), var(--blue), var(--green));
+    }
+    .road-dot {
+      position: relative;
+      z-index: 1;
+      width: 14px;
+      height: 14px;
+      margin: 5px auto 0;
+      border: 4px solid var(--paper);
+      border-radius: 50%;
+      background: var(--red);
+      box-shadow: 0 0 0 2px var(--red);
+    }
+    .road-dot.blue { background: var(--blue); box-shadow: 0 0 0 2px var(--blue); }
+    .road-dot.green { background: var(--green); box-shadow: 0 0 0 2px var(--green); }
+    .road-step { padding-bottom: 21px; }
+    .road-step:last-child { padding-bottom: 0; }
+    .road-step strong { display: block; margin-bottom: 4px; font-size: clamp(14px, 1.12vw, 18px); }
+    .road-step span { color: var(--muted); font-size: clamp(11px, .88vw, 14px); }
+    .closing-line {
+      margin: 22px 0 0;
+      color: #42423f;
+      font-size: clamp(14px, 1.25vw, 20px);
+      line-height: 1.42;
+    }
+
+    /* Controls */
+    .controls {
+      position: fixed;
+      left: 50%;
+      bottom: 18px;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border: 1px solid rgba(255,255,255,.65);
       border-radius: 999px;
-      background: rgba(255, 255, 255, .86);
-      box-shadow: 0 10px 28px rgba(39, 71, 109, .12);
-      backdrop-filter: blur(12px);
+      background: rgba(27,27,26,.9);
+      box-shadow: 0 16px 36px rgba(17,17,17,.22);
+      backdrop-filter: blur(14px);
       transform: translateX(-50%);
     }
-    .nav button {
+    .control-button {
       display: grid;
       place-items: center;
       width: 34px;
@@ -443,367 +664,526 @@
       padding: 0;
       border: 0;
       border-radius: 50%;
-      background: rgba(24, 37, 58, .05);
-      color: var(--text);
+      color: #fff;
+      background: rgba(255,255,255,.1);
       cursor: pointer;
-      font-size: 19px;
+      transition: background .2s ease, transform .2s ease;
     }
-    .dots { display: flex; gap: 7px; }
+    .control-button:hover { background: rgba(255,255,255,.2); transform: translateY(-1px); }
+    .control-button:disabled { opacity: .32; cursor: default; transform: none; }
+    .control-button svg { width: 17px; height: 17px; stroke: currentColor; }
+    .dots { display: flex; align-items: center; gap: 6px; padding: 0 3px; }
     .dot {
-      width: 8px;
-      height: 8px;
+      width: 7px;
+      height: 7px;
+      padding: 0;
       border: 0;
-      border-radius: 50%;
-      background: rgba(24, 37, 58, .16);
+      border-radius: 999px;
+      background: #6e6e69;
       cursor: pointer;
-      transition: .2s;
+      transition: width .25s ease, background .25s ease;
     }
-    .dot.active { background: var(--cyan); transform: scale(1.25); }
-    .counter { min-width: 36px; color: #6c7f9c; font-size: 12px; text-align: center; }
+    .dot.active { width: 22px; background: var(--red); }
     .timer {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 0 9px;
-      color: #344b69;
-      font-size: 13px;
-      font-weight: 800;
+      min-width: 48px;
+      padding: 0 6px;
+      color: #dddcd8;
       font-variant-numeric: tabular-nums;
+      font-size: 11px;
+      font-weight: 720;
+      text-align: center;
     }
-    .timer::before {
-      content: "";
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 0 5px rgba(37, 208, 165, .13);
+    .progress {
+      position: fixed;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 101;
+      height: 3px;
+      background: rgba(17,17,17,.09);
     }
-    .timer.warn::before { background: var(--orange); box-shadow: 0 0 0 5px rgba(255, 159, 67, .13); }
-    .timer.danger::before { background: var(--red); box-shadow: 0 0 0 5px rgba(255, 90, 107, .13); }
+    .progress-bar { width: 0; height: 100%; background: var(--red); transition: width .35s ease; }
+    .notes-panel {
+      position: fixed;
+      right: 18px;
+      bottom: 72px;
+      z-index: 120;
+      width: min(420px, calc(100vw - 36px));
+      max-height: min(48vh, 360px);
+      padding: 20px 22px;
+      overflow: auto;
+      border: 1px solid #3a3a38;
+      border-radius: 18px;
+      color: #f5f5f2;
+      background: rgba(24,24,23,.96);
+      box-shadow: 0 24px 60px rgba(0,0,0,.32);
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: .25s ease;
+    }
+    .notes-panel.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+    .notes-panel h3 { margin-bottom: 10px; font-size: 14px; letter-spacing: .02em; }
+    .notes-panel p { margin: 0; color: #d0d0cb; font-size: 13px; line-height: 1.52; }
+    .notes-hint { margin-top: 12px; color: #7e7e79; font-size: 10px; }
+    .key-hint {
+      position: fixed;
+      right: 24px;
+      bottom: 26px;
+      z-index: 90;
+      color: #989894;
+      font-size: 10px;
+    }
 
-    @media (max-width: 900px) {
-      .hero, .grid-2, .grid-3, .grid-4, .final-grid { grid-template-columns: 1fr; }
-      .content { overflow: auto; }
-      .metrics { grid-template-columns: repeat(3, 1fr); }
-      .demo-shell { height: 68vh; }
+    @media (max-width: 980px), (max-height: 650px) {
+      :root { --pad-x: 34px; --pad-y: 25px; }
+      h1 { font-size: clamp(46px, 7.2vw, 74px); }
+      h2 { font-size: clamp(31px, 4.2vw, 48px); margin-bottom: 20px; }
+      .hero-layout { grid-template-columns: 1.2fr .8fr; gap: 26px; }
+      .metric-row { min-height: 76px; padding: 14px 18px; grid-template-columns: 86px 1fr; }
+      .metric-value { font-size: 40px; }
+      .state-card, .feature-card, .value-card { min-height: 245px; padding: 22px; }
+      .icon-box { margin-bottom: 15px; }
+      .architecture { gap: 14px 54px; }
+      .arch-node { padding: 17px; }
+      .arch-backend { min-height: 184px; }
+    }
+    @media (max-width: 760px) {
+      body { overflow: auto; }
+      .deck { min-height: 100vh; }
+      .slide {
+        position: relative;
+        display: none;
+        min-height: 100vh;
+        height: auto;
+        padding: 24px 20px 88px;
+        overflow: auto;
+      }
+      .slide.active { display: grid; }
+      .hero-layout, .grid-2, .grid-3, .value-layout, .pilot-layout, .comparison { grid-template-columns: 1fr; }
+      .metrics { margin-top: 10px; }
+      .flow-arrow { transform: rotate(90deg); }
+      .value-plus { width: 54px; height: 54px; }
+      .architecture { grid-template-columns: 1fr; grid-template-rows: auto; gap: 12px; }
+      .arch-chat, .arch-backend, .arch-mcp, .arch-llm { grid-column: 1; grid-row: auto; min-height: auto; }
+      .connector, .connector-label { display: none; }
+      .key-hint { display: none; }
+      .slide.demo-slide { min-height: 100vh; height: 100vh; }
+    }
+    @media print {
+      @page { size: 16in 9in; margin: 0; }
+      html, body { overflow: visible; background: #fff; }
+      .deck { width: auto; height: auto; }
+      .slide {
+        position: relative;
+        display: grid !important;
+        width: 16in;
+        height: 9in;
+        break-after: page;
+        opacity: 1 !important;
+        visibility: visible !important;
+        transform: none !important;
+      }
+      .reveal { opacity: 1 !important; transform: none !important; }
+      .controls, .progress, .notes-panel, .key-hint { display: none !important; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; }
     }
   </style>
 </head>
 <body>
-  <main class="deck">
-    <!-- 1. Приветствие -->
-    <section class="slide active" data-slide="1">
-      <div class="mesh">
-        <div class="blob" style="width:460px;height:460px;top:-130px;right:-90px;background:#50c8ff;opacity:.14"></div>
-        <div class="blob" style="width:360px;height:360px;bottom:-100px;left:-70px;background:#7c5cff;opacity:.13"></div>
-        <div class="blob" style="width:220px;height:220px;top:36%;left:15%;background:#25d0a5;opacity:.11"></div>
-      </div>
-      <div class="content hero">
-        <div>
-          <div class="pill reveal">AI Product Hack · Альфа-Банк · Demo Day</div>
-          <h1 class="hero-title reveal">AI-агент проверки<br>контрагентов</h1>
-          <p class="lead reveal">Превращает сложные отчёты о компаниях в понятные подсказки, отвечает на вопросы и помогает сделать выбор.</p>
-          <div class="team reveal">
-            <span>Илья Спевак · AI Product</span>
-            <span>Алексей Коновалов · AI Engineer</span>
-            <span>Павел Милютин · AI Engineer</span>
-          </div>
-        </div>
-        <div class="glass hero-card reveal">
-          <div class="kicker">Продукт в цифрах</div>
-          <div class="metrics">
-            <div><div class="metric">5</div><div class="metric-label">направлений оценки компании</div></div>
-            <div><div class="metric">40+</div><div class="metric-label">правил проверки</div></div>
-            <div><div class="metric">10</div><div class="metric-label">компаний в одной сессии</div></div>
-          </div>
-          <div class="roadline"></div>
-          <p class="muted" style="margin:18px 0 0;line-height:1.5">ИНН → факты → сравнение → рекомендации для проверки</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- 2. Продукт -->
-    <section class="slide" data-slide="2">
-      <div class="mesh">
-        <div class="blob" style="width:380px;height:380px;top:-100px;right:-80px;background:#50c8ff;opacity:.08"></div>
-        <div class="blob" style="width:290px;height:290px;bottom:-80px;left:-50px;background:#7c5cff;opacity:.08"></div>
-      </div>
-      <div class="content">
-        <div class="kicker reveal">Продукт</div>
-        <h2 class="section-title reveal">Множество кандидатов — множество объёмных профилей. Сравнивать приходится вручную</h2>
-        <div class="grid-2">
-          <div class="glass problem-flow reveal">
-            <div class="kicker">Сейчас</div>
-            <div class="problem-row">
-              <div class="problem-icon">1×</div>
-              <div><strong>Один отчёт за раз</strong><div class="muted" style="margin-top:4px;font-size:14px">Каждая компания проверяется отдельно</div></div>
-            </div>
-            <div class="problem-row">
-              <div class="problem-icon">§</div>
-              <div><strong>Множество разделов</strong><div class="muted" style="margin-top:4px;font-size:14px">Финансы, суды, реестры, связи</div></div>
-            </div>
-            <div class="problem-row">
-              <div class="problem-icon">!</div>
-              <div><strong>Риск пропустить сигнал</strong><div class="muted" style="margin-top:4px;font-size:14px">Сравнение остаётся «в голове»</div></div>
-            </div>
-          </div>
-          <div class="glass solution-card reveal">
-            <div class="kicker">С AI-агентом</div>
-            <h3 style="margin:11px 0 7px;font-family:var(--display);font-size:27px;letter-spacing:-.03em">Один диалог для проверки и сравнения</h3>
-            <div class="steps">
-              <div class="step"><b>1</b><span>Компактный профиль контрагента</span></div>
-              <div class="step"><b>2</b><span>Сводка фактов и пробелов в данных</span></div>
-              <div class="step"><b>3</b><span>Сравнение по пяти направлениям</span></div>
-              <div class="step"><b>4</b><span>Рекомендации для дополнительной проверки</span></div>
-              <div class="step"><b>5</b><span>Уточняющие вопросы в чате</span></div>
-            </div>
-            <div class="guardrail">Каждый вывод агента проверяется по данным отчёта</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- 3. Ценность -->
-    <section class="slide" data-slide="3">
-      <div class="mesh">
-        <div class="blob" style="width:330px;height:330px;top:-80px;left:-50px;background:#25d0a5;opacity:.08"></div>
-        <div class="blob" style="width:310px;height:310px;bottom:-90px;right:-60px;background:#7c5cff;opacity:.08"></div>
-      </div>
-      <div class="content">
-        <div class="kicker reveal">Ценность</div>
-        <h2 class="section-title reveal">Предпринимателю — проще сравнить. Банку — больше причин вернуться к продукту</h2>
-        <div class="grid-3">
-          <article class="glass value-card reveal">
-            <div class="value-num">01</div>
-            <div class="value-word accent">Быстрее</div>
-            <p>Сводка и сравнение заменяют последовательное изучение полных отчётов.</p>
-            <span class="value-for">Предприниматель</span>
-          </article>
-          <article class="glass value-card reveal">
-            <div class="value-num">02</div>
-            <div class="value-word green">Точнее</div>
-            <p>Единые критерии по всем кандидатам снижают вероятность пропустить рискованный фактор.</p>
-            <span class="value-for">Предприниматель</span>
-          </article>
-          <article class="glass value-card reveal">
-            <div class="value-num">03</div>
-            <div class="value-word" style="color:#6546d9">Полезнее</div>
-            <p>Продукт помогает при выборе из нескольких компаний, а не только при разовой проверке.</p>
-            <span class="value-for">Банк</span>
-          </article>
-        </div>
-        <div class="glass hypothesis reveal">
-          <span class="badge">Гипотеза пилота</span>
-          <span style="color:#3c5371;font-size:16px;line-height:1.45">Предприниматель быстрее и без ошибок сравнивает несколько контрагентов и выбирает, с кем продолжить работу.</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- 4. Ключевые особенности -->
-    <section class="slide" data-slide="4">
-      <div class="mesh">
-        <div class="blob" style="width:350px;height:350px;top:-90px;right:-70px;background:#50c8ff;opacity:.08"></div>
-        <div class="blob" style="width:300px;height:300px;bottom:-90px;left:-60px;background:#25d0a5;opacity:.08"></div>
-      </div>
-      <div class="content">
-        <div class="kicker reveal">Ключевые особенности</div>
-        <h2 class="section-title reveal">ИИ объясняет отчёт, правила контролируют проверку, факты подтверждают вывод</h2>
-        <div class="grid-4">
-          <article class="glass feature-card reveal" style="--feature-color:rgba(80,200,255,.13);--feature-text:#2a7dc4">
-            <div class="feature-icon">AI</div>
-            <h3>Диалог с ИИ</h3>
-            <p>Вопросы обычным языком и краткие ответы вместо поиска по разделам отчёта.</p>
-          </article>
-          <article class="glass feature-card reveal" style="--feature-color:rgba(124,92,255,.12);--feature-text:#6546d9">
-            <div class="feature-icon">{ }</div>
-            <h3>Движок правил</h3>
-            <p>40+ детерминированных проверок находят рискованные факторы и пробелы в данных.</p>
-          </article>
-          <article class="glass feature-card reveal" style="--feature-color:rgba(37,208,165,.13);--feature-text:#0a8a70">
-            <div class="feature-icon">✓</div>
-            <h3>Факты профиля</h3>
-            <p>Каждый вывод связан с конкретными данными компании: источник можно открыть и проверить.</p>
-          </article>
-          <article class="glass feature-card reveal" style="--feature-color:rgba(255,159,67,.13);--feature-text:#d87516">
-            <div class="feature-icon">10</div>
-            <h3>Сравнение</h3>
-            <p>До 10 контрагентов оцениваются по одинаковым направлениям в одной сессии.</p>
-          </article>
-        </div>
-        <div class="glass feature-proof reveal">
-          <span>✓</span>
-          <span>Вывод модели можно подтвердить фактами из профиля компании</span>
-        </div>
-      </div>
-    </section>
-
-    <!-- 5. Демо -->
-    <section class="slide" data-slide="5">
-      <div class="mesh">
-        <div class="blob" style="width:360px;height:360px;top:-120px;right:-80px;background:#7c5cff;opacity:.08"></div>
-        <div class="blob" style="width:300px;height:300px;bottom:-90px;left:-60px;background:#50c8ff;opacity:.08"></div>
-      </div>
-      <div class="content wide">
-        <div style="display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:13px">
+  <main class="deck" aria-label="Презентация AI-агента проверки контрагентов">
+    <section class="slide active" data-title="Открытие" aria-hidden="false">
+      <header class="topline">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span>AI Product Hack · Demo Day</div>
+        <div class="section-label">Открытие · 0:00–0:30</div>
+      </header>
+      <div class="slide-main">
+        <div class="hero-layout">
           <div>
-            <div class="kicker reveal">Демо</div>
-            <h2 class="section-title reveal" style="margin-bottom:0">Проверка контрагентов в одном диалоге</h2>
+            <div class="eyebrow reveal">Внутрибанковский ИИ-помощник</div>
+            <h1 class="reveal" style="--delay:80ms">AI-агент<br>проверки <span class="hero-title-mark">контрагентов</span></h1>
+            <p class="lead reveal" style="--delay:160ms">Превращает объёмные профили компаний в понятные подсказки, отвечает на вопросы и помогает сравнить кандидатов перед сделкой.</p>
+            <div class="team reveal" style="--delay:230ms">
+              <span><strong>Илья Спевак</strong> · AI Product</span>
+              <span><strong>Алексей Коновалов</strong> · AI Engineer</span>
+              <span><strong>Павел Милютин</strong> · AI Engineer</span>
+            </div>
           </div>
-          <div class="pill reveal">Живой интерактивный mockup</div>
+          <div class="metrics card reveal" style="--delay:160ms">
+            <div class="metric-row"><div class="metric-value">5</div><div class="metric-label">направлений оценки компании</div></div>
+            <div class="metric-row"><div class="metric-value">95%</div><div class="metric-label">корректных ответов в тестовом прогоне</div></div>
+            <div class="metric-row"><div class="metric-value">10</div><div class="metric-label">компаний в одной сессии</div></div>
+          </div>
         </div>
+      </div>
+      <footer class="slide-footer"><span>Альфа-Банк · сентябрь 2026</span><span><strong>01</strong> / 07</span></footer>
+      <aside class="speaker-notes" hidden>Мы создали ИИ-агента для малого бизнеса, клиента банка, который проверяет контрагентов перед сделкой и хочет снизить риск столкнуться с недобросовестным поставщиком.</aside>
+    </section>
+
+    <section class="slide" data-title="Продукт" aria-hidden="true">
+      <header class="topline">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span>Проверка контрагентов</div>
+        <div class="section-label">Продукт · 0:30–1:00</div>
+      </header>
+      <div class="slide-main">
+        <div class="eyebrow reveal">Проблема → решение</div>
+        <h2 class="reveal" style="--delay:70ms">Несколько кандидатов — несколько объёмных отчётов. Сравнение остаётся <span class="red">ручным</span></h2>
+        <div class="comparison">
+          <article class="state-card before card reveal" style="--delay:140ms">
+            <div class="state-label"><span>Сейчас</span><span class="chip">по одному</span></div>
+            <div class="report-stack" aria-label="Несколько отдельных отчётов">
+              <div class="report"></div>
+              <div class="report"></div>
+              <div class="report">
+                <div class="report-line short"></div><div class="report-line"></div><div class="report-line"></div><div class="report-line short"></div>
+              </div>
+            </div>
+            <p class="muted">Пользователь листает разделы и держит различия между компаниями в голове.</p>
+          </article>
+          <div class="flow-arrow reveal" style="--delay:210ms" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M5 12h14M14 7l5 5-5 5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <article class="state-card after card reveal" style="--delay:230ms">
+            <div class="state-label"><span>С агентом</span><span class="chip" style="color:var(--red-dark);background:rgba(239,49,36,.07)"><span class="chip-dot"></span>одна сессия</span></div>
+            <div class="mini-app" aria-label="Чат и панель сравнения">
+              <div class="mini-app-head"><span>Проверка контрагентов</span><span>3 компании</span></div>
+              <div class="mini-app-body">
+                <div class="mini-chat">
+                  <div class="bubble">Сравни 3 компании перед поставкой</div>
+                  <div class="bubble answer">Нашёл различия по риску, финансам и юридическим событиям.</div>
+                </div>
+                <div class="mini-table">
+                  <div class="mini-table-row"><span>Оценка банка</span><span>3</span></div>
+                  <div class="mini-table-row"><span>Финансы</span><span>2</span></div>
+                  <div class="mini-table-row"><span>Реестры ФНС</span><span>1</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="outcome-strip">
+              <div class="outcome">Предпринимателю — меньше ручной работы</div>
+              <div class="outcome">Банку — причина вернуться в продукт</div>
+            </div>
+          </article>
+        </div>
+      </div>
+      <footer class="slide-footer"><span>Сводка · сравнение · вопросы в чате</span><span><strong>02</strong> / 07</span></footer>
+      <aside class="speaker-notes" hidden>Клиент получает объёмный отчёт по каждому контрагенту отдельно. Когда кандидатов несколько, он изучает их по очереди. Агент по ИНН собирает короткую сводку и позволяет сравнить несколько компаний в одной сессии.</aside>
+    </section>
+
+    <section class="slide" data-title="Ценность" aria-hidden="true">
+      <header class="topline">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span>Проверка контрагентов</div>
+        <div class="section-label">Ценность</div>
+      </header>
+      <div class="slide-main">
+        <div class="eyebrow reveal">Две стороны одного продукта</div>
+        <h2 class="reveal" style="--delay:70ms">Помогаем предпринимателю выбрать контрагента и повышаем ценность банковского сервиса</h2>
+        <div class="value-layout">
+          <article class="value-card card reveal" style="--delay:140ms">
+            <div>
+              <div class="icon-box" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm7 8a7 7 0 0 0-14 0" stroke-width="1.8" stroke-linecap="round"/></svg>
+              </div>
+              <h3>Предприниматель</h3>
+              <p class="muted">Видит различия между кандидатами, значимые факты и пробелы в данных без ручного разбора каждого отчёта.</p>
+            </div>
+            <div class="value-result">Меньше времени на сравнение</div>
+          </article>
+          <div class="value-plus reveal" style="--delay:210ms" aria-label="и">+</div>
+          <article class="value-card bank card reveal" style="--delay:260ms">
+            <div>
+              <div class="icon-box" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none"><path d="m3 10 9-6 9 6M5 10v8m4-8v8m6-8v8m4-8v8M3 20h18" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </div>
+              <h3>Банк</h3>
+              <p class="muted">Превращает статичный отчёт в диалоговый сервис для повторных проверок и сопровождения выбора.</p>
+            </div>
+            <div class="value-result">Выше полезность и лояльность</div>
+          </article>
+        </div>
+      </div>
+      <footer class="slide-footer"><span>Ценность проверим на пилоте</span><span><strong>03</strong> / 07</span></footer>
+      <aside class="speaker-notes" hidden>Предприниматель решает проблему трудоёмкого сравнения компаний. Для банка это способ сделать отчёт более полезным и повысить лояльность клиентов. Эффект на поведение пользователей мы проверим на пилоте.</aside>
+    </section>
+
+    <section class="slide" data-title="Особенности" aria-hidden="true">
+      <header class="topline">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span>Проверка контрагентов</div>
+        <div class="section-label">Особенности · 1:00–1:20</div>
+      </header>
+      <div class="slide-main">
+        <div class="eyebrow reveal">Ключевые особенности</div>
+        <h2 class="reveal" style="--delay:70ms">Агент интерпретирует отчёт, а факты позволяют <span class="red">проверить вывод</span></h2>
+        <div class="grid-3">
+          <article class="feature-card primary card reveal" style="--delay:140ms">
+            <div class="icon-box" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="m9.5 12.5 2 2 4-5M20 12a8 8 0 1 1-3.2-6.4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 3v4h4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h3>Подтверждение фактами</h3>
+            <p>Каждый вывод связан с данными профиля. Источник можно открыть прямо из чата.</p>
+            <div class="proof-path">Вывод → факт → профиль</div>
+            <span class="feature-number">1</span>
+          </article>
+          <article class="feature-card card reveal" style="--delay:210ms">
+            <div class="icon-box" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M4 5h16M4 12h16M4 19h16M8 3v4M15 10v4M11 17v4" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </div>
+            <h3>Подробное сравнение</h3>
+            <p>Отобранные компании сопоставляются по одинаковым направлениям в одной сессии.</p>
+            <span class="feature-number">2</span>
+          </article>
+          <article class="feature-card card reveal" style="--delay:280ms">
+            <div class="icon-box" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9ZM10 21h4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h3>Подписка на обновления</h3>
+            <p>Пользователь отмечает важные компании и получает основу для постоянного мониторинга изменений.</p>
+            <span class="feature-number">3</span>
+          </article>
+        </div>
+      </div>
+      <footer class="slide-footer"><span>Центральный принцип: вывод можно проверить</span><span><strong>04</strong> / 07</span></footer>
+      <aside class="speaker-notes" hidden>Три вещи отличают продукт. Каждый вывод привязан к факту из профиля. Несколько кандидатов сравниваются в одной сессии по одним критериям. По отобранным компаниям можно включить подписку и следить за изменениями.</aside>
+    </section>
+
+    <section class="slide demo-slide" data-title="Демо" aria-hidden="true">
+      <header class="topline">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span>Демонстрация приложения</div>
+        <div class="section-label">Демо · 1:20–3:10</div>
+      </header>
+      <div class="slide-main">
         <div class="demo-shell reveal">
           <div class="browser-bar">
-            <span class="browser-dot" style="background:#ff8d91"></span>
-            <span class="browser-dot" style="background:#ffc76b"></span>
-            <span class="browser-dot" style="background:#67d7b1"></span>
-            <span class="browser-label">Агент проверки контрагентов</span>
+            <div class="browser-dots" aria-hidden="true"><i></i><i></i><i></i></div>
+            <div class="browser-address">Проверка контрагентов · прототип</div>
+            <div class="live-badge">live</div>
           </div>
-          <iframe src="../ui/mockup.html#empty" title="Интерактивный прототип агента проверки контрагентов"></iframe>
+          <iframe class="demo-frame" data-src="../ui/mockup.html#three" title="Интерактивный прототип проверки контрагентов" loading="lazy"></iframe>
         </div>
       </div>
+      <footer class="slide-footer"><span>Интерактивный прототип</span><span><strong>05</strong> / 07</span></footer>
+      <aside class="speaker-notes" hidden>Покажите проверку нескольких ИНН, сводку по одной компании, переход к факту в профиле, сравнение кандидатов и подписку. На демо отведите не больше 1 минуты 50 секунд.</aside>
     </section>
 
-    <!-- 6. Технический слайд оставлен пустым по запросу -->
-    <section class="slide slide-technical-empty" data-slide="6"></section>
+    <section class="slide" data-title="Архитектура" aria-hidden="true">
+      <header class="topline">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span>Проверка контрагентов</div>
+        <div class="section-label">Техника · 3:10–4:10</div>
+      </header>
+      <div class="slide-main">
+        <div class="eyebrow reveal">Как работает прототип</div>
+        <h2 class="reveal" style="--delay:70ms">Бэкенд сам решает, когда запросить отчёт, и возвращает готовый ответ в чат</h2>
+        <div class="architecture reveal" style="--delay:140ms">
+          <article class="arch-node arch-chat card">
+            <div class="icon-box" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M20 14a3 3 0 0 1-3 3H9l-5 4v-4a3 3 0 0 1-2-3V7a3 3 0 0 1 3-3h12a3 3 0 0 1 3 3v7Z" stroke-width="1.8" stroke-linejoin="round"/></svg>
+            </div>
+            <div><h3>Чат</h3><p>Запрос пользователя и панель сравнения</p></div>
+          </article>
+          <article class="arch-node arch-backend card">
+            <div class="icon-box" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M5 7h14M5 12h14M5 17h14M8 5v4M16 10v4M11 15v4" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </div>
+            <div><h3>Бэкенд-агент</h3><p>Хранит сессию, вызывает нужный инструмент, разбирает отчёт и собирает ответ</p></div>
+          </article>
+          <article class="arch-node arch-mcp card">
+            <div class="icon-box" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><ellipse cx="12" cy="5" rx="7" ry="3" stroke-width="1.8"/><path d="M5 5v6c0 1.7 3.1 3 7 3s7-1.3 7-3V5M5 11v6c0 1.7 3.1 3 7 3s7-1.3 7-3v-6" stroke-width="1.8"/></svg>
+            </div>
+            <div><h3>MCP-сервер</h3><p>Находит отчёт компании по ИНН</p></div>
+          </article>
+          <article class="arch-node arch-llm card">
+            <div class="icon-box" style="color:var(--blue);background:rgba(47,111,237,.08)" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none"><path d="M9 4a3 3 0 0 0-3 3v1a3 3 0 0 0-2 5 3 3 0 0 0 3 5h2M15 4a3 3 0 0 1 3 3v1a3 3 0 0 1 2 5 3 3 0 0 1-3 5h-2M9 4v16m6-16v16M9 9h2m4 6h-2" stroke-width="1.8" stroke-linecap="round"/></svg>
+            </div>
+            <div><h3>Qwen 3.8 27B</h3><p>Формулирует структурированный ответ</p></div>
+          </article>
+          <div class="connector left" aria-hidden="true"></div>
+          <div class="connector upper" aria-hidden="true"></div>
+          <div class="connector lower" aria-hidden="true"></div>
+          <span class="connector-label label-left">сообщение ↔ ответ</span>
+          <span class="connector-label label-upper">отчёт по ИНН</span>
+          <span class="connector-label label-lower">запрос ↔ текст</span>
+        </div>
+        <div class="arch-legend reveal" style="--delay:220ms">
+          <span class="chip"><span class="chip-dot" style="color:var(--red)"></span>LangChain + память сессии</span>
+          <span class="chip"><span class="chip-dot" style="color:var(--blue)"></span>Structured output</span>
+          <span class="chip"><span class="chip-dot" style="color:var(--green)"></span>MCP · streamable HTTP</span>
+        </div>
+      </div>
+      <footer class="slide-footer"><span>Данные остаются отделены от языковой модели</span><span><strong>06</strong> / 07</span></footer>
+      <aside class="speaker-notes" hidden>Пользователь пишет в чат. Бэкенд-агент решает, нужны ли данные, вызывает MCP-инструмент и получает отчёт по ИНН. Затем он извлекает нужные сигналы, передаёт их Qwen и возвращает структурированный ответ на фронт.</aside>
+    </section>
 
-    <!-- 7. Финал -->
-    <section class="slide" data-slide="7">
-      <div class="mesh">
-        <div class="blob" style="width:430px;height:430px;top:-130px;right:-90px;background:#50c8ff;opacity:.1"></div>
-        <div class="blob" style="width:340px;height:340px;bottom:-100px;left:-80px;background:#7c5cff;opacity:.09"></div>
-        <div class="blob" style="width:220px;height:220px;top:38%;left:16%;background:#25d0a5;opacity:.08"></div>
-      </div>
-      <div class="content">
-        <div class="kicker reveal">Финал</div>
-        <h2 class="section-title reveal">Прототип готов. Следующий шаг — пилот на реальных проверках</h2>
-        <div class="final-grid">
-          <article class="glass final-card reveal">
-            <div class="kicker">Готово</div>
-            <h3>Рабочий сценарий проверки</h3>
-            <div class="check-list">
-              <div class="check-item"><span>✓</span><span>Сравнение до 10 компаний</span></div>
-              <div class="check-item"><span>✓</span><span>40+ правил анализа отчёта</span></div>
-              <div class="check-item"><span>✓</span><span>Ответы по данным с проверкой источников</span></div>
-              <div class="check-item"><span>✓</span><span>Рекомендации для уточнений у контрагента</span></div>
+    <section class="slide" data-title="Пилот" aria-hidden="true">
+      <header class="topline">
+        <div class="brand"><span class="brand-mark" aria-hidden="true"></span>Проверка контрагентов</div>
+        <div class="section-label">Финал · 4:10–4:50</div>
+      </header>
+      <div class="slide-main">
+        <div class="eyebrow reveal">Следующий шаг</div>
+        <h2 class="reveal" style="--delay:70ms">Прототип готов. Проверяем ценность на <span class="red">реальных задачах</span></h2>
+        <div class="pilot-layout">
+          <article class="pilot-card card reveal" style="--delay:140ms">
+            <div style="font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.11em;opacity:.8">Пилот</div>
+            <div class="pilot-number">2–4</div>
+            <div style="font-size:clamp(20px,1.8vw,29px);font-weight:780">недели · 10–15 пользователей МСП</div>
+            <div class="pilot-list">
+              <div class="pilot-item">Время до принятия решения</div>
+              <div class="pilot-item">Количество галлюцинаций</div>
             </div>
           </article>
-          <article class="glass final-card reveal">
-            <div class="kicker">Пилот · 2–4 недели</div>
-            <h3>Проверить продуктовую гипотезу</h3>
-            <div class="check-list">
-              <div class="check-item"><span>01</span><span>10–15 пользователей малого бизнеса</span></div>
-              <div class="check-item"><span>02</span><span>Сценарий: несколько контрагентов и контекст сделки</span></div>
-              <div class="check-item"><span>03</span><span>Метрики: время до решения и число найденных факторов риска</span></div>
-            </div>
+          <article class="roadmap-card card reveal" style="--delay:220ms">
+            <h3>После пилота</h3>
             <div class="roadmap">
-              <div>Подписка на изменения</div>
-              <div>Связанные компании</div>
-              <div>Сопровождение сделки</div>
+              <div class="road-dot"></div>
+              <div class="road-step"><strong>Проверка связанных компаний</strong><span>Больше контекста о структуре бизнеса</span></div>
+              <div class="road-dot blue"></div>
+              <div class="road-step"><strong>Сопровождение договора</strong><span>Контроль изменений и исполнения</span></div>
+              <div class="road-dot blue"></div>
+              <div class="road-step"><strong>Банковские услуги</strong><span>Кредитование, лизинг, факторинг</span></div>
+              <div class="road-dot green"></div>
+              <div class="road-step"><strong>Подбор поставщиков</strong><span>По виду деятельности и репутации</span></div>
             </div>
           </article>
         </div>
-        <div class="glass closing reveal">
-          <q>Мы сделали агента, который превращает отчёты в рекомендации. Следующий шаг — пилот на реальных проверках, чтобы измерить выигрыш во времени и рост повторного использования продукта.</q>
-          <div style="text-align:center">
-            <img class="qr" src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&margin=8&data=https%3A%2F%2Fgithub.com%2FCyX4Puk%2FAITHackathon" alt="QR-код репозитория">
-            <div style="margin-top:4px;color:#7890af;font-size:10px;font-weight:700">РЕПОЗИТОРИЙ</div>
-          </div>
-        </div>
+        <p class="closing-line reveal" style="--delay:290ms">Мы превращаем отчёты о компаниях в понятный диалог — теперь хотим измерить, сколько времени это экономит клиенту.</p>
       </div>
+      <footer class="slide-footer"><span>Команда AI Product Hack</span><span><strong>07</strong> / 07</span></footer>
+      <aside class="speaker-notes" hidden>Мы сделали агента, который превращает отчёты в рекомендации. Следующий шаг — пилот на реальных проверках, чтобы измерить выигрыш во времени и рост повторного использования продукта.</aside>
     </section>
   </main>
 
-  <nav class="nav" aria-label="Навигация презентации">
-    <div class="timer" id="timer">05:00</div>
-    <button type="button" id="prev" aria-label="Предыдущий слайд">‹</button>
-    <div class="dots" id="dots"></div>
-    <button type="button" id="next" aria-label="Следующий слайд">›</button>
-    <span class="counter" id="counter">1 / 7</span>
+  <nav class="controls" aria-label="Навигация по презентации">
+    <button class="control-button" id="prev" type="button" aria-label="Предыдущий слайд">
+      <svg viewBox="0 0 24 24" fill="none"><path d="m15 18-6-6 6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <div class="dots" id="dots" aria-label="Слайды"></div>
+    <div class="timer" id="timer" title="R — сбросить таймер">0:00</div>
+    <button class="control-button" id="notes" type="button" aria-label="Заметки спикера" title="Заметки спикера (N)">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M6 3h9l4 4v14H6V3Z" stroke-width="1.8" stroke-linejoin="round"/><path d="M9 12h6M9 16h6M14 3v5h5" stroke-width="1.8" stroke-linecap="round"/></svg>
+    </button>
+    <button class="control-button" id="fullscreen" type="button" aria-label="Полноэкранный режим" title="Полноэкранный режим (F)">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+    <button class="control-button" id="next" type="button" aria-label="Следующий слайд">
+      <svg viewBox="0 0 24 24" fill="none"><path d="m9 18 6-6-6-6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
   </nav>
+  <div class="progress" aria-hidden="true"><div class="progress-bar" id="progress"></div></div>
+  <aside class="notes-panel" id="notes-panel" aria-live="polite">
+    <h3 id="notes-title">Заметки спикера</h3>
+    <p id="notes-text"></p>
+    <div class="notes-hint">N — закрыть · R — сбросить таймер</div>
+  </aside>
+  <div class="key-hint">← → навигация · F полный экран · N заметки</div>
 
   <script>
-    const slides = [...document.querySelectorAll(".slide")];
-    const dots = document.getElementById("dots");
-    const counter = document.getElementById("counter");
-    const timer = document.getElementById("timer");
-    let current = 0;
-    let remaining = 300;
+    (() => {
+      const slides = [...document.querySelectorAll(".slide")];
+      const dotsBox = document.getElementById("dots");
+      const prevButton = document.getElementById("prev");
+      const nextButton = document.getElementById("next");
+      const notesButton = document.getElementById("notes");
+      const fullscreenButton = document.getElementById("fullscreen");
+      const progress = document.getElementById("progress");
+      const notesPanel = document.getElementById("notes-panel");
+      const notesTitle = document.getElementById("notes-title");
+      const notesText = document.getElementById("notes-text");
+      const timer = document.getElementById("timer");
+      let current = Math.min(Math.max(Number(location.hash.slice(1)) - 1 || 0, 0), slides.length - 1);
+      let startedAt = Date.now();
+      let touchStartX = null;
 
-    slides.forEach((_, index) => {
-      const dot = document.createElement("button");
-      dot.type = "button";
-      dot.className = "dot" + (index === 0 ? " active" : "");
-      dot.setAttribute("aria-label", `Слайд ${index + 1}`);
-      dot.addEventListener("click", () => goTo(index));
-      dots.appendChild(dot);
-    });
-
-    function animateSlide(slide) {
-      slide.querySelectorAll(".reveal").forEach((element, index) => {
-        element.style.transition = "none";
-        element.style.opacity = "0";
-        element.style.transform = "translateY(14px)";
-        element.offsetHeight;
-        element.style.transition = `opacity .35s ease ${index * .07}s, transform .35s ease ${index * .07}s`;
-        element.style.opacity = "1";
-        element.style.transform = "translateY(0)";
+      const dots = slides.map((slide, index) => {
+        const dot = document.createElement("button");
+        dot.type = "button";
+        dot.className = "dot";
+        dot.setAttribute("aria-label", `Слайд ${index + 1}: ${slide.dataset.title}`);
+        dot.addEventListener("click", () => show(index));
+        dotsBox.appendChild(dot);
+        return dot;
       });
-    }
 
-    function goTo(index) {
-      current = (index + slides.length) % slides.length;
-      slides.forEach((slide, i) => slide.classList.toggle("active", i === current));
-      [...dots.children].forEach((dot, i) => dot.classList.toggle("active", i === current));
-      counter.textContent = `${current + 1} / ${slides.length}`;
-      animateSlide(slides[current]);
-    }
-
-    document.getElementById("prev").addEventListener("click", () => goTo(current - 1));
-    document.getElementById("next").addEventListener("click", () => goTo(current + 1));
-
-    document.addEventListener("keydown", event => {
-      const iframeFocused = document.activeElement?.tagName === "IFRAME";
-      if (iframeFocused) return;
-      if (event.key === "ArrowRight" || event.key === "PageDown" || event.key === " ") {
-        event.preventDefault();
-        goTo(current + 1);
+      function loadDemo(slide) {
+        const frame = slide.querySelector("iframe[data-src]");
+        if (frame && !frame.getAttribute("src")) frame.src = frame.dataset.src;
       }
-      if (event.key === "ArrowLeft" || event.key === "PageUp") {
-        event.preventDefault();
-        goTo(current - 1);
+
+      function show(index, updateHash = true) {
+        const nextIndex = Math.min(Math.max(index, 0), slides.length - 1);
+        slides.forEach((slide, i) => {
+          slide.classList.toggle("active", i === nextIndex);
+          slide.classList.toggle("was-before", i < nextIndex);
+          slide.setAttribute("aria-hidden", i === nextIndex ? "false" : "true");
+        });
+        dots.forEach((dot, i) => dot.classList.toggle("active", i === nextIndex));
+        current = nextIndex;
+        prevButton.disabled = current === 0;
+        nextButton.disabled = current === slides.length - 1;
+        progress.style.width = `${((current + 1) / slides.length) * 100}%`;
+        document.title = `${current + 1}/7 · ${slides[current].dataset.title} · AI-агент`;
+        loadDemo(slides[current]);
+        updateNotes();
+        if (updateHash) history.replaceState(null, "", `#${current + 1}`);
       }
-      if (event.key.toLowerCase() === "f") {
-        if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
-        else document.exitFullscreen?.();
+
+      function updateNotes() {
+        const source = slides[current].querySelector(".speaker-notes");
+        notesTitle.textContent = `${current + 1}/7 · ${slides[current].dataset.title}`;
+        notesText.textContent = source ? source.textContent.trim() : "Для этого слайда заметок нет.";
       }
-      if (event.key.toLowerCase() === "r") {
-        remaining = 300;
-        paintTimer();
+
+      function toggleNotes(force) {
+        const open = typeof force === "boolean" ? force : !notesPanel.classList.contains("open");
+        notesPanel.classList.toggle("open", open);
+        notesButton.setAttribute("aria-pressed", String(open));
       }
-    });
 
-    function paintTimer() {
-      const minutes = String(Math.floor(remaining / 60)).padStart(2, "0");
-      const seconds = String(remaining % 60).padStart(2, "0");
-      timer.textContent = `${minutes}:${seconds}`;
-      timer.classList.toggle("warn", remaining <= 120 && remaining > 60);
-      timer.classList.toggle("danger", remaining <= 60);
-    }
+      async function toggleFullscreen() {
+        try {
+          if (!document.fullscreenElement) await document.documentElement.requestFullscreen();
+          else await document.exitFullscreen();
+        } catch (_) {}
+      }
 
-    setInterval(() => {
-      if (remaining > 0) remaining -= 1;
-      paintTimer();
-    }, 1000);
+      function resetTimer() { startedAt = Date.now(); }
+      function updateTimer() {
+        const seconds = Math.floor((Date.now() - startedAt) / 1000);
+        timer.textContent = `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
+      }
 
-    let touchStartX = 0;
-    document.addEventListener("touchstart", event => { touchStartX = event.touches[0].clientX; });
-    document.addEventListener("touchend", event => {
-      const delta = touchStartX - event.changedTouches[0].clientX;
-      if (Math.abs(delta) > 55) goTo(current + (delta > 0 ? 1 : -1));
-    });
+      prevButton.addEventListener("click", () => show(current - 1));
+      nextButton.addEventListener("click", () => show(current + 1));
+      notesButton.addEventListener("click", () => toggleNotes());
+      fullscreenButton.addEventListener("click", toggleFullscreen);
+      document.addEventListener("fullscreenchange", () => fullscreenButton.setAttribute("aria-pressed", String(Boolean(document.fullscreenElement))));
+      window.addEventListener("hashchange", () => show(Number(location.hash.slice(1)) - 1 || 0, false));
+      window.addEventListener("keydown", event => {
+        if (event.target.matches("input, textarea, select")) return;
+        if (["ArrowRight", "PageDown", " "].includes(event.key)) { event.preventDefault(); show(current + 1); }
+        else if (["ArrowLeft", "PageUp"].includes(event.key)) { event.preventDefault(); show(current - 1); }
+        else if (event.key === "Home") show(0);
+        else if (event.key === "End") show(slides.length - 1);
+        else if (event.key.toLowerCase() === "f") toggleFullscreen();
+        else if (event.key.toLowerCase() === "n") toggleNotes();
+        else if (event.key.toLowerCase() === "r") resetTimer();
+        else if (event.key === "Escape") toggleNotes(false);
+      });
+      window.addEventListener("touchstart", event => { touchStartX = event.changedTouches[0].clientX; }, {passive: true});
+      window.addEventListener("touchend", event => {
+        if (touchStartX === null) return;
+        const delta = event.changedTouches[0].clientX - touchStartX;
+        if (Math.abs(delta) > 60) show(current + (delta < 0 ? 1 : -1));
+        touchStartX = null;
+      }, {passive: true});
 
-    paintTimer();
-    animateSlide(slides[0]);
+      show(current, false);
+      updateTimer();
+      setInterval(updateTimer, 1000);
+    })();
   </script>
 </body>
 </html>

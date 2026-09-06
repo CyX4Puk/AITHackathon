@@ -1,0 +1,368 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#ef3124">
+  <title>Проверка контрагентов</title>
+  <style>
+    :root {
+      --red: #ef3124;
+      --red-dark: #c9251a;
+      --ink: #171717;
+      --muted: #676767;
+      --line: #deded9;
+      --paper: #f6f6f3;
+      --white: #ffffff;
+      --blue: #2f6fed;
+      --green: #159b68;
+      --shadow: 0 20px 55px rgba(17, 17, 17, .09);
+      --radius-lg: 22px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; }
+    body {
+      overflow: hidden;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: Inter, "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont,
+        "Segoe UI", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input { font: inherit; }
+    svg { display: block; }
+    h1, p { margin: 0; }
+
+    .page {
+      position: relative;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      width: 100%;
+      height: 100%;
+      min-height: 100vh;
+      overflow: hidden;
+      background:
+        radial-gradient(circle at 83% 12%, rgba(239, 49, 36, .08), transparent 24%),
+        radial-gradient(circle at 8% 88%, rgba(47, 111, 237, .055), transparent 25%),
+        var(--paper);
+    }
+    .page::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      opacity: .15;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.11'/%3E%3C/svg%3E");
+      mix-blend-mode: multiply;
+    }
+
+    header, main, footer { position: relative; z-index: 2; }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 72px;
+      padding: 18px clamp(22px, 4.5vw, 56px);
+    }
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 750;
+      letter-spacing: -.02em;
+      text-decoration: none;
+    }
+    .brand-mark {
+      position: relative;
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      background: var(--red);
+      transform: skew(-8deg);
+      box-shadow: 0 8px 18px rgba(239, 49, 36, .22);
+    }
+    .brand-mark::before {
+      content: "";
+      position: absolute;
+      width: 5px;
+      height: 17px;
+      left: 10px;
+      top: 4px;
+      border-radius: 5px;
+      background: #fff;
+    }
+    .header-meta {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 650;
+      letter-spacing: .02em;
+    }
+
+    main {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+      padding: 0 clamp(22px, 4.5vw, 56px) 8vh;
+    }
+
+    .launcher {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: min(760px, 100%);
+      text-align: center;
+    }
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      margin-bottom: 18px;
+      padding: 8px 13px;
+      border: 1px solid rgba(239, 49, 36, .18);
+      border-radius: 999px;
+      color: var(--red-dark);
+      background: rgba(239, 49, 36, .06);
+      font-size: 11px;
+      font-weight: 750;
+      text-transform: uppercase;
+      letter-spacing: .11em;
+    }
+    h1 {
+      max-width: 18ch;
+      margin-bottom: 16px;
+      font-size: clamp(38px, 5.4vw, 68px);
+      font-weight: 850;
+      line-height: .94;
+      letter-spacing: -.05em;
+    }
+    .title-mark { position: relative; display: inline-block; }
+    .title-mark::after {
+      content: "";
+      position: absolute;
+      left: 2px;
+      right: -3px;
+      bottom: 4px;
+      z-index: -1;
+      height: .12em;
+      border-radius: 999px;
+      background: var(--red);
+      transform: rotate(-1.2deg);
+    }
+    .lead {
+      max-width: 54ch;
+      margin-bottom: 28px;
+      color: #4f4f4c;
+      font-size: clamp(16px, 1.45vw, 20px);
+      line-height: 1.5;
+    }
+
+    .compose-card {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 28px;
+      background: rgba(255, 255, 255, .9);
+      box-shadow: var(--shadow);
+    }
+    form {
+      display: flex;
+      gap: 8px;
+      align-items: stretch;
+    }
+    input[type="text"] {
+      flex: 1;
+      min-width: 0;
+      height: 58px;
+      padding: 0 20px;
+      border: 0;
+      border-radius: 20px;
+      background: transparent;
+      color: var(--ink);
+      outline: none;
+    }
+    input::placeholder { color: #9a9a94; }
+    .submit {
+      height: 58px;
+      padding: 0 22px;
+      border: 0;
+      border-radius: 18px;
+      color: #fff;
+      background: var(--red);
+      box-shadow: 0 12px 28px rgba(239, 49, 36, .24);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: transform .18s ease, background .18s ease;
+    }
+    .submit:hover { background: var(--red-dark); transform: translateY(-1px); }
+    .submit:active { transform: translateY(0); }
+
+    .examples {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .chip {
+      padding: 9px 13px;
+      border: 1px solid transparent;
+      border-radius: 999px;
+      color: #4e4e4a;
+      background: #f0f0ec;
+      font-size: 13px;
+      font-weight: 650;
+      cursor: pointer;
+      transition: background .18s ease, color .18s ease, border-color .18s ease;
+    }
+    .chip:hover {
+      color: var(--ink);
+      background: #fff;
+      border-color: var(--line);
+    }
+
+    .capabilities {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px 22px;
+      margin-top: 28px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 650;
+    }
+    .capabilities span {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--red);
+    }
+    .dot.blue { background: var(--blue); }
+    .dot.green { background: var(--green); }
+
+    footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 clamp(22px, 4.5vw, 56px) 22px;
+      color: #8a8a86;
+      font-size: 12px;
+    }
+    footer a {
+      color: var(--ink);
+      font-weight: 650;
+      text-decoration: none;
+    }
+    footer a:hover { color: var(--red); }
+    .visually-hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+    }
+
+    @media (max-width: 720px) {
+      body { overflow: auto; }
+      .page { min-height: 100vh; height: auto; }
+      header { min-height: 64px; }
+      .header-meta { display: none; }
+      h1 { max-width: none; }
+      form { flex-direction: column; }
+      input[type="text"], .submit { width: 100%; }
+      footer { flex-direction: column; gap: 8px; align-items: flex-start; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .submit { transition: none; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <a class="brand" href="./mockup_home.html">
+        <span class="brand-mark" aria-hidden="true"></span>
+        Проверка контрагентов
+      </a>
+      <div class="header-meta">ИИ-помощник · Альфа-Банк</div>
+    </header>
+
+    <main>
+      <section class="launcher" aria-label="Начало проверки">
+        <div class="eyebrow">Интеллектуальный помощник</div>
+        <h1>Здравствуйте. Проверим <span class="title-mark">контрагента</span></h1>
+        <p class="lead">Опишите задачу своими словами. Можно сразу направить ИНН, контекст сделки или попросить сравнить несколько компаний.</p>
+
+        <div class="compose-card">
+          <form id="startForm">
+            <label class="visually-hidden" for="query">Запрос</label>
+            <input id="query" type="text" autocomplete="off" placeholder="Например: планируется контракт на 100 млн, поставка, сравни Ромашка и Одуванчик">
+            <button class="submit" type="submit">Проверить</button>
+          </form>
+        </div>
+
+        <div class="examples">
+          <button type="button" class="chip" data-q="проверь 9721159668">Проверить 9721159668</button>
+          <button type="button" class="chip" data-q="Доступные ИНН">Показать доступные ИНН</button>
+          <button type="button" class="chip" data-q="проверь 9721159668 и 1660266560">Сравнить 9721159668 и 1660266560</button>
+        </div>
+
+        <div class="capabilities">
+          <span><i class="dot"></i>5 направлений оценки</span>
+          <span><i class="dot blue"></i>до 10 компаний в сессии</span>
+          <span><i class="dot green"></i>вывод можно проверить</span>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <span>Пустая сессия · введите ИНН, чтобы начать</span>
+      <a href="./mockup.html">Открыть рабочий макет</a>
+    </footer>
+  </div>
+
+  <script>
+    const input = document.getElementById("query");
+    const form = document.getElementById("startForm");
+
+    function innsIn(text) {
+      return [...new Set((text.match(/(?<!\d)\d{10}(?!\d)|(?<!\d)\d{12}(?!\d)/g) || []))];
+    }
+
+    function openMockup(text) {
+      const inns = innsIn(text);
+      const hash = inns.length >= 3 ? "three" : inns.length === 1 ? "one" : inns.length === 2 ? "three" : "empty";
+      const url = new URL("mockup.html", window.location.href);
+      url.hash = hash;
+      window.location.href = url.toString();
+    }
+
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      const text = input.value.trim();
+      if (!text) {
+        input.focus();
+        return;
+      }
+      openMockup(text);
+    });
+
+    document.querySelectorAll(".chip").forEach(chip => {
+      chip.addEventListener("click", () => {
+        input.value = chip.dataset.q;
+        input.focus();
+      });
+    });
+  </script>
+</body>
+</html>
