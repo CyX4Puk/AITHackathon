@@ -54,10 +54,15 @@
   .rail .arr{font-size:16px}
   .layout:not([data-panel="closed"]) .rail,.layout.nosession .rail{display:none}
   .panel-body{padding:16px;overflow:auto;flex:1;min-height:0}
-  .details-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:flex-start}
+  .details-head{padding:12px 16px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 10px;align-items:start}
   .details-head .ttl{flex:1;min-width:0}
   .details-head .ttl h2{font-size:15px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-  .details-head .icons{display:flex;gap:2px;flex:none}
+  .details-head .icons{grid-column:2;grid-row:1;display:flex;gap:2px;flex:none}
+  .subscribe-btn{grid-column:1/-1;grid-row:2;width:max-content;height:30px;display:none;align-items:center;justify-content:center;gap:6px;padding:0 10px;border:1px solid var(--border);border-radius:8px;background:var(--bg-primary);color:var(--text-primary);font-size:13px;font-weight:500;white-space:nowrap}
+  .subscribe-btn:hover{background:var(--bg-secondary)}
+  .subscribe-btn svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+  .subscribe-btn.on{background:var(--positive-bg);color:var(--positive-text)}
+  .subscribe-btn.on:hover{filter:brightness(.97)}
   .ibtn{width:28px;height:28px;border:0;background:transparent;border-radius:6px;color:var(--text-secondary);font-size:15px;line-height:1}
   .ibtn:hover{background:var(--bg-secondary);color:var(--text-primary)}
 
@@ -328,7 +333,14 @@
 
   <!-- B. Панель «Подробности» — открывается по ссылке из ответа, содержимое следует за последним ответом -->
   <aside class="panel details" id="details">
-    <div class="details-head"><div class="ttl" id="dTitle"></div><div class="icons"><button class="ibtn" id="pwide" title="Развернуть">⤢</button><button class="ibtn" data-pclose="1" title="Свернуть панель">×</button></div></div>
+    <div class="details-head">
+      <div class="ttl" id="dTitle"></div>
+      <button class="subscribe-btn" id="subscribeBtn" type="button" aria-pressed="false">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 21h4"/></svg>
+        <span>Подписаться на обновления о компании</span>
+      </button>
+      <div class="icons"><button class="ibtn" id="pwide" title="Развернуть">⤢</button><button class="ibtn" data-pclose="1" title="Свернуть панель">×</button></div>
+    </div>
     <div class="panel-body" id="dBody"></div>
   </aside>
   <button class="rail" id="rail" title="Открыть подробности"><span class="arr">‹</span><span class="vt" id="railText">Подробности</span></button>
@@ -577,7 +589,7 @@ const METRICS = [['pr','Выручка','finReports[].common.proceeds'],['pf','�
    panel: closed | open | wide — состояние панели «Подробности»
    view:  {kind:'card'|'compare'|'chart', inn} — что панель показывает; меняется только вслед за ответом агента или кликом по ссылке из ответа
    ctx:   контекст последнего ответа, от него зависят три подсказки под ответом */
-const S = { session:[], selected:null, llmOff:false, epView:'active', deal:{goal:null,amount:null},
+const S = { session:[], selected:null, llmOff:false, epView:'active', deal:{goal:null,amount:null}, subscriptions:new Set(),
   filter:'all', focus:[], focusMode:false, expanded:false, metric:'pr',
   panel:'closed', view:{kind:'card',inn:null}, ctx:'start' };
 
@@ -681,6 +693,15 @@ function renderPanel(){
   L.dataset.panel=S.panel;
   $('#pwide').textContent=S.panel==='wide'?'⤡':'⤢'; $('#pwide').title=S.panel==='wide'?'Обычная ширина':'Развернуть';
   const c=DB[S.view.inn];
+  const subscribeBtn=$('#subscribeBtn');
+  const isCard=S.view.kind==='card'&&c;
+  const subscribed=isCard&&S.subscriptions.has(c.inn);
+  subscribeBtn.style.display=isCard?'inline-flex':'none';
+  subscribeBtn.classList.toggle('on',subscribed);
+  subscribeBtn.setAttribute('aria-pressed',String(!!subscribed));
+  subscribeBtn.setAttribute('aria-label',subscribed?'Отписаться от обновлений по контрагенту':'Подписаться на обновления по контрагенту');
+  subscribeBtn.title=subscribed?'Отписаться от обновлений по контрагенту':'Получать уведомления об изменениях по контрагенту';
+  subscribeBtn.querySelector('span').textContent=subscribed?'Вы подписаны':'Подписаться на обновления о компании';
   const railKind={card:c?esc(c.short):'', compare:'Сравнение', chart:'Финансовые показатели'}[S.view.kind];
   $('#railText').textContent='Подробности · '+railKind;
   if(S.panel==='closed') return;
@@ -1177,6 +1198,7 @@ document.addEventListener('click',e=>{
   else if(d.pview){ openPanel(d.pview, d.inn); if(d.block) highlight(d.block); }
   else if(d.pclose){ S.panel='closed'; renderAll(); }
   else if(t.id==='pwide'||cl('#pwide')){ S.panel=S.panel==='wide'?'open':'wide'; renderAll(); }
+  else if(t.id==='subscribeBtn'||cl('#subscribeBtn')){ const inn=S.view.inn; if(S.subscriptions.has(inn)) S.subscriptions.delete(inn); else S.subscriptions.add(inn); renderPanel(); }
   else if(cl('#rail')){ S.panel='open'; renderAll(); }
   else if(d.pick!==undefined){ S.focus=t.checked?[...S.focus,d.pick]:S.focus.filter(i=>i!==d.pick); renderPanel(); }
   else if(d.focus){ S.focusMode=true; renderPanel(); }
