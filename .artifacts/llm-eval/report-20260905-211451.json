@@ -1,0 +1,55 @@
+{
+  "generated_at": "2026-09-05T21:14:51.997734+03:00",
+  "profile": "full",
+  "model": "qwen/qwen3.8-27b",
+  "agent_url": "http://localhost:8130",
+  "summary": {
+    "total": 1,
+    "passed": 1,
+    "failed": 0
+  },
+  "results": [
+    {
+      "id": "one-exact-revenue",
+      "tier": "smoke",
+      "message": "Какая выручка у Транслориума за 2025 год?",
+      "inns": [
+        "9721159668"
+      ],
+      "notes": "Точное число и внутренняя ссылка должны совпасть со входом.",
+      "elapsed_s": 0.029,
+      "answer": "Выручка Транслориума за 2025 год составляет 806,3 млн ₽.",
+      "turn": {
+        "reply_text": "Выручка Транслориума за 2025 год составляет 806,3 млн ₽.",
+        "brief": [],
+        "answer_kind": "qa",
+        "primary_inn": "9721159668",
+        "facts": [],
+        "claims": [
+          {
+            "text_span": "806,3 млн ₽",
+            "inn": "9721159668",
+            "field": "finReports[year=2025].common.proceeds",
+            "signal_id": "FIN_PROCEEDS_UP"
+          }
+        ],
+        "gaps": [],
+        "next_steps": [],
+        "headline": null,
+        "panel": {
+          "kind": "card",
+          "inn": "9721159668",
+          "block": "B",
+          "metric": null
+        },
+        "suggestions": [],
+        "_latency_s": 0.0
+      },
+      "backend_validation": {
+        "issues": [],
+        "allowed_signals": 5
+      },
+      "issues": []
+    }
+  ]
+}
